@@ -723,14 +723,32 @@ async function signOut() {
   document.getElementById('user-chip').style.display='none';
 }
 
-async function getToken() {
-  try {
-    const result = await msalInstance.acquireTokenSilent({ scopes: CONFIG.scopes, account: currentAccount });
-    return result.accessToken;
-  } catch(e) {
-    const result = await msalInstance.acquireTokenPopup({ scopes: CONFIG.scopes });
-    return result.accessToken;
+async function getToken(retries=3) {
+  // Wait if an interaction is already in progress
+  for(let i=0; i<retries; i++) {
+    try {
+      const result = await msalInstance.acquireTokenSilent({ scopes: CONFIG.scopes, account: currentAccount });
+      return result.accessToken;
+    } catch(e) {
+      const code = e.errorCode || e.name || '';
+      if(code.includes('interaction_in_progress')) {
+        // Another auth interaction is running — wait and retry
+        await new Promise(r => setTimeout(r, 1500));
+        continue;
+      }
+      if(code.includes('InteractionRequired') || code.includes('consent_required') || code.includes('login_required')) {
+        // Need user interaction — show popup
+        try {
+          const result = await msalInstance.acquireTokenPopup({ scopes: CONFIG.scopes, account: currentAccount });
+          return result.accessToken;
+        } catch(popupErr) {
+          throw popupErr;
+        }
+      }
+      throw e;
+    }
   }
+  throw new Error('Unable to acquire token after retries — please refresh the page and sign in again.');
 }
 
 async function onSignedIn() {
@@ -844,6 +862,8 @@ async function loadFromSharePoint() {
 
 async function saveToSharePoint() {
   setSyncStatus('syncing','Saving…');
+  // Brief pause to let any in-progress MSAL interactions complete
+  await new Promise(r => setTimeout(r, 800));
   try {
     const keys = Object.keys(CONFIG.lists);
     await Promise.all(keys.map(async key => {
