@@ -290,6 +290,7 @@ tbody td{padding:8px 11px;vertical-align:middle}
     <div class="auth-logo" id="auth-logo-wrap"></div>
     <div class="auth-title">EDGE Architects — Finance</div>
     <div class="auth-sub">Sign in with your Microsoft 365 account to access the shared finance dashboard.</div>
+    <div id="auth-debug" style="font-size:9px;color:#aaa;margin-bottom:8px;word-break:break-all"></div>
     <button class="auth-btn" onclick="signIn()">
       <svg width="20" height="20" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="9" height="9" fill="#F25022"/><rect x="11" y="1" width="9" height="9" fill="#7FBA00"/><rect x="1" y="11" width="9" height="9" fill="#00A4EF"/><rect x="11" y="11" width="9" height="9" fill="#FFB900"/></svg>
       Sign in with Microsoft
@@ -656,6 +657,13 @@ async function waitForMSAL(maxWaitMs=10000) {
 
 async function initMSAL() {
   await waitForMSAL();
+  // Clear any stale MSAL cache entries that might reference old app registrations
+  try {
+    Object.keys(localStorage).filter(k => k.startsWith('msal.')).forEach(k => {
+      // Only clear if it doesn't match current clientId
+      if(!k.includes(CONFIG.clientId)) localStorage.removeItem(k);
+    });
+  } catch(e) {}
   msalInstance = new msal.PublicClientApplication({
     auth: {
       clientId: CONFIG.clientId,
@@ -682,15 +690,28 @@ async function signIn() {
     await onSignedIn();
   } catch(e) {
     document.getElementById('auth-loading').style.display='none';
-    const msg = e.errorCode || e.message || String(e);
-    // popup_window_error = browser blocked popup → suggest allowing popups
-    if(msg.includes('popup') || msg.includes('user_cancelled')) {
-      document.getElementById('auth-error').textContent = 'Pop-up was blocked or closed. Please allow pop-ups for this site and try again.';
+    // Build detailed error message for diagnosis
+    const errorCode = e.errorCode || '';
+    const errorMsg = e.message || '';
+    const subError = e.subError || '';
+    const correlationId = e.correlationId || '';
+    let display = '';
+    if(errorCode.includes('popup') || errorCode.includes('user_cancelled') || errorMsg.includes('user_cancelled')) {
+      display = 'Pop-up was blocked or closed. Please allow pop-ups for this site and try again.';
     } else {
-      document.getElementById('auth-error').textContent = 'Sign-in failed: ' + msg;
+      display = `Error: ${errorCode || 'unknown'}\n${errorMsg}`;
+      if(subError) display += `\nSub-error: ${subError}`;
+      if(correlationId) display += `\nCorrelation ID: ${correlationId}`;
     }
-    document.getElementById('auth-error').style.display='block';
-    console.error('MSAL signIn error:', e);
+    const errEl = document.getElementById('auth-error');
+    errEl.style.whiteSpace = 'pre-wrap';
+    errEl.style.fontSize = '10px';
+    errEl.style.textAlign = 'left';
+    errEl.textContent = display;
+    errEl.style.display='block';
+    console.error('MSAL full error object:', JSON.stringify(e, null, 2));
+    console.error('MSAL errorCode:', errorCode);
+    console.error('MSAL message:', errorMsg);
   }
 }
 
@@ -871,6 +892,10 @@ function setSyncStatus(state, label) {
 // ─────────────────────────────────────────────────
 async function loadDB() {
   await initMSAL();
+  // Show config debug info on login screen
+  const dbgEl = document.getElementById('auth-debug');
+  if(dbgEl) dbgEl.textContent = `Client: ${CONFIG.clientId.slice(0,8)}… · Tenant: ${CONFIG.tenantId.slice(0,8)}…`;
+
   // Handle any redirect response (MSAL may return here after redirect login)
   try {
     const redirectResult = await msalInstance.handleRedirectPromise();
