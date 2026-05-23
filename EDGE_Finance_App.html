@@ -251,6 +251,72 @@ tbody td{padding:8px 11px;vertical-align:middle}
 .sub-tag{background:#f0f0f0;border-radius:3px;padding:2px 7px;font-size:10px;color:var(--gd);white-space:nowrap}
 .sub-tag.has-sub{background:#fff3cd;color:#7a5c00}
 
+
+/* IMPROVEMENTS */
+/* Row colour coding by due date */
+.row-due-soon td { background: #fffbea !important; }
+.row-overdue td { background: #fff0f0 !important; }
+.row-paid td { opacity: 0.7; }
+
+/* Status toggle button */
+.status-toggle { 
+  cursor:pointer;padding:2px 8px;border-radius:10px;font-size:9.5px;
+  font-weight:700;letter-spacing:.03em;text-transform:uppercase;
+  border:none;transition:all .15s;
+}
+.status-toggle:hover { opacity:.8;transform:scale(1.05); }
+
+/* Drawn down bar */
+.drawn-bar-wrap{height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;margin-top:3px;min-width:80px}
+.drawn-bar{height:100%;border-radius:3px;background:var(--yellow);transition:width .3s}
+
+/* Activity log */
+.activity-log{max-height:180px;overflow-y:auto;margin-top:8px}
+.activity-item{padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:11px}
+.activity-item:last-child{border-bottom:none}
+.activity-meta{font-size:9.5px;color:var(--gm);margin-top:2px}
+.activity-input-row{display:flex;gap:6px;margin-top:8px}
+.activity-input-row input{flex:1;padding:6px 8px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:11.5px}
+.activity-input-row input:focus{outline:none;border-color:var(--black)}
+
+/* Cumulative line on chart */
+.cf-cumulative{font-size:10px;color:var(--yellow);font-weight:600;text-align:right;padding:2px 8px}
+
+/* Scenario toggle */
+.scenario-toggle{display:flex;gap:0;border:1px solid var(--gl);border-radius:var(--r);overflow:hidden}
+.scenario-btn{padding:5px 12px;font-size:10.5px;font-weight:600;cursor:pointer;background:var(--white);border:none;font-family:var(--font);text-transform:uppercase;letter-spacing:.04em;color:var(--gm);transition:all .15s}
+.scenario-btn.active{background:var(--black);color:var(--yellow)}
+
+/* VO pipeline badge */
+.pipeline-val{font-size:11px;color:var(--amber);font-weight:600}
+
+/* PDF print styles */
+@media print {
+  nav,.save-bar,.auth-overlay,.btn,.td-acts { display:none !important; }
+  body { background:white; font-size:11px; }
+  .card { border:1px solid #ccc; box-shadow:none; }
+  .kpi-strip { grid-template-columns:repeat(4,1fr); }
+  main { padding:10px; max-width:100%; }
+  .sec { display:block !important; }
+  #sec-projects,#sec-fees,#sec-vo,#sec-tracker { display:none !important; }
+}
+
+/* Mobile responsive */
+@media(max-width:768px) {
+  nav { padding:0 12px; height:44px; }
+  .ntab { padding:0 10px; font-size:10px; }
+  main { padding:12px; }
+  .kpi-strip { grid-template-columns:repeat(2,1fr); gap:8px; }
+  .kpi-val { font-size:16px; }
+  .tw { font-size:11px; }
+  thead th { padding:6px 8px; font-size:9px; }
+  tbody td { padding:6px 8px; }
+  .cf-month { grid-template-columns:60px 1fr 90px 90px; }
+  .cf-month .cf-bar-cell:nth-child(3) { display:none; }
+  .g2 { grid-template-columns:1fr; }
+  .brand img { height:28px; }
+}
+
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -335,12 +401,17 @@ tbody td{padding:8px 11px;vertical-align:middle}
 <div class="sec active" id="sec-dashboard">
   <div class="ph">
     <div><div class="ph-title">Cashflow Overview</div><div class="ph-sub">Money in · Money out · What's overdue</div></div>
-    <div style="display:flex;gap:8px;align-items:center">
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div class="scenario-toggle">
+        <button class="scenario-btn active" id="scenario-all" onclick="setScenario('all')">All Forecast</button>
+        <button class="scenario-btn" id="scenario-confirmed" onclick="setScenario('confirmed')">Confirmed Only</button>
+      </div>
       <select id="cf-months-select" onchange="renderDashboard()" style="padding:6px 9px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:11px;background:var(--white)">
         <option value="6">Next 6 months</option>
         <option value="12">Next 12 months</option>
         <option value="3">Next 3 months</option>
       </select>
+      <button class="btn btn-ghost btn-sm" onclick="printReport()" title="Print / Export PDF">🖨 Print Report</button>
     </div>
   </div>
   <div class="kpi-strip" id="kpi-strip"></div>
@@ -362,7 +433,7 @@ tbody td{padding:8px 11px;vertical-align:middle}
     <select id="proj-status-f" onchange="renderProjects()"><option value="">All Statuses</option><option>Live</option><option>Planned</option><option>Complete</option></select>
   </div>
   <div class="card"><div class="tw"><table id="proj-table">
-    <thead><tr><th>Project</th><th>Client</th><th>Lead</th><th class="r">Contract Fee (AED)</th><th class="r">+Approved VOs</th><th class="r">Total Value</th><th class="r">Sub Costs</th><th class="r">Net Revenue</th><th>Gross Margin</th><th>Start</th><th>End</th><th>Status</th><th></th></tr></thead>
+    <thead><tr><th>Project</th><th>Client</th><th>Lead</th><th class="r">Contract Fee (AED)</th><th class="r">+Approved VOs</th><th class="r">Total Value</th><th class="r">Sub Costs</th><th class="r">Net Revenue</th><th>Gross Margin</th><th>Fee Drawn</th><th>Start</th><th>End</th><th>Status</th><th></th></tr></thead>
     <tbody></tbody>
   </table></div></div>
 </div>
@@ -437,6 +508,21 @@ tbody td{padding:8px 11px;vertical-align:middle}
 
 </main>
 
+<!-- NOTES MODAL -->
+<div class="mo" id="mo-notes">
+  <div class="modal" style="max-width:480px">
+    <div class="mhead"><span class="mtitle" id="notes-modal-title">Project Notes</span><button class="mclose" onclick="closeMo('mo-notes')">×</button></div>
+    <div class="mbody">
+      <div id="activity-log-list" class="activity-log"></div>
+      <div class="activity-input-row">
+        <input type="text" id="activity-input" placeholder="Add a note or update…" onkeydown="if(event.key==='Enter')addActivity()">
+        <button class="btn btn-y btn-sm" onclick="addActivity()">Add</button>
+      </div>
+    </div>
+    <div class="mfoot"><button class="btn btn-ghost" onclick="closeMo('mo-notes')">Close</button></div>
+  </div>
+</div>
+
 <!-- ═══════════════ MODALS ═══════════════ -->
 
 <!-- PROJECT -->
@@ -472,7 +558,7 @@ tbody td{padding:8px 11px;vertical-align:middle}
       <div class="fgrp"><label>Invoice Amount (AED) *</label><input id="sf-amt" type="number" placeholder="0"></div>
       <div class="fgrp"><label>Invoice Date</label><input id="sf-invdate" type="date"></div>
       <div class="fgrp"><label>Expected Receipt Date</label><input id="sf-recdate" type="date" oninput="autoSubDate('sf-recdate','sf-subs-list')"><div class="fhint">Sets sub pay date to +7 days automatically</div></div>
-      <div class="fgrp"><label>Actual Receipt Date</label><input id="sf-actdate" type="date" oninput="recalcStatus('stage')"></div>
+      <div class="fgrp"><label>Actual Receipt Date</label><input id="sf-actdate" type="date"></div>
       <div class="fgrp"><label>Status</label><select id="sf-status"><option>Planned</option><option>Invoiced</option><option>Paid</option></select></div>
       <hr class="fdiv">
       <div class="fsec full">Sub Consultants (optional — add as many as needed)</div>
@@ -1188,7 +1274,7 @@ function render(id) {
 let openMonths = new Set();
 
 function renderDashboard() {
-  const rows = allRows();
+  const rows = scenarioRows(allRows());
   const numMonths = parseInt(document.getElementById('cf-months-select')?.value||6);
   const t = today();
 
@@ -1240,6 +1326,7 @@ function renderDashboard() {
       <div class="margin-bar-wrap" style="margin-top:6px"><div class="margin-bar" style="width:${Math.min(portfolioMargin||0,100)}%;background:${portfolioMarginColor}"></div></div>
       <div class="kpi-sub">${marginLabel(portfolioMargin)} · target ≥ 40%</div>
     </div>
+    <div class="kpi"><div class="kpi-lbl">VO Pipeline (Unconfirmed)</div><div class="kpi-val pipeline-val">${fmtN(getVOPipeline())}</div><div class="kpi-sub">AED · identified + submitted</div></div>
     <div class="kpi ${overdueAmt?'r':''}"><div class="kpi-lbl">Overdue Receipts</div><div class="kpi-val">${fmtN(overdueAmt)}</div><div class="kpi-sub">${overdueRows.length} invoice${overdueRows.length===1?'':'s'} past due</div></div>
     <div class="kpi b"><div class="kpi-lbl">This Month — In</div><div class="kpi-val">${fmtN(thisMonthIn)}</div><div class="kpi-sub">AED expected receipts</div></div>
     <div class="kpi"><div class="kpi-lbl">This Month — Out</div><div class="kpi-val">${fmtN(thisMonthOut)}</div><div class="kpi-sub">AED sub payments due</div></div>
@@ -1282,6 +1369,7 @@ function renderDashboard() {
       <div class="cfcell right">In (AED)</div>
       <div class="cfcell right">Out (AED)</div>
       <div class="cfcell right">Net (AED)</div>
+      <div class="cfcell right" style="font-size:9px;color:var(--yellow)">Cumulative</div>
     </div>`;
 
   months.forEach(m => {
@@ -1298,6 +1386,9 @@ function renderDashboard() {
     const mKey = `${m.year}-${m.month}`;
     const isOpen = openMonths.has(mKey);
 
+    const cumIn = months.slice(0,months.indexOf(m)+1).reduce((a,mm)=>a+rows.filter(r=>matchMonth(r.recdate,mm)).reduce((s,r)=>s+(+r.amt||0),0),0);
+    const cumOut = months.slice(0,months.indexOf(m)+1).reduce((a,mm)=>a+rows.reduce((s,r)=>s+(r.subs||[]).filter(x=>matchMonth(x.pay,mm)).reduce((b,x)=>b+(+x.amt||0),0),0),0);
+    const cumNet = cumIn - cumOut;
     html += `<div class="cf-month${isNow?' current-month':''}">
       <div class="cfm-label" style="font-size:11px;cursor:pointer" onclick="toggleMonth('${mKey}')">${shortLabel}</div>
       <div class="cf-bar-cell">
@@ -1311,6 +1402,7 @@ function renderDashboard() {
       <div class="cfcell right bold">${totalIn?fmtN(totalIn):'—'}</div>
       <div class="cfcell right" style="color:var(--gd)">${totalOut?fmtN(totalOut):'—'}</div>
       <div class="cfcell right ${netVal>0?'net-pos':netVal<0?'net-neg':''}">${netVal?fmtN(netVal):'—'}</div>
+      <div class="cfcell right" style="font-size:10px;color:${cumNet>=0?'#27ae60':'#c0392b'};font-weight:600" title="Cumulative net cashflow">${fmtN(cumNet)}</div>
     </div>`;
 
     if(isOpen) {
@@ -1391,10 +1483,21 @@ function renderProjects() {
       <td class="td-r" style="color:var(--red)">${subCosts?fmtN(subCosts):'—'}</td>
       <td class="td-r" style="color:var(--green)"><strong>${fmtN(netRev)}</strong></td>
       <td>${marginPill(margin, true)}</td>
+      <td>
+        ${(()=>{
+          const allFees=[...db.stageFees,...db.milestoneFees,...db.monthlyFees].filter(r=>r.project===p.name);
+          const invoiced=allFees.reduce((a,r)=>a+(r.status!=='Planned'?(+r.amt||0):0),0);
+          const pct=totalVal>0?Math.min(Math.round((invoiced/totalVal)*100),100):0;
+          return \`<div style="font-size:10.5px;font-weight:600">\${fmtN(invoiced)} AED</div>
+          <div class="drawn-bar-wrap"><div class="drawn-bar" style="width:\${pct}%"></div></div>
+          <div style="font-size:9px;color:var(--gm)">\${pct}% drawn</div>\`;
+        })()}
+      </td>
       <td class="td-m">${fmtD(p.start)}</td><td class="td-m">${p.end?fmtD(p.end):'Ongoing'}</td>
       <td>${statusBadge(p.status)}</td>
       <td><div class="td-acts">
         <button class="btn btn-blk btn-xs" onclick="editProject('${p.id}')">Edit</button>
+        <button class="btn btn-blk btn-xs" onclick="openNotes('${p.id}')">📝</button>
         <button class="btn btn-del btn-xs" onclick="del('projects','${p.id}')">Del</button>
       </div></td>
     </tr>`;
@@ -1444,18 +1547,22 @@ function renderStageFees() {
   tbody.innerHTML=db.stageFees.map(r=>{
     const od=daysOverdue(r.recdate,r.actdate,r.status);
     const subs=normSubs(r);const subTotal=subs.reduce((a,s)=>a+(+s.amt||0),0);
-    return `<tr>
+    const rc=rowClass(r.invdate,r.recdate,r.actdate,r.status);
+    const sc={Planned:'#f0f0f0',Invoiced:'#e3f0ff',Paid:'#e8f8ef'}[r.status]||'#f0f0f0';
+    const stc={Planned:'#555',Invoiced:'#1a5fa0',Paid:'#1a7a40'}[r.status]||'#555';
+    return `<tr class="${rc}">
       <td>${r.project}</td><td>${r.stage}${r.event?' — '+r.event:''}</td>
       <td class="td-r"><strong>${fmtN(r.amt)}</strong></td>
       <td class="td-m">${fmtD(r.invdate)}</td>
       <td class="td-m">${fmtD(r.recdate)}</td>
       <td class="td-m">${r.actdate?fmtD(r.actdate):'—'}</td>
       <td class="td-r">${overdueCell(od)}</td>
-      <td>${statusBadge(r.status)}</td>
+      <td><button class="status-toggle" style="background:${sc};color:${stc}" onclick="quickStatus('stageFees','${r.id}','${r.status}')" title="Click to advance status">${r.status} ▸</button></td>
       <td>${renderSubTags(subs)}</td>
       <td class="td-r">${subTotal?'<strong>'+fmtN(subTotal)+'</strong>':'—'}</td>
       <td><div class="td-acts">
         <button class="btn btn-blk btn-xs" onclick="editStageFee('${r.id}')">Edit</button>
+        <button class="btn btn-blk btn-xs" title="Duplicate row" onclick="duplicateRow('stageFees','${r.id}')">⧉</button>
         <button class="btn btn-del btn-xs" onclick="del('stageFees','${r.id}')">Del</button>
       </div></td>
     </tr>`;
@@ -1495,17 +1602,21 @@ function renderMilestoneFees() {
   tbody.innerHTML=db.milestoneFees.map(r=>{
     const od=daysOverdue(r.recdate,r.actdate,r.status);
     const subs=normSubs(r);const subTotal=subs.reduce((a,s)=>a+(+s.amt||0),0);
-    return `<tr>
+    const rc=rowClass(r.invdate,r.recdate,r.actdate,r.status);
+    const sc={Planned:'#f0f0f0',Invoiced:'#e3f0ff',Paid:'#e8f8ef'}[r.status]||'#f0f0f0';
+    const stc={Planned:'#555',Invoiced:'#1a5fa0',Paid:'#1a7a40'}[r.status]||'#555';
+    return `<tr class="${rc}">
       <td>${r.project}</td><td>${r.phase||''}${r.event?' — '+r.event:''}</td>
       <td class="td-r"><strong>${fmtN(r.amt)}</strong></td>
       <td class="td-m">${fmtD(r.invdate)}</td><td class="td-m">${fmtD(r.recdate)}</td>
       <td class="td-m">${r.actdate?fmtD(r.actdate):'—'}</td>
       <td class="td-r">${overdueCell(od)}</td>
-      <td>${statusBadge(r.status)}</td>
+      <td><button class="status-toggle" style="background:${sc};color:${stc}" onclick="quickStatus('milestoneFees','${r.id}','${r.status}')" title="Click to advance status">${r.status} ▸</button></td>
       <td>${renderSubTags(subs)}</td>
       <td class="td-r">${subTotal?'<strong>'+fmtN(subTotal)+'</strong>':'—'}</td>
       <td><div class="td-acts">
         <button class="btn btn-blk btn-xs" onclick="editMilestone('${r.id}')">Edit</button>
+        <button class="btn btn-blk btn-xs" title="Duplicate" onclick="duplicateRow('milestoneFees','${r.id}')">⧉</button>
         <button class="btn btn-del btn-xs" onclick="del('milestoneFees','${r.id}')">Del</button>
       </div></td>
     </tr>`;
@@ -1545,17 +1656,21 @@ function renderMonthlyFees() {
   tbody.innerHTML=db.monthlyFees.map(r=>{
     const od=daysOverdue(r.recdate,r.actdate,r.status);
     const subs=normSubs(r);const subTotal=subs.reduce((a,s)=>a+(+s.amt||0),0);
-    return `<tr>
+    const rc=rowClass(r.invdate,r.recdate,r.actdate,r.status);
+    const sc={Planned:'#f0f0f0',Invoiced:'#e3f0ff',Paid:'#e8f8ef'}[r.status]||'#f0f0f0';
+    const stc={Planned:'#555',Invoiced:'#1a5fa0',Paid:'#1a7a40'}[r.status]||'#555';
+    return `<tr class="${rc}">
       <td>${r.project}</td><td>${r.phase||'—'}</td><td class="td-m">${r.month||'—'}</td>
       <td class="td-r"><strong>${fmtN(r.amt)}</strong></td>
       <td class="td-m">${fmtD(r.invdate)}</td><td class="td-m">${fmtD(r.recdate)}</td>
       <td class="td-m">${r.actdate?fmtD(r.actdate):'—'}</td>
       <td class="td-r">${overdueCell(od)}</td>
-      <td>${statusBadge(r.status)}</td>
+      <td><button class="status-toggle" style="background:${sc};color:${stc}" onclick="quickStatus('monthlyFees','${r.id}','${r.status}')" title="Click to advance status">${r.status} ▸</button></td>
       <td>${renderSubTags(subs)}</td>
       <td class="td-r">${subTotal?'<strong>'+fmtN(subTotal)+'</strong>':'—'}</td>
       <td><div class="td-acts">
         <button class="btn btn-blk btn-xs" onclick="editMonthly('${r.id}')">Edit</button>
+        <button class="btn btn-blk btn-xs" title="Duplicate" onclick="duplicateRow('monthlyFees','${r.id}')">⧉</button>
         <button class="btn btn-del btn-xs" onclick="del('monthlyFees','${r.id}')">Del</button>
       </div></td>
     </tr>`;
@@ -1602,10 +1717,12 @@ function renderVO() {
   tbody.innerHTML=db.voRegister.map(r=>{
     const od=daysOverdue(r.recdate,r.actdate,r.status);
     const subs=normSubs(r);const subTotal=subs.reduce((a,s)=>a+(+s.amt||0),0);
+    const sc={Identified:'#f0f0f0',Submitted:'#fff8e1',Approved:'#e8f8ef',Rejected:'#fde8e8'}[r.status]||'#f0f0f0';
+    const stc={Identified:'#555',Submitted:'#856404',Approved:'#1a7a40',Rejected:'#8b1a1a'}[r.status]||'#555';
     return `<tr>
       <td><strong>${r.voNo}</strong></td><td>${r.project}</td>
       <td style="max-width:180px;overflow:hidden;text-overflow:ellipsis">${r.desc||'—'}</td>
-      <td>${statusBadge(r.status)}</td>
+      <td><button class="status-toggle" style="background:${sc};color:${stc}" onclick="quickStatusVO('${r.id}','${r.status}')" title="Click to advance status">${r.status} ▸</button></td>
       <td class="td-r">${fmtN(r.est)}</td>
       <td class="td-r">${r.agreed?fmtN(r.agreed):'—'}</td>
       <td class="td-m">${fmtD(r.invdate)}</td>
@@ -1679,7 +1796,10 @@ function renderTracker() {
   if(!rows.length){tbody.innerHTML='<tr><td colspan="12"><div class="empty"><div class="ei">🧾</div><p>No invoices logged.</p><button class="btn btn-y btn-sm" onclick="openMo(\'mo-tracker\')">Log First Invoice</button></div></td></tr>';return;}
   tbody.innerHTML=rows.map(r=>{
     const od=r.computedStatus!=='Paid'&&r.dueDate?Math.max(0,Math.floor((t-new Date(r.dueDate+'T00:00'))/86400000)):0;
-    return `<tr>
+    const tsc={Invoiced:'#e3f0ff',Paid:'#e8f8ef',Overdue:'#fde8e8'}[r.computedStatus]||'#f0f0f0';
+    const tstc={Invoiced:'#1a5fa0',Paid:'#1a7a40',Overdue:'#8b1a1a'}[r.computedStatus]||'#555';
+    const trc=r.computedStatus==='Overdue'?'row-overdue':r.computedStatus==='Paid'?'row-paid':'';
+    return `<tr class="${trc}">
       <td><strong>${r.invNo}</strong></td><td>${r.project}</td>
       <td class="td-m">${getProject(r.project).client||'—'}</td>
       <td class="td-m">${r.type||'—'}</td>
@@ -1688,7 +1808,7 @@ function renderTracker() {
       <td class="td-r">${r.recv?fmtN(r.recv):'—'}</td>
       <td class="td-m">${fmtD(r.recDate)}</td>
       <td class="td-r">${overdueCell(od)}</td>
-      <td>${statusBadge(r.computedStatus)}</td>
+      <td><button class="status-toggle" style="background:${tsc};color:${tstc}" onclick="quickStatusTracker('${r.id}','${r.computedStatus}')" title="Click to mark as paid">${r.computedStatus} ▸</button></td>
       <td><div class="td-acts">
         <button class="btn btn-blk btn-xs" onclick="editTracker('${r.id}')">Edit</button>
         <button class="btn btn-del btn-xs" onclick="del('invoiceTracker','${r.id}')">Del</button>
@@ -1833,6 +1953,152 @@ function renderSubTags(subs) {
 function renderSubPayDates(subs) {
   if(!subs||!subs.length) return '<span class="td-m">—</span>';
   return subs.map(s=>`<div style="font-size:10.5px;color:var(--gd)">${s.name}: ${fmtD(s.pay)}</div>`).join('');
+}
+
+
+// ═══════════════════════════════════════════════════
+// IMPROVEMENT FUNCTIONS
+// ═══════════════════════════════════════════════════
+
+// ── 1. Scenario toggle ──
+let currentScenario = 'all'; // 'all' or 'confirmed'
+function setScenario(s) {
+  currentScenario = s;
+  document.getElementById('scenario-all').classList.toggle('active', s==='all');
+  document.getElementById('scenario-confirmed').classList.toggle('active', s==='confirmed');
+  renderDashboard();
+}
+
+// Filter rows by scenario
+function scenarioRows(rows) {
+  if(currentScenario === 'confirmed') return rows.filter(r => r.status === 'Invoiced' || r.status === 'Paid');
+  return rows;
+}
+
+// ── 2. Print / PDF report ──
+function printReport() {
+  window.print();
+}
+
+// ── 3. Status quick-toggle ──
+function quickStatus(collection, id, current) {
+  const cycle = { 'Planned':'Invoiced', 'Invoiced':'Paid', 'Paid':'Planned' };
+  const next = cycle[current] || 'Invoiced';
+  const idx = db[collection].findIndex(r=>r.id===id);
+  if(idx < 0) return;
+  db[collection][idx].status = next;
+  // If marking as Paid and no actual date set, auto-set to today
+  if(next === 'Paid' && !db[collection][idx].actdate) {
+    db[collection][idx].actdate = new Date().toISOString().slice(0,10);
+  }
+  // If marking as Invoiced and no invoice date, set to today
+  if(next === 'Invoiced' && !db[collection][idx].invdate) {
+    db[collection][idx].invdate = new Date().toISOString().slice(0,10);
+  }
+  saveDB();
+  renderCurrentFeeTab();
+}
+
+function quickStatusVO(id, current) {
+  const cycle = { 'Identified':'Submitted', 'Submitted':'Approved', 'Approved':'Identified', 'Rejected':'Identified' };
+  const next = cycle[current] || 'Submitted';
+  const idx = db.voRegister.findIndex(r=>r.id===id);
+  if(idx < 0) return;
+  db.voRegister[idx].status = next;
+  saveDB();
+  renderVO();
+}
+
+function quickStatusTracker(id, current) {
+  const cycle = { 'Invoiced':'Paid', 'Paid':'Invoiced', 'Overdue':'Paid' };
+  const next = cycle[current] || 'Paid';
+  const idx = db.invoiceTracker.findIndex(r=>r.id===id);
+  if(idx < 0) return;
+  db.invoiceTracker[idx].status = next;
+  if(next === 'Paid') {
+    if(!db.invoiceTracker[idx].recDate) db.invoiceTracker[idx].recDate = new Date().toISOString().slice(0,10);
+    if(!db.invoiceTracker[idx].recv) db.invoiceTracker[idx].recv = db.invoiceTracker[idx].amt;
+  }
+  saveDB();
+  renderTracker();
+}
+
+// ── 4. Activity / Notes log ──
+let notesProjectId = null;
+function openNotes(projId) {
+  notesProjectId = projId;
+  const p = db.projects.find(x=>x.id===projId);
+  if(!p) return;
+  document.getElementById('notes-modal-title').textContent = p.name + ' — Notes';
+  renderActivityLog();
+  openMo('mo-notes');
+}
+
+function renderActivityLog() {
+  const p = db.projects.find(x=>x.id===notesProjectId);
+  const notes = p ? (p.notes_log || []) : [];
+  const el = document.getElementById('activity-log-list');
+  if(!notes.length) { el.innerHTML = '<div style="color:var(--gm);font-size:11px;padding:8px 0">No notes yet — add the first one below.</div>'; return; }
+  el.innerHTML = notes.slice().reverse().map(n => `
+    <div class="activity-item">
+      <div>${n.text}</div>
+      <div class="activity-meta">${fmtD(n.date)} · ${n.time||''}</div>
+    </div>`).join('');
+}
+
+function addActivity() {
+  const input = document.getElementById('activity-input');
+  const text = input.value.trim();
+  if(!text) return;
+  const p = db.projects.find(x=>x.id===notesProjectId);
+  if(!p) return;
+  if(!p.notes_log) p.notes_log = [];
+  const now = new Date();
+  p.notes_log.push({
+    text,
+    date: now.toISOString().slice(0,10),
+    time: now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'})
+  });
+  input.value = '';
+  saveDB();
+  renderActivityLog();
+}
+
+// ── 5. Duplicate row ──
+function duplicateRow(collection, id) {
+  const orig = db[collection].find(r=>r.id===id);
+  if(!orig) return;
+  const copy = { ...orig, id: uid() };
+  // Clear dates and status on duplicate
+  copy.invdate = ''; copy.recdate = ''; copy.actdate = '';
+  copy.status = 'Planned';
+  if(copy.subs) copy.subs = copy.subs.map(s=>({...s, pay:''}));
+  db[collection].push(copy);
+  saveDB();
+  renderCurrentFeeTab();
+}
+
+// ── 6. Row colour coding helper ──
+function rowClass(invdate, recdate, actdate, status) {
+  if(status === 'Paid' || actdate) return 'row-paid';
+  const t = new Date();
+  if(recdate) {
+    const due = new Date(recdate+'T00:00');
+    const diff = Math.floor((due-t)/86400000);
+    if(diff < 0) return 'row-overdue';
+    if(diff <= 7) return 'row-due-soon';
+  }
+  if(invdate) {
+    const inv = new Date(invdate+'T00:00');
+    const diff = Math.floor((inv-t)/86400000);
+    if(diff <= 7 && diff >= 0) return 'row-due-soon';
+  }
+  return '';
+}
+
+// ── 7. VO Pipeline value on dashboard ──
+function getVOPipeline() {
+  return db.voRegister.filter(v=>v.status==='Identified'||v.status==='Submitted').reduce((a,v)=>a+(+v.est||0),0);
 }
 
 // ═══════════════════════════════════════════════════
