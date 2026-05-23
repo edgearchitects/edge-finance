@@ -804,16 +804,33 @@ async function resolveSiteAndLists() {
   siteId = siteData.id;
 
   // Get all lists and map names to IDs
-  const listsData = await graphRequest(`/sites/${siteId}/lists?$select=id,name`);
+  const listsData = await graphRequest(`/sites/${siteId}/lists?$select=id,name,displayName`);
+  
+  // Log all lists found for diagnosis
+  console.log('SharePoint lists found:', listsData.value.map(l => `name="${l.name}" display="${l.displayName}" id=${l.id}`));
+  
   listsData.value.forEach(l => {
-    Object.entries(CONFIG.lists).forEach(([key, name]) => {
-      if(l.name === name) listIds[key] = l.id;
+    Object.entries(CONFIG.lists).forEach(([key, expectedName]) => {
+      // Match on internal name OR display name (case-insensitive)
+      if(l.name === expectedName || 
+         l.displayName === expectedName ||
+         l.name.toLowerCase() === expectedName.toLowerCase() ||
+         l.displayName.toLowerCase() === expectedName.toLowerCase()) {
+        listIds[key] = l.id;
+        console.log(`Matched list key="${key}" name="${l.name}" display="${l.displayName}"`);
+      }
     });
   });
 
   // Check all lists found
   const missing = Object.keys(CONFIG.lists).filter(k=>!listIds[k]);
-  if(missing.length) throw new Error('Missing SharePoint lists: ' + missing.join(', ') + '. Please create them in SharePoint.');
+  console.log('listIds resolved:', JSON.stringify(listIds));
+  console.log('Missing lists:', missing);
+  if(missing.length) {
+    // Show exactly what lists exist to help diagnose
+    const available = listsData.value.map(l=>l.name).join(', ');
+    throw new Error(`Missing SharePoint lists: ${missing.join(', ')}\n\nLists available in SharePoint: ${available}\n\nCheck names match exactly.`);
+  }
 
   // Ensure each list has a 'EdgeData' multiline text column for storing JSON
   // (Title field is limited to 255 chars — too short for our records)
