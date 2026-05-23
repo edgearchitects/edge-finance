@@ -321,6 +321,7 @@ tbody td{padding:8px 11px;vertical-align:middle}
   <div class="nav-right" style="display:flex;align-items:center;gap:8px">
     <div class="sync-status" id="sync-status"><div class="sync-dot ok" id="sync-dot"></div><span id="sync-label">Synced</span></div>
     <button class="btn btn-ghost btn-sm" onclick="exportData()">⬇ Export</button>
+    <label class="btn btn-ghost btn-sm" style="cursor:pointer">⬆ Import<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
     <div class="user-chip" onclick="signOut()" title="Click to sign out" id="user-chip" style="display:none">
       <div class="user-avatar" id="user-avatar">?</div>
       <span class="user-name" id="user-name">Loading…</span>
@@ -795,6 +796,26 @@ async function resolveSiteAndLists() {
   // Check all lists found
   const missing = Object.keys(CONFIG.lists).filter(k=>!listIds[k]);
   if(missing.length) throw new Error('Missing SharePoint lists: ' + missing.join(', ') + '. Please create them in SharePoint.');
+
+  // Ensure each list has a 'EdgeData' multiline text column for storing JSON
+  // (Title field is limited to 255 chars — too short for our records)
+  await Promise.all(Object.keys(CONFIG.lists).map(async key => {
+    const listId = listIds[key];
+    try {
+      // Check if column exists
+      const cols = await graphRequest(`/sites/${siteId}/lists/${listId}/columns?$select=name`);
+      const hasEdgeData = cols.value.some(c => c.name === 'EdgeData');
+      if(!hasEdgeData) {
+        // Create multiline text column - no character limit
+        await graphRequest(`/sites/${siteId}/lists/${listId}/columns`, 'POST', {
+          name: 'EdgeData',
+          text: { allowMultipleLines: true, maxLength: 0 }
+        });
+      }
+    } catch(e) {
+      console.warn('Column check/create error for', key, e.message);
+    }
+  }));
 }
 
 // ─────────────────────────────────────────────────
@@ -806,8 +827,12 @@ async function loadFromSharePoint() {
     const listId = listIds[key];
     const data = await graphRequest(`/sites/${siteId}/lists/${listId}/items?$expand=fields&$select=fields&$top=999`);
     db[key] = data.value.map(item => {
-      try { return JSON.parse(item.fields.Title || '{}'); } catch(e) { return null; }
-    }).filter(Boolean);
+      try {
+        // Try EdgeData first (multiline, no limit), fall back to Title for legacy data
+        const raw = item.fields.EdgeData || item.fields.Title || '{}';
+        return JSON.parse(raw);
+      } catch(e) { return null; }
+    }).filter(r => r && r.id);  // must have an id field to be valid
   }));
   // Seed if all lists empty
   const isEmpty = Object.values(db).every(arr=>!arr.length);
@@ -829,12 +854,26 @@ async function saveToSharePoint() {
       const existing = await graphRequest(`/sites/${siteId}/lists/${listId}/items?$expand=fields&$select=id,fields&$top=999`);
       const existingMap = {};
       existing.value.forEach(item => {
-        try { const r=JSON.parse(item.fields.Title||'{}'); if(r.id) existingMap[r.id]=item.id; } catch(e){}
+        try {
+          // Try EdgeData first, fall back to Title for legacy items
+          const raw = item.fields.EdgeData || item.fields.Title || '{}';
+          const r = JSON.parse(raw);
+          if(r.id) existingMap[r.id] = item.id;
+          else if(item.fields.Title) existingMap[item.fields.Title] = item.id; // use Title as ID directly
+        } catch(e) {
+          if(item.fields.Title) existingMap[item.fields.Title] = item.id;
+        }
       });
 
       // Upsert all current records
       const upsertPromises = records.map(async record => {
-        const payload = { fields: { Title: JSON.stringify(record) } };
+        const json = JSON.stringify(record);
+        // Title = short identifier (record id, max 50 chars)
+        // EdgeData = full JSON in multiline text field (no size limit)
+        const payload = { fields: {
+          Title: record.id || uid(),
+          EdgeData: json
+        }};
         const spItemId = existingMap[record.id];
         if(spItemId) {
           // Update
