@@ -832,25 +832,9 @@ async function resolveSiteAndLists() {
     throw new Error(`Missing SharePoint lists: ${missing.join(', ')}\n\nLists available in SharePoint: ${available}\n\nCheck names match exactly.`);
   }
 
-  // Ensure each list has a 'EdgeData' multiline text column for storing JSON
-  // (Title field is limited to 255 chars — too short for our records)
-  await Promise.all(Object.keys(CONFIG.lists).map(async key => {
-    const listId = listIds[key];
-    try {
-      // Check if column exists
-      const cols = await graphRequest(`/sites/${siteId}/lists/${listId}/columns?$select=name`);
-      const hasEdgeData = cols.value.some(c => c.name === 'EdgeData');
-      if(!hasEdgeData) {
-        // Create multiline text column - no character limit
-        await graphRequest(`/sites/${siteId}/lists/${listId}/columns`, 'POST', {
-          name: 'EdgeData',
-          text: { allowMultipleLines: true, maxLength: 0 }
-        });
-      }
-    } catch(e) {
-      console.warn('Column check/create error for', key, e.message);
-    }
-  }));
+  // EdgeData column must be manually added to each SharePoint list
+  // as a 'Multiple lines of text' column named 'EdgeData'
+  // (Title field is limited to 255 chars — EdgeData has no limit)
 }
 
 // ─────────────────────────────────────────────────
