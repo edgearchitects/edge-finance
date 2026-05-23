@@ -1271,7 +1271,7 @@ function renderDashboard() {
   }
 
   const maxIn = Math.max(...months.map(m=>rows.filter(r=>matchMonth(r.recdate,m)).reduce((a,r)=>a+(+r.amt||0),0)),1);
-  const maxOut = Math.max(...months.map(m=>rows.filter(r=>matchMonth(r.subpay,m)&&r.subamt>0).reduce((a,r)=>a+(+r.subamt||0),0)),1);
+  const maxOut = Math.max(...months.map(m=>rows.reduce((a,r)=>a+(r.subs||[]).filter(s=>matchMonth(s.pay,m)).reduce((b,s)=>b+(+s.amt||0),0),0)),1);
   const maxBoth = Math.max(maxIn,maxOut);
 
   let html = `<div class="cf-grid">
@@ -1440,7 +1440,7 @@ function renderStageFees() {
   const tbody=document.querySelector('#stage-table tbody');
   if(!db.stageFees.length){tbody.innerHTML='<tr><td colspan="12"><div class="empty"><div class="ei">📊</div><p>No stage fees added yet.</p></div></td></tr>';return;}
   const total=db.stageFees.reduce((a,r)=>a+(+r.amt||0),0);
-  document.getElementById('stage-sbar').innerHTML=`<div class="sbar"><div class="si"><div class="sl">Total Stage Billing</div><div class="sv y">${fmtN(total)} AED</div></div><div class="si"><div class="sl">Sub Costs</div><div class="sv r">${fmtN(db.stageFees.reduce((a,r)=>a+(+r.subamt||0),0))} AED</div></div><div class="si"><div class="sl">Rows</div><div class="sv">${db.stageFees.length}</div></div></div>`;
+  document.getElementById('stage-sbar').innerHTML=`<div class="sbar"><div class="si"><div class="sl">Total Stage Billing</div><div class="sv y">${fmtN(total)} AED</div></div><div class="si"><div class="sl">Sub Costs</div><div class="sv r">${fmtN(db.stageFees.reduce((a,r)=>a+normSubs(r).reduce((b,s)=>b+(+s.amt||0),0),0))} AED</div></div><div class="si"><div class="sl">Rows</div><div class="sv">${db.stageFees.length}</div></div></div>`;
   tbody.innerHTML=db.stageFees.map(r=>{
     const od=daysOverdue(r.recdate,r.actdate,r.status);
     const subs=normSubs(r);const subTotal=subs.reduce((a,s)=>a+(+s.amt||0),0);
