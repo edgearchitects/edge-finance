@@ -256,7 +256,31 @@ tbody td{padding:8px 11px;vertical-align:middle}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--gl);border-radius:3px}
 </style>
-<script src="https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js"></script>
+<script>
+// MSAL loader — tries multiple CDNs in sequence, never fails silently
+(function() {
+  var cdns = [
+    'https://alcdn.msauth.net/browser/2.38.3/js/msal-browser.min.js',
+    'https://cdn.jsdelivr.net/npm/@azure/msal-browser@2.38.3/lib/msal-browser.min.js',
+    'https://unpkg.com/@azure/msal-browser@2.38.3/lib/msal-browser.min.js'
+  ];
+  var idx = 0;
+  function loadNext() {
+    if(idx >= cdns.length) {
+      document.getElementById('auth-error').textContent = 'Failed to load Microsoft auth library. Check your internet connection and refresh.';
+      document.getElementById('auth-error').style.display = 'block';
+      document.getElementById('auth-loading').style.display = 'none';
+      return;
+    }
+    var s = document.createElement('script');
+    s.src = cdns[idx++];
+    s.onload = function() { window._msalLoaded = true; };
+    s.onerror = function() { loadNext(); };
+    document.head.appendChild(s);
+  }
+  loadNext();
+})();
+</script>
 </head>
 <body>
 
@@ -563,7 +587,7 @@ tbody td{padding:8px 11px;vertical-align:middle}
 // CONFIG
 // ═══════════════════════════════════════════════════
 const CONFIG = {
-  clientId: 'b76e8edb-ad89-4198-9fa2-70d52d77be00',
+  clientId: '43b85214-f99c-4e56-93eb-764fc58255f0',
   tenantId: '744d3632-c6d3-40c0-bdab-c699a2e7aa9c',
   siteUrl:  'https://edgedesignuae.sharepoint.com/sites/FINANCE',
   scopes:   ['https://graph.microsoft.com/Sites.ReadWrite.All',
@@ -621,7 +645,17 @@ function saveDB() {
 // ─────────────────────────────────────────────────
 // MSAL AUTH
 // ─────────────────────────────────────────────────
+async function waitForMSAL(maxWaitMs=10000) {
+  // Poll until the msal global is available (CDN may load async)
+  const start = Date.now();
+  while(typeof msal === 'undefined') {
+    if(Date.now() - start > maxWaitMs) throw new Error('Microsoft auth library did not load. Please refresh the page.');
+    await new Promise(r => setTimeout(r, 100));
+  }
+}
+
 async function initMSAL() {
+  await waitForMSAL();
   msalInstance = new msal.PublicClientApplication({
     auth: {
       clientId: CONFIG.clientId,
@@ -639,7 +673,7 @@ async function signIn() {
   document.getElementById('auth-error').style.display='none';
   try {
     // Ensure MSAL is ready (guard against button click before init completes)
-    if(!msalInstance) await initMSAL();
+    if(!msalInstance) { await waitForMSAL(); await initMSAL(); }
     const result = await msalInstance.loginPopup({
       scopes: CONFIG.scopes,
       prompt: 'select_account'
