@@ -501,7 +501,13 @@ tbody td{padding:8px 11px;vertical-align:middle}
     <select id="tr-proj-f" onchange="renderTracker()"><option value="">All Projects</option></select>
   </div>
   <div class="card"><div class="tw"><table id="tracker-table">
-    <thead><tr><th>Invoice No</th><th>Project</th><th>Client</th><th>Type</th><th class="r">Amount (AED)</th><th>Issue Date</th><th>Due Date</th><th class="r">Received</th><th>Receipt Date</th><th class="r">Days O/D</th><th>Status</th><th></th></tr></thead>
+    <thead><tr>
+  <th style="cursor:pointer" onclick="sortTracker('invNo')" title="Sort by invoice number">Invoice No <span id="sort-inv-icon">↕</span></th>
+  <th>Project</th><th>Client</th><th>Type</th><th>Stage</th>
+  <th class="r">Amount (AED)</th><th>Issue Date</th><th>Due Date</th>
+  <th class="r">Received</th><th>Receipt Date</th>
+  <th class="r">Days O/D</th><th>Status</th><th></th>
+</tr></thead>
     <tbody></tbody>
   </table></div></div>
 </div>
@@ -655,12 +661,25 @@ tbody td{padding:8px 11px;vertical-align:middle}
   <div class="modal">
     <div class="mhead"><span class="mtitle" id="mtr-title">Log Invoice</span><button class="mclose" onclick="closeMo('mo-tracker')">×</button></div>
     <div class="mbody"><div class="fg">
-      <div class="fgrp"><label>Invoice No *</label><input id="tf-no" type="text" placeholder="e.g. INV-001"></div>
-      <div class="fgrp"><label>Project *</label><select id="tf-proj"><option value="">Select project…</option></select></div>
+      <div class="fgrp"><label>Invoice No *</label><input id="tf-no" type="text" placeholder="Auto-generated"><div class="fhint" id="tf-no-hint" style="color:var(--yellow)"></div></div>
+      <div class="fgrp"><label>Project *</label><select id="tf-proj" onchange="trackerProjectChanged()"><option value="">Select project…</option></select></div>
       <div class="fgrp"><label>Type</label><select id="tf-type"><option>Stage</option><option>Milestone</option><option>Monthly</option><option>VO</option></select></div>
+      <div class="fgrp"><label>Stage / Phase</label><select id="tf-stage">
+        <option value="">— Select —</option>
+        <option>Feasibility</option>
+        <option>Concept Design</option>
+        <option>Schematic Design</option>
+        <option>Detailed Design</option>
+        <option>Tender Documentation</option>
+        <option>Issued for Construction</option>
+        <option>Construction Supervision</option>
+        <option>Mobilisation</option>
+        <option>Completion</option>
+        <option>Other</option>
+      </select></div>
       <div class="fgrp"><label>Invoice Amount (AED) *</label><input id="tf-amt" type="number" placeholder="0"></div>
-      <div class="fgrp"><label>Issue Date</label><input id="tf-issue" type="date"></div>
-      <div class="fgrp"><label>Due Date</label><input id="tf-due" type="date"></div>
+      <div class="fgrp"><label>Issue Date</label><input id="tf-issue" type="date" oninput="autoTrackerDueDate()"></div>
+      <div class="fgrp"><label>Due Date <span style="font-size:9px;color:var(--gm)">(auto: +30 days)</span></label><input id="tf-due" type="date"></div>
       <div class="fgrp"><label>Amount Received (AED)</label><input id="tf-recv" type="number" placeholder="0"></div>
       <div class="fgrp"><label>Receipt Date</label><input id="tf-recdate" type="date"></div>
       <div class="fgrp"><label>Status</label><select id="tf-status"><option>Invoiced</option><option>Paid</option><option>Overdue</option></select></div>
@@ -1293,14 +1312,15 @@ function renderDashboard() {
   const totalSubs = rows.reduce((a,r)=>a+(r.subs||[]).reduce((b,s)=>b+(+s.amt||0),0),0);
   const net = totalForecast - totalSubs;
 
-  // Overdue (not paid, due date passed)
-  const overdueRows = rows.filter(r=>{
-    if(r.status==='Paid'||r.actdate) return false;
-    if(!r.recdate) return false;
-    return new Date(r.recdate+'T00:00') < t;
+  // Overdue: pulled from invoice tracker (single source of truth)
+  const overdueRows = db.invoiceTracker.filter(r=>{
+    if(r.status==='Paid') return false;
+    if(r.recDate) return false;
+    if(!r.dueDate) return false;
+    return new Date(r.dueDate+'T00:00') < t;
   });
-  const overdueAmt = overdueRows.reduce((a,r)=>a+(+r.amt||0),0);
-  const overdueDays = overdueRows.map(r=>Math.floor((t-new Date(r.recdate+'T00:00'))/86400000));
+  const overdueAmt = overdueRows.reduce((a,r)=>a+(+r.amt-(+r.recv||0)),0);
+  const overdueDays = overdueRows.map(r=>Math.floor((t-new Date(r.dueDate+'T00:00'))/86400000));
 
   // This month
   const thisMonthIn = rows.filter(r=>{
@@ -1337,7 +1357,7 @@ function renderDashboard() {
       <div class="kpi-sub">${marginLabel(portfolioMargin)} · target ≥ 40%</div>
     </div>
     <div class="kpi"><div class="kpi-lbl">VO Pipeline (Unconfirmed)</div><div class="kpi-val pipeline-val">${fmtN(getVOPipeline())}</div><div class="kpi-sub">AED · identified + submitted</div></div>
-    <div class="kpi ${overdueAmt?'r':''}"><div class="kpi-lbl">Overdue Receipts</div><div class="kpi-val">${fmtN(overdueAmt)}</div><div class="kpi-sub">${overdueRows.length} invoice${overdueRows.length===1?'':'s'} past due</div></div>
+    <div class="kpi ${overdueAmt?'r':''}"><div class="kpi-lbl">Overdue Receipts</div><div class="kpi-val">${fmtN(overdueAmt)}</div><div class="kpi-sub">${overdueRows.length} invoice${overdueRows.length===1?'':'s'} past due · tracker</div></div>
     <div class="kpi b"><div class="kpi-lbl">This Month — In</div><div class="kpi-val">${fmtN(thisMonthIn)}</div><div class="kpi-sub">AED expected receipts</div></div>
     <div class="kpi"><div class="kpi-lbl">This Month — Out</div><div class="kpi-val">${fmtN(thisMonthOut)}</div><div class="kpi-sub">AED sub payments due</div></div>
     <div class="kpi g"><div class="kpi-lbl">Actual Received (Tracker)</div><div class="kpi-val">${fmtN(trackerRecv)}</div><div class="kpi-sub">AED confirmed</div></div>
@@ -1348,14 +1368,13 @@ function renderDashboard() {
   const ob = document.getElementById('overdue-banner');
   if(overdueRows.length) {
     ob.classList.add('show');
-    const maxDays = Math.max(...overdueDays);
     ob.innerHTML = `<div class="ob-title">⚠ ${overdueRows.length} Overdue Invoice${overdueRows.length>1?'s':''} — ${fmtN(overdueAmt)} AED</div>`
       + overdueRows.map((r,i)=>`<div class="ob-row">
-        <div><strong>${r.project}</strong><span class="td-m" style="margin-left:8px">${r.type} — ${r.stage||r.phase||r.event||''}</span></div>
+        <div><strong>${r.invNo}</strong><span style="margin-left:6px;font-size:11px;color:var(--gd)">${r.project}</span><span class="td-m" style="margin-left:8px">${r.type||''}</span></div>
         <div style="display:flex;align-items:center;gap:10px">
-          <span style="font-size:11px;color:var(--gd)">Due ${fmtD(r.recdate)}</span>
+          <span style="font-size:11px;color:var(--gd)">Due ${fmtD(r.dueDate)}</span>
           <span class="ob-days">${overdueDays[i]}d overdue</span>
-          <strong style="font-size:12px">${fmtN(r.amt)} AED</strong>
+          <strong style="font-size:12px">${fmtN(+r.amt-(+r.recv||0))} AED</strong>
         </div>
       </div>`).join('');
   } else { ob.classList.remove('show'); ob.innerHTML=''; }
@@ -1771,6 +1790,21 @@ function editVO(id) {
 // ═══════════════════════════════════════════════════
 // INVOICE TRACKER
 // ═══════════════════════════════════════════════════
+let trackerSortAsc = true;
+function sortTracker(field) {
+  trackerSortAsc = !trackerSortAsc;
+  db.invoiceTracker.sort((a,b)=>{
+    const av = a[field]||''; const bv = b[field]||'';
+    // Natural sort for invoice numbers (INV-001, INV-002 etc)
+    const am = av.match(/(\d+)$/); const bm = bv.match(/(\d+)$/);
+    if(am && bm) return trackerSortAsc ? parseInt(am[1])-parseInt(bm[1]) : parseInt(bm[1])-parseInt(am[1]);
+    return trackerSortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+  });
+  document.getElementById('sort-inv-icon').textContent = trackerSortAsc ? '↑' : '↓';
+  saveDB();
+  renderTracker();
+}
+
 function renderTracker() {
   fillProjectSelects();
   const tf=document.getElementById('tr-proj-f');
@@ -1804,6 +1838,7 @@ function renderTracker() {
       <td><strong>${r.invNo}</strong></td><td>${r.project}</td>
       <td class="td-m">${getProject(r.project).client||'—'}</td>
       <td class="td-m">${r.type||'—'}</td>
+      <td class="td-m">${r.stage||'—'}</td>
       <td class="td-r"><strong>${fmtN(r.amt)}</strong></td>
       <td class="td-m">${fmtD(r.issueDate)}</td><td class="td-m">${fmtD(r.dueDate)}</td>
       <td class="td-r">${r.recv?fmtN(r.recv):'—'}</td>
@@ -1818,13 +1853,66 @@ function renderTracker() {
   }).join('');
 }
 
+function autoTrackerDueDate() {
+  const issue = document.getElementById('tf-issue').value;
+  if(!issue) return;
+  const d = new Date(issue+'T00:00');
+  d.setDate(d.getDate()+30);
+  // Only auto-set if due date is empty or was previously auto-set
+  const dueEl = document.getElementById('tf-due');
+  if(!dueEl.dataset.manuallySet) dueEl.value = d.toISOString().slice(0,10);
+}
+
+function trackerProjectChanged() {
+  // When project changes, suggest next invoice number
+  if(!editState.id) suggestInvoiceNumber();
+}
+
+function suggestInvoiceNumber() {
+  // Find highest existing invoice number and increment
+  const nums = db.invoiceTracker.map(t=>{
+    const m = (t.invNo||'').match(/(\d+)$/);
+    return m ? parseInt(m[1]) : 0;
+  });
+  const next = (Math.max(0,...nums) + 1);
+  const nextNo = 'INV-' + String(next).padStart(3,'0');
+  document.getElementById('tf-no').value = nextNo;
+  document.getElementById('tf-no-hint').textContent = 'Auto-generated: ' + nextNo;
+}
+
 function saveTracker() {
   const p=document.getElementById('tf-proj').value;if(!p){alert('Select a project.');return;}
   const no=document.getElementById('tf-no').value.trim();if(!no){alert('Invoice number required.');return;}
-  const d={invNo:no,project:p,type:document.getElementById('tf-type').value,amt:parseFloat(document.getElementById('tf-amt').value)||0,issueDate:document.getElementById('tf-issue').value,dueDate:document.getElementById('tf-due').value,recv:parseFloat(document.getElementById('tf-recv').value)||0,recDate:document.getElementById('tf-recdate').value,status:document.getElementById('tf-status').value,notes:document.getElementById('tf-notes').value};
-  if(editState.id){const i=db.invoiceTracker.findIndex(x=>x.id===editState.id);if(i>=0)db.invoiceTracker[i]={...db.invoiceTracker[i],...d};}
-  else db.invoiceTracker.push({id:uid(),...d});
+  const newStatus = document.getElementById('tf-status').value;
+  const stage = document.getElementById('tf-stage').value;
+  const d={invNo:no,project:p,type:document.getElementById('tf-type').value,stage:stage,amt:parseFloat(document.getElementById('tf-amt').value)||0,issueDate:document.getElementById('tf-issue').value,dueDate:document.getElementById('tf-due').value,recv:parseFloat(document.getElementById('tf-recv').value)||0,recDate:document.getElementById('tf-recdate').value,status:newStatus,notes:document.getElementById('tf-notes').value};
+  if(editState.id){
+    const i=db.invoiceTracker.findIndex(x=>x.id===editState.id);
+    if(i>=0){
+      db.invoiceTracker[i]={...db.invoiceTracker[i],...d};
+      // Sync status back to matching fee schedule rows
+      syncFeeStatus(p, stage, document.getElementById('tf-type').value, newStatus);
+    }
+  } else {
+    db.invoiceTracker.push({id:uid(),...d});
+    syncFeeStatus(p, stage, document.getElementById('tf-type').value, newStatus);
+  }
   saveDB();closeMo('mo-tracker');renderTracker();
+}
+
+// Sync invoice tracker status back to matching fee schedule rows
+function syncFeeStatus(project, stage, type, status) {
+  if(!stage || !project) return;
+  const spStatus = status === 'Paid' ? 'Paid' : status === 'Overdue' ? 'Invoiced' : 'Invoiced';
+  const collections = type==='Stage' ? ['stageFees'] : type==='Milestone' ? ['milestoneFees'] : type==='Monthly' ? ['monthlyFees'] : ['stageFees','milestoneFees','monthlyFees'];
+  collections.forEach(col => {
+    db[col].forEach(r => {
+      if(r.project===project && (r.stage===stage || r.phase===stage || r.month===stage)) {
+        r.status = spStatus;
+        if(status==='Paid' && !r.actdate) r.actdate = new Date().toISOString().slice(0,10);
+      }
+    });
+  });
 }
 
 function editTracker(id) {
@@ -1835,9 +1923,12 @@ function editTracker(id) {
   document.getElementById('tf-no').value=r.invNo;
   document.getElementById('tf-proj').value=r.project;
   document.getElementById('tf-type').value=r.type||'Stage';
+  document.getElementById('tf-stage').value=r.stage||'';
   document.getElementById('tf-amt').value=r.amt;
   document.getElementById('tf-issue').value=r.issueDate||'';
-  document.getElementById('tf-due').value=r.dueDate||'';
+  const dueEl=document.getElementById('tf-due');
+  dueEl.value=r.dueDate||'';
+  dueEl.dataset.manuallySet='true'; // existing due date - don't auto-override
   document.getElementById('tf-recv').value=r.recv||0;
   document.getElementById('tf-recdate').value=r.recDate||'';
   document.getElementById('tf-status').value=r.status||'Invoiced';
@@ -1851,6 +1942,13 @@ function editTracker(id) {
 function openMo(id) {
   fillProjectSelects();
   document.getElementById(id).classList.add('open');
+  // Auto-suggest invoice number when opening tracker modal for new invoice
+  if(id==='mo-tracker' && !editState.id) {
+    suggestInvoiceNumber();
+    // Clear manual due date flag
+    const dueEl=document.getElementById('tf-due');
+    if(dueEl) dueEl.dataset.manuallySet='';
+  }
 }
 function closeMo(id) {
   document.getElementById(id).classList.remove('open');
@@ -1861,6 +1959,11 @@ function closeMo(id) {
   });
   // clear sub consultant lists
   document.querySelectorAll('#'+id+' .subs-list').forEach(el=>el.innerHTML='');
+  // clear invoice number hint and due date manual flag
+  if(id==='mo-tracker') {
+    const hint=document.getElementById('tf-no-hint'); if(hint) hint.textContent='';
+    const dueEl=document.getElementById('tf-due'); if(dueEl) dueEl.dataset.manuallySet='';
+  }
 }
 document.querySelectorAll('.mo').forEach(el=>el.addEventListener('click',e=>{if(e.target===el)el.classList.remove('open')}));
 
@@ -2020,6 +2123,9 @@ function quickStatusTracker(id, current) {
     if(!db.invoiceTracker[idx].recDate) db.invoiceTracker[idx].recDate = new Date().toISOString().slice(0,10);
     if(!db.invoiceTracker[idx].recv) db.invoiceTracker[idx].recv = db.invoiceTracker[idx].amt;
   }
+  // Sync status back to matching fee schedule row
+  const r = db.invoiceTracker[idx];
+  syncFeeStatus(r.project, r.stage, r.type, next);
   saveDB();
   renderTracker();
 }
