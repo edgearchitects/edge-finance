@@ -1816,7 +1816,7 @@ function renderTracker() {
   const t=today();
   let rows=db.invoiceTracker.map(r=>{
     let s=r.status;
-    if(s!=='Paid'&&r.dueDate){const d=new Date(r.dueDate+'T00:00');if(d<t)s='Overdue';}
+    if(s!=='Paid'&&!r.recDate&&r.dueDate){const d=new Date(r.dueDate+'T00:00');if(d<t)s='Overdue';}
     return {...r,computedStatus:s};
   }).filter(r=>
     (!search||r.invNo.toLowerCase().includes(search)||(r.project||'').toLowerCase().includes(search))&&
@@ -1830,7 +1830,7 @@ function renderTracker() {
   const tbody=document.querySelector('#tracker-table tbody');
   if(!rows.length){tbody.innerHTML='<tr><td colspan="12"><div class="empty"><div class="ei">🧾</div><p>No invoices logged.</p><button class="btn btn-y btn-sm" onclick="openMo(\'mo-tracker\')">Log First Invoice</button></div></td></tr>';return;}
   tbody.innerHTML=rows.map(r=>{
-    const od=r.computedStatus!=='Paid'&&r.dueDate?Math.max(0,Math.floor((t-new Date(r.dueDate+'T00:00'))/86400000)):0;
+    const od=r.computedStatus==='Overdue'&&r.dueDate?Math.max(0,Math.floor((t-new Date(r.dueDate+'T00:00'))/86400000)):0;
     const tsc={Invoiced:'#e3f0ff',Paid:'#e8f8ef',Overdue:'#fde8e8'}[r.computedStatus]||'#f0f0f0';
     const tstc={Invoiced:'#1a5fa0',Paid:'#1a7a40',Overdue:'#8b1a1a'}[r.computedStatus]||'#555';
     const trc=r.computedStatus==='Overdue'?'row-overdue':r.computedStatus==='Paid'?'row-paid':'';
@@ -2122,6 +2122,9 @@ function quickStatusTracker(id, current) {
   if(next === 'Paid') {
     if(!db.invoiceTracker[idx].recDate) db.invoiceTracker[idx].recDate = new Date().toISOString().slice(0,10);
     if(!db.invoiceTracker[idx].recv) db.invoiceTracker[idx].recv = db.invoiceTracker[idx].amt;
+  } else if(next === 'Invoiced') {
+    db.invoiceTracker[idx].recDate = '';
+    db.invoiceTracker[idx].recv = 0;
   }
   // Sync status back to matching fee schedule row
   const r = db.invoiceTracker[idx];
