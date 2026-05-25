@@ -1107,53 +1107,40 @@ async function loadDB() {
 // ═══════════════════════════════════════════════════
 function seed() {
   db.projects = [
-    {id:'p3',name:'Courtyard & Retail [Pre-Contract]',client:'Atlantis the Royal',lead:'Maryam Siddiqui',fee:856700,start:'2026-03-01',end:'2026-06-15',status:'Live',notes:''},
     {id:'p1',name:'Platos Lounge & Bar [Pre-Contract]',client:'Atlantis the Palm',lead:'Nadeem Koya',fee:921244,start:'2026-03-01',end:'2026-06-15',status:'Live',notes:''},
-    {id:'p4',name:'Al Jurf Villa Redesign',client:'Savills Middle East',lead:'Robert Cresswell',fee:1489714,start:'2025-09-01',end:'',status:'Live',notes:''},
     {id:'p2',name:'Platos Lounge & Bar [Post-Contract]',client:'Atlantis the Palm',lead:'Nadeem Koya',fee:323551,start:'2026-07-01',end:'2026-12-31',status:'Planned',notes:''},
-    {id:'mpjcthvkb8tn',name:'Courtyard & Retail [Post Contract]',client:'Atlantis the Royal',lead:'Maryam Siddiqui',fee:353156,start:'2026-06-15',end:'2026-10-15',status:'Planned',notes:'Staged construction supervision'},
+    {id:'p3',name:'Courtyard & Retail [Pre-Contract]',client:'Atlantis the Royal',lead:'Maryam Siddiqui',fee:856700,start:'2026-03-01',end:'2026-06-15',status:'Live',notes:''},
+    {id:'p4',name:'Al Jurf Villa Redesign',client:'Savills Middle East',lead:'Robert Cresswell',fee:1489714,start:'2025-09-01',end:'',status:'Live',notes:''}
   ];
   db.stageFees = [
-    {id:'sf6',project:'Al Jurf Villa Redesign',stage:'Concept Design',event:'Approval',amt:186214,invdate:'2026-04-23',recdate:'2026-05-22',actdate:'2026-05-24',status:'Invoiced',subs:[{name:'Top Notch',amt:36500,pay:'2026-05-29'}],notes:''},
-    {id:'sf7',project:'Courtyard & Retail [Pre-Contract]',stage:'Feasibility',event:'Completion',amt:85670,invdate:'2026-04-23',recdate:'2026-05-23',actdate:'2026-05-18',status:'Paid',subs:[{name:'Rice Perry Ellis',amt:86076,pay:'2026-05-29'}],notes:''},
-    {id:'sf5',project:'Al Jurf Villa Redesign',stage:'Concept Design',event:'Submission',amt:186214,invdate:'2025-10-15',recdate:'2025-11-13',actdate:'2025-11-10',status:'Invoiced',subs:[],notes:''},
-    {id:'sf3',project:'Platos Lounge & Bar [Pre-Contract]',stage:'Concept Design',event:'Submission',amt:184250,invdate:'2026-05-20',recdate:'2026-06-20',actdate:'',status:'Invoiced',subs:[{name:'Rice Perry Ellis',amt:71950,pay:'2026-06-26'},{name:'Studio N Lighting',amt:12750,pay:'2026-06-26'},{name:'Aurelle',amt:21000,pay:'2026-06-26'}],notes:''},
-    {id:'sf1',project:'Platos Lounge & Bar [Pre-Contract]',stage:'Feasibility',event:'Completion',amt:92124,invdate:'2026-04-21',recdate:'2026-05-21',actdate:'',status:'Invoiced',subs:[{name:'Rice Perry Ellis',amt:67450,pay:'2026-05-27'}],notes:''},
-    {id:'mpilxmmlbq3w',project:'Courtyard & Retail [Pre-Contract]',stage:'Concept Design',event:'Submission',amt:267718.75,invdate:'2026-05-25',recdate:'2026-06-25',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:112225,pay:'2026-07-01'}],notes:''},
-    {id:'mpim1nhst1lw',project:'Courtyard & Retail [Pre-Contract]',stage:'Tender Documentation',event:'Submission',amt:342680.25,invdate:'2026-07-13',recdate:'2026-08-13',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:177495,pay:'2026-08-19'}],notes:''},
-    {id:'mpim0ysru6nl',project:'Courtyard & Retail [Pre-Contract]',stage:'Schematic Design',event:'Submission',amt:289136.25,invdate:'2026-06-19',recdate:'2026-07-19',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:157925,pay:'2026-07-25'}],notes:''},
-    {id:'mpjbfyw3zfp3',project:'Platos Lounge & Bar [Pre-Contract]',stage:'Schematic Design',event:'Submission',amt:276373,invdate:'2026-06-15',recdate:'2026-07-15',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:120075,pay:'2026-07-21'},{name:'Studio N',amt:17250,pay:'2026-07-21'},{name:'Aurelle',amt:31500,pay:'2026-07-21'}],notes:''},
-    {id:'mpjbgn0zqtgq',project:'Platos Lounge & Bar [Pre-Contract]',stage:'Detailed Design',event:'Submission',amt:276373,invdate:'2026-07-06',recdate:'2026-08-06',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:197474,pay:'2026-08-12'},{name:'Studio N',amt:28625,pay:'2026-08-12'},{name:'Aurelle',amt:42000,pay:'2026-08-12'}],notes:''},
+    {id:'sf1',project:'Platos Lounge & Bar [Pre-Contract]',stage:'Feasibility',event:'Submission',amt:55274,invdate:'2026-04-01',recdate:'2026-04-30',actdate:'',status:'Invoiced',subs:[{name:'Rice Perry Ellis',amt:28000,pay:'2026-05-07'},{name:'Studio N Lighting',amt:6500,pay:'2026-05-07'}],notes:''},
+    {id:'sf2',project:'Platos Lounge & Bar [Pre-Contract]',stage:'Feasibility',event:'Approval',amt:36849,invdate:'2026-04-11',recdate:'2026-05-10',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:18000,pay:'2026-05-17'}],notes:''},
+    {id:'sf3',project:'Platos Lounge & Bar [Pre-Contract]',stage:'Concept Design',event:'Submission',amt:110549,invdate:'2026-04-22',recdate:'2026-05-21',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:55000,pay:'2026-05-28'},{name:'Studio N Lighting',amt:9500,pay:'2026-05-28'}],notes:''},
+    {id:'sf4',project:'Platos Lounge & Bar [Pre-Contract]',stage:'Concept Design',event:'Approval',amt:73699,invdate:'2026-05-02',recdate:'2026-06-01',actdate:'',status:'Planned',subs:[],notes:''},
+    {id:'sf5',project:'Al Jurf Villa Redesign',stage:'Concept Design',event:'Submission',amt:186214,invdate:'2025-10-15',recdate:'2025-11-13',actdate:'2025-11-10',status:'Paid',subs:[{name:'Top Notch',amt:36500,pay:'2025-11-17'}],notes:''},
+    {id:'sf6',project:'Al Jurf Villa Redesign',stage:'Concept Design',event:'Approval',amt:186214,invdate:'2026-04-23',recdate:'2026-05-22',actdate:'',status:'Invoiced',subs:[{name:'Top Notch',amt:36500,pay:'2026-05-29'}],notes:''},
+    {id:'sf7',project:'Courtyard & Retail [Pre-Contract]',stage:'Feasibility',event:'Submission',amt:51402,invdate:'2026-04-01',recdate:'2026-04-30',actdate:'',status:'Invoiced',subs:[],notes:''},
+    {id:'sf8',project:'Courtyard & Retail [Pre-Contract]',stage:'Feasibility',event:'Approval',amt:34268,invdate:'2026-04-11',recdate:'2026-05-10',actdate:'',status:'Planned',subs:[],notes:''},
   ];
   db.milestoneFees = [
-    {id:'mpikac8zhyvb',project:'Courtyard & Retail [Pre-Contract]',phase:'Mobilization',event:'Mobilization Fee',amt:85670,invdate:'2026-04-13',recdate:'2026-05-13',actdate:'2026-05-18',status:'Paid',subs:[],notes:''},
-    {id:'mf1',project:'Platos Lounge & Bar [Pre-Contract]',phase:'Mobilisation',event:'Mobilisation Fee',amt:92124,invdate:'2026-04-13',recdate:'2026-05-13',actdate:'2026-05-18',status:'Paid',subs:[{name:'Aurelle',amt:14500,pay:'2026-05-19'}],notes:''},
+    {id:'mf1',project:'Platos Lounge & Bar [Pre-Contract]',phase:'Mobilisation',event:'Mobilisation Fee',amt:92124,invdate:'2026-03-30',recdate:'2026-04-29',actdate:'2026-04-25',status:'Paid',subs:[],notes:''},
     {id:'mf2',project:'Al Jurf Villa Redesign',phase:'Client Brief',event:'Brief & Preparation',amt:79200,invdate:'2025-09-15',recdate:'2025-10-15',actdate:'2025-10-12',status:'Paid',subs:[],notes:''},
   ];
   db.monthlyFees = [
-    {id:'mo2',project:'Platos Lounge & Bar [Post-Contract]',phase:'Construction Supervision',month:'June 2026',amt:107850,invdate:'2026-07-01',recdate:'2026-08-01',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:60750,pay:'2026-08-07'},{name:'Studio N',amt:5145,pay:'2026-08-07'},{name:'Aurelle',amt:13350,pay:'2026-08-07'}],notes:''},
-    {id:'mpjcf2cv0uf7',project:'Platos Lounge & Bar [Post-Contract]',phase:'Construction Supervision',month:'July 2026',amt:107850,invdate:'2026-08-01',recdate:'2026-09-01',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:60750,pay:'2026-09-07'},{name:'Studio N',amt:5145,pay:'2026-09-07'},{name:'Aurelle',amt:13350,pay:'2026-09-07'}],notes:''},
-    {id:'mpjcfyp9fyhw',project:'Platos Lounge & Bar [Post-Contract]',phase:'Construction Supervision',month:'August 2026',amt:107850,invdate:'2026-09-01',recdate:'2026-10-01',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:60750,pay:'2026-10-07'},{name:'Studio N',amt:5145,pay:'2026-10-07'},{name:'Aurelle',amt:13350,pay:'2026-10-07'}],notes:''},
-    {id:'mpjcvszt41fy',project:'Courtyard & Retail [Post Contract]',phase:'Construction Supervision',month:'July 2026',amt:88289,invdate:'2026-08-15',recdate:'2026-09-15',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:64000,pay:'2026-09-21'}],notes:''},
-    {id:'mpjcvx9pef4m',project:'Courtyard & Retail [Post Contract]',phase:'Construction Supervision',month:'August 2026',amt:88289,invdate:'2026-09-15',recdate:'2026-10-15',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:64000,pay:'2026-10-21'}],notes:''},
-    {id:'mpjcvywmbdyb',project:'Courtyard & Retail [Post Contract]',phase:'Construction Supervision',month:'September 2026',amt:88289,invdate:'2026-10-15',recdate:'2026-11-15',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:64000,pay:'2026-11-21'}],notes:''},
+    {id:'mo1',project:'Platos Lounge & Bar [Post-Contract]',phase:'Construction Supervision',month:'August 2026',amt:107850,invdate:'2026-08-01',recdate:'2026-08-30',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:28500,pay:'2026-09-06'},{name:'Studio N Lighting',amt:5200,pay:'2026-09-06'}],notes:''},
+    {id:'mo2',project:'Platos Lounge & Bar [Post-Contract]',phase:'Construction Supervision',month:'September 2026',amt:107850,invdate:'2026-09-01',recdate:'2026-09-30',actdate:'',status:'Planned',subs:[{name:'Rice Perry Ellis',amt:28500,pay:'2026-10-07'}],notes:''},
   ];
   db.voRegister = [
-    {id:'v1',voNo:'VO-01.1',project:'Courtyard & Retail [Pre-Contract]',desc:'Layout revision',status:'Approved',origin:'Client',est:53543.75,agreed:53543.75,invdate:'2026-05-25',recdate:'2026-06-25',actdate:'',subs:[{name:'Rice Perry Ellis',amt:17517,pay:'2026-07-01'}],notes:''},
-    {id:'v2',voNo:'VO-04',project:'Al Jurf Villa Redesign',desc:'Alternative design development',status:'Submitted',origin:'Client',est:90775,agreed:0,invdate:'2026-05-08',recdate:'2026-05-15',actdate:'',subs:[],notes:''},
-    {id:'mpik3pfog6nr',voNo:'VO-02',project:'Platos Lounge & Bar [Pre-Contract]',desc:'Addition of majlis pantry',status:'Approved',origin:'Client',est:62240,agreed:40000,invdate:'2026-05-25',recdate:'2026-06-25',actdate:'',subs:[{name:'Rice Perry Ellis',amt:20000,pay:'2026-07-01'}],notes:''},
-    {id:'mpim7fevs3ak',voNo:'VO-01.3',project:'Courtyard & Retail [Pre-Contract]',desc:'Technical Design',status:'Approved',origin:'Client',est:85670,agreed:85670,invdate:'2026-07-13',recdate:'2026-08-13',actdate:'',subs:[{name:'Rice Perry Ellis',amt:29756,pay:'2026-08-19'}],notes:''},
-    {id:'mpim51xu3m72',voNo:'VO-01.2',project:'Courtyard & Retail [Pre-Contract]',desc:'Spatial Coordination',status:'Approved',origin:'Client',est:74961.25,agreed:74961.25,invdate:'2026-06-19',recdate:'2026-07-19',actdate:'',subs:[{name:'Rice Perry Ellis',amt:25863,pay:'2026-07-25'}],notes:''},
+    {id:'v1',voNo:'VO-01',project:'Courtyard & Retail [Pre-Contract]',desc:'Layout revision',status:'Submitted',origin:'Client',est:53543,agreed:0,invdate:'2026-04-08',recdate:'2026-05-07',actdate:'',subs:[],notes:''},
+    {id:'v2',voNo:'VO-04',project:'Al Jurf Villa Redesign',desc:'Alternative design development',status:'Approved',origin:'Client',est:156600,agreed:156600,invdate:'2026-04-08',recdate:'2026-04-15',actdate:'',subs:[],notes:''},
   ];
   db.invoiceTracker = [
-    {id:'t3',invNo:'INV-003',project:'Platos Lounge & Bar [Pre-Contract]',type:'Milestone',amt:92124,issueDate:'2026-04-13',dueDate:'2026-05-13',recv:92124,recDate:'2026-05-18',status:'Paid',notes:'',stage:'Mobilisation'},
-    {id:'t2',invNo:'INV-002',project:'Al Jurf Villa Redesign',type:'Stage',amt:186214,issueDate:'2025-10-15',dueDate:'2025-11-14',recv:186214,recDate:'2025-11-10',status:'Paid',notes:'',stage:'Concept Design'},
-    {id:'t1',invNo:'INV-001',project:'Al Jurf Villa Redesign',type:'Milestone',amt:79200,issueDate:'2025-09-15',dueDate:'2025-10-15',recv:79200,recDate:'2025-10-12',status:'Paid',notes:'',stage:'Other'},
-    {id:'t5',invNo:'INV-005',project:'Courtyard & Retail [Pre-Contract]',type:'Milestone',amt:85670,issueDate:'2026-04-13',dueDate:'2026-05-13',recv:85670,recDate:'2026-05-18',status:'Paid',notes:'',stage:'Mobilisation'},
-    {id:'t6',invNo:'INV-006',project:'Al Jurf Villa Redesign',type:'Stage',amt:186214,issueDate:'2026-05-20',dueDate:'2026-06-19',recv:186214,recDate:'',status:'Overdue',notes:'',stage:'Concept Design'},
-    {id:'t4',invNo:'INV-004',project:'Platos Lounge & Bar [Pre-Contract]',type:'Stage',amt:92124,issueDate:'2026-04-21',dueDate:'2026-05-21',recv:0,recDate:'',status:'Overdue',notes:'',stage:'Feasibility'},
-    {id:'mpjdd0ihpwx0',invNo:'INV-007',project:'Courtyard & Retail [Pre-Contract]',type:'Stage',amt:85670,issueDate:'2026-04-23',dueDate:'2026-05-23',recv:85670,recDate:'2026-05-18',status:'Paid',notes:'',stage:'Feasibility'},
-    {id:'mpjde30ewhdd',invNo:'INV-008',project:'Platos Lounge & Bar [Pre-Contract]',type:'Stage',amt:184250,issueDate:'2026-05-20',dueDate:'2026-06-20',recv:0,recDate:'',status:'Invoiced',notes:'',stage:'Concept Design'},
+    {id:'t1',invNo:'INV-001',project:'Al Jurf Villa Redesign',type:'Milestone',amt:79200,issueDate:'2025-09-15',dueDate:'2025-10-15',recv:79200,recDate:'2025-10-12',status:'Paid',notes:''},
+    {id:'t2',invNo:'INV-002',project:'Al Jurf Villa Redesign',type:'Stage',amt:186214,issueDate:'2025-10-15',dueDate:'2025-11-14',recv:186214,recDate:'2025-11-10',status:'Paid',notes:''},
+    {id:'t3',invNo:'INV-003',project:'Platos Lounge & Bar [Pre-Contract]',type:'Milestone',amt:92124,issueDate:'2026-03-30',dueDate:'2026-04-29',recv:92124,recDate:'2026-04-25',status:'Paid',notes:''},
+    {id:'t4',invNo:'INV-004',project:'Platos Lounge & Bar [Pre-Contract]',type:'Stage',amt:55274,issueDate:'2026-04-01',dueDate:'2026-04-30',recv:0,recDate:'',status:'Invoiced',notes:''},
+    {id:'t5',invNo:'INV-005',project:'Courtyard & Retail [Pre-Contract]',type:'Stage',amt:51402,issueDate:'2026-04-01',dueDate:'2026-04-30',recv:0,recDate:'',status:'Invoiced',notes:''},
+    {id:'t6',invNo:'INV-006',project:'Al Jurf Villa Redesign',type:'Stage',amt:186214,issueDate:'2026-04-23',dueDate:'2026-05-22',recv:0,recDate:'',status:'Invoiced',notes:''},
   ];
   saveDB();
 }
@@ -1176,7 +1163,8 @@ function daysOverdue(dueDate, actDate, status) {
 
 function overdueCell(days) {
   if(!days) return '<span class="td-m">—</span>';
-  return `<span class="days-badge">${days}d</span>`;
+  if(days === 0) return '<span class="days-badge" style="background:#fff8e1;color:#856404">Due today</span>';
+  return `<span class="days-badge">${days}d overdue</span>`;
 }
 
 function statusBadge(status) {
@@ -1325,13 +1313,14 @@ function renderDashboard() {
   const totalSubs = rows.reduce((a,r)=>a+(r.subs||[]).reduce((b,s)=>b+(+s.amt||0),0),0);
   const net = totalForecast - totalSubs;
 
-  // Overdue: pulled from invoice tracker (single source of truth)
+  // Overdue: mirror exact same logic as tracker computedStatus
   const overdueRows = db.invoiceTracker.filter(r=>{
+    // Not paid - check both stored status and receipt date
     if(r.status==='Paid') return false;
-    if(r.recDate) return false;
-    if((+r.recv||0)>=(+r.amt||0)&&(+r.amt||0)>0) return false;
+    if(r.recv && +r.recv >= +r.amt) return false; // fully received = paid
     if(!r.dueDate) return false;
-    return new Date(r.dueDate+'T00:00') < t;
+    const due = new Date(r.dueDate+'T00:00');
+    return due < t; // due date has passed
   });
   const overdueAmt = overdueRows.reduce((a,r)=>a+(+r.amt-(+r.recv||0)),0);
   const overdueDays = overdueRows.map(r=>Math.floor((t-new Date(r.dueDate+'T00:00'))/86400000));
@@ -1830,14 +1819,7 @@ function renderTracker() {
   const t=today();
   let rows=db.invoiceTracker.map(r=>{
     let s=r.status;
-    if(s!=='Paid'){
-      if((+r.recv||0)>=(+r.amt||0)&&(+r.amt||0)>0){s='Paid';}
-      else if(!r.recDate&&r.dueDate){
-        const d=new Date(r.dueDate+'T00:00');
-        if(d<t) s='Overdue';
-        else if(s==='Overdue') s='Invoiced';
-      }
-    }
+    if(s!=='Paid'&&r.dueDate){const d=new Date(r.dueDate+'T00:00');if(d<t)s='Overdue';}
     return {...r,computedStatus:s};
   }).filter(r=>
     (!search||r.invNo.toLowerCase().includes(search)||(r.project||'').toLowerCase().includes(search))&&
@@ -1851,7 +1833,7 @@ function renderTracker() {
   const tbody=document.querySelector('#tracker-table tbody');
   if(!rows.length){tbody.innerHTML='<tr><td colspan="12"><div class="empty"><div class="ei">🧾</div><p>No invoices logged.</p><button class="btn btn-y btn-sm" onclick="openMo(\'mo-tracker\')">Log First Invoice</button></div></td></tr>';return;}
   tbody.innerHTML=rows.map(r=>{
-    const od=r.computedStatus==='Overdue'&&r.dueDate?Math.max(0,Math.floor((t-new Date(r.dueDate+'T00:00'))/86400000)):0;
+    const od=(r.computedStatus==='Overdue'||( r.computedStatus!=='Paid'&&r.dueDate&&new Date(r.dueDate+'T00:00')<t))?Math.max(1,Math.floor((t-new Date(r.dueDate+'T00:00'))/86400000)):0;
     const tsc={Invoiced:'#e3f0ff',Paid:'#e8f8ef',Overdue:'#fde8e8'}[r.computedStatus]||'#f0f0f0';
     const tstc={Invoiced:'#1a5fa0',Paid:'#1a7a40',Overdue:'#8b1a1a'}[r.computedStatus]||'#555';
     const trc=r.computedStatus==='Overdue'?'row-overdue':r.computedStatus==='Paid'?'row-paid':'';
@@ -2143,9 +2125,6 @@ function quickStatusTracker(id, current) {
   if(next === 'Paid') {
     if(!db.invoiceTracker[idx].recDate) db.invoiceTracker[idx].recDate = new Date().toISOString().slice(0,10);
     if(!db.invoiceTracker[idx].recv) db.invoiceTracker[idx].recv = db.invoiceTracker[idx].amt;
-  } else if(next === 'Invoiced') {
-    db.invoiceTracker[idx].recDate = '';
-    db.invoiceTracker[idx].recv = 0;
   }
   // Sync status back to matching fee schedule row
   const r = db.invoiceTracker[idx];
