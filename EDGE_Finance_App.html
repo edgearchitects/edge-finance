@@ -321,6 +321,26 @@ tbody td{padding:8px 11px;vertical-align:middle}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--gl);border-radius:3px}
+
+/* PROJECT MATRIX */
+.pm-wrap{overflow-x:auto}
+.pm-table{width:100%;border-collapse:collapse;font-size:11px;white-space:nowrap}
+.pm-table thead th{padding:8px 12px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;background:var(--black);color:var(--offwhite)}
+.pm-proj-col{text-align:left;min-width:210px;position:sticky;left:0;z-index:3}
+.pm-month-col{text-align:right;min-width:96px}
+.pm-month-col.pm-now{border-bottom:2px solid var(--yellow)}
+.pm-proj-cell{padding:7px 12px;position:sticky;left:0;z-index:1;background:inherit;max-width:220px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px}
+.pm-num-cell{padding:6px 12px;text-align:right;font-variant-numeric:tabular-nums;font-size:11px}
+.pm-num-cell.pm-now{background:#fffef5 !important}
+.pm-bal-row{background:#f9f8f5}.pm-bal-row td{border-bottom:1px solid var(--gl)}
+.pm-group-row td{background:var(--black);color:var(--offwhite);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;padding:5px 12px}
+.pm-proj-row td{border-bottom:1px solid #f0eeea}.pm-proj-row:hover td{background:#f5f4f0}
+.pm-planned-row{opacity:.8}
+.pm-total-row td{border-top:2px solid var(--black);background:#f0efec;font-weight:700}
+.pm-running-row td{background:var(--black);color:var(--offwhite);font-weight:700;font-size:11.5px}
+.pm-bal-input-wrap{display:flex;align-items:center;gap:8px}
+.pm-bal-input-wrap label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gm);white-space:nowrap}
+.pm-bal-input-wrap input{width:140px;padding:5px 9px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:12px;text-align:right;background:var(--offwhite)}
 </style>
 <script>
 // MSAL loader — tries multiple CDNs in sequence, never fails silently
@@ -419,6 +439,16 @@ tbody td{padding:8px 11px;vertical-align:middle}
   <div class="card">
     <div class="card-head"><span class="card-title">Monthly Cashflow — Click a month to expand</span><span id="cf-total-label" style="font-size:10px;color:var(--gm)"></span></div>
     <div id="cf-table"></div>
+  </div>
+  <div class="card">
+    <div class="card-head">
+      <span class="card-title">Project Cashflow Matrix — Net per project per month</span>
+      <div class="pm-bal-input-wrap">
+        <label for="starting-balance-input">Starting Balance (AED)</label>
+        <input type="number" id="starting-balance-input" placeholder="0" oninput="updateStartingBalance()">
+      </div>
+    </div>
+    <div id="cf-matrix"></div>
   </div>
 </div>
 
@@ -713,7 +743,7 @@ const CONFIG = {
 // DATA
 // ═══════════════════════════════════════════════════
 const SK = 'edge_v3';
-let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[] };
+let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{} };
 let dbSnapshot = null;   // snapshot of last saved state for dirty detection
 let editState = {};
 let msalInstance = null;
@@ -1142,6 +1172,7 @@ function seed() {
     {id:'t5',invNo:'INV-005',project:'Courtyard & Retail [Pre-Contract]',type:'Stage',amt:51402,issueDate:'2026-04-01',dueDate:'2026-04-30',recv:0,recDate:'',status:'Invoiced',notes:''},
     {id:'t6',invNo:'INV-006',project:'Al Jurf Villa Redesign',type:'Stage',amt:186214,issueDate:'2026-04-23',dueDate:'2026-05-22',recv:0,recDate:'',status:'Invoiced',notes:''},
   ];
+  db.config = { startingBalance: 0 };
   saveDB();
 }
 
@@ -1476,6 +1507,107 @@ function renderDashboard() {
   // totals label
   const grandIn = months.reduce((a,m)=>a+rows.filter(r=>matchMonth(r.recdate,m)).reduce((s,r)=>s+(+r.amt||0),0),0);
   document.getElementById('cf-total-label').textContent = `${numMonths}-month total: ${fmtN(grandIn)} AED`;
+
+  renderProjectMatrix();
+}
+
+function updateStartingBalance() {
+  const v = parseFloat(document.getElementById('starting-balance-input')?.value)||0;
+  if(!db.config) db.config={};
+  db.config.startingBalance = v;
+  saveDB();
+  renderProjectMatrix();
+}
+
+function renderProjectMatrix() {
+  const el = document.getElementById('cf-matrix');
+  if(!el) return;
+  const t = today();
+  const numMonths = parseInt(document.getElementById('cf-months-select')?.value||6);
+  const months = [];
+  for(let i=0;i<numMonths;i++){
+    const d=new Date(t.getFullYear(),t.getMonth()+i,1);
+    months.push({year:d.getFullYear(),month:d.getMonth()});
+  }
+
+  const startBal = +(db.config?.startingBalance||0);
+  const inp = document.getElementById('starting-balance-input');
+  if(inp && !inp.matches(':focus')) inp.value = startBal||'';
+
+  const allFeeRows = scenarioRows(allRows());
+  const isNow = m => m.year===t.getFullYear()&&m.month===t.getMonth();
+  const shortLabel = m => new Date(m.year,m.month,1).toLocaleDateString('en-GB',{month:'short',year:'2-digit'});
+
+  const projNetByMonth = projName => months.map(m => {
+    const projRows = allFeeRows.filter(r=>r.project===projName);
+    const inAmt = projRows.filter(r=>matchMonth(r.recdate,m)).reduce((a,r)=>a+(+r.amt||0),0);
+    const outAmt = projRows.reduce((a,r)=>a+(r.subs||[]).filter(s=>matchMonth(s.pay,m)).reduce((b,s)=>b+(+s.amt||0),0),0);
+    return inAmt - outAmt;
+  });
+
+  const cellHtml = (v, now) => {
+    const nc = now?' pm-now':'';
+    if(!v) return `<td class="pm-num-cell${nc}"><span style="color:var(--gm)">—</span></td>`;
+    const col = v>0?'var(--green)':'var(--red)';
+    return `<td class="pm-num-cell${nc}"><span style="color:${col};font-weight:600">${v>0?'':'-'}${fmtN(Math.abs(v))}</span></td>`;
+  };
+
+  const liveProjs = db.projects.filter(p=>p.status==='Live');
+  const plannedProjs = db.projects.filter(p=>p.status==='Planned');
+
+  const totalByMonth = months.map((_,mi)=>db.projects.reduce((a,p)=>a+projNetByMonth(p.name)[mi],0));
+  let runBal = startBal;
+  const runningBals = totalByMonth.map(net=>{runBal+=net;return runBal;});
+
+  let html = `<div class="pm-wrap"><table class="pm-table"><thead><tr>`;
+  html += `<th class="pm-proj-col">Project</th>`;
+  months.forEach(m=>html+=`<th class="pm-month-col${isNow(m)?' pm-now':''}">${shortLabel(m)}</th>`);
+  html += `</tr></thead><tbody>`;
+
+  // Starting balance row
+  html += `<tr class="pm-bal-row"><td class="pm-proj-cell"><strong>Starting Balance</strong></td>`;
+  months.forEach((m,i)=>{
+    html += i===0
+      ? `<td class="pm-num-cell${isNow(m)?' pm-now':''}" style="font-weight:700">${fmtN(startBal)}</td>`
+      : `<td class="pm-num-cell${isNow(m)?' pm-now':''}"></td>`;
+  });
+  html += `</tr>`;
+
+  const renderProjRows = (projs, extraCls) => projs.map(p=>{
+    const nets = projNetByMonth(p.name);
+    let row = `<tr class="pm-proj-row${extraCls||''}"><td class="pm-proj-cell">${p.name}</td>`;
+    nets.forEach((v,i)=>row+=cellHtml(v,isNow(months[i])));
+    return row+'</tr>';
+  }).join('');
+
+  if(liveProjs.length){
+    html += `<tr class="pm-group-row"><td colspan="${months.length+1}">Active Projects</td></tr>`;
+    html += renderProjRows(liveProjs,'');
+  }
+  if(plannedProjs.length){
+    html += `<tr class="pm-group-row"><td colspan="${months.length+1}">Planned Projects</td></tr>`;
+    html += renderProjRows(plannedProjs,' pm-planned-row');
+  }
+
+  // Net cash row
+  html += `<tr class="pm-total-row"><td class="pm-proj-cell">Net Cash</td>`;
+  totalByMonth.forEach((v,i)=>{
+    const nc=isNow(months[i])?' pm-now':'';
+    const col=v>0?'var(--green)':v<0?'var(--red)':'var(--gm)';
+    html+=`<td class="pm-num-cell${nc}" style="color:${col}">${v?fmtN(v):'—'}</td>`;
+  });
+  html += `</tr>`;
+
+  // Running balance row
+  html += `<tr class="pm-running-row"><td class="pm-proj-cell">Running Balance</td>`;
+  runningBals.forEach((v,i)=>{
+    const nc=isNow(months[i])?' pm-now':'';
+    const col=v>=0?'#4ade80':'#f87171';
+    html+=`<td class="pm-num-cell${nc}" style="color:${col}">${fmtN(v)}</td>`;
+  });
+  html += `</tr></tbody></table></div>`;
+
+  el.innerHTML = html;
 }
 
 function matchMonth(dateStr, m) {
