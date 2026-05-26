@@ -1196,7 +1196,8 @@ body.home-active .nav .brand{color:#fff}
     <div class="mhead"><span class="mtitle" id="mo-account-title">New Account</span><button class="mclose" onclick="closeMo('mo-account')">×</button></div>
     <div class="mbody"><div class="fg">
       <div class="fgrp full"><label>Company Name *</label><input id="acc-f-name" type="text" placeholder="e.g. Emaar Properties"></div>
-      <div class="fgrp"><label>Type</label><select id="acc-f-type"><option value="">— select —</option><option>Developer</option><option>Hotel Operator</option><option>Government</option><option>Private Client</option><option>Contractor</option><option>Fund / Investor</option></select></div>
+      <div class="fgrp"><label>Relationship Type</label><select id="acc-f-reltype"><option value="">— select —</option><option>Client</option><option>Collaborator</option><option>Sub-Consultant</option><option>Supplier</option><option>PMC / CM</option><option>Supply Chain</option><option>Other</option></select></div>
+      <div class="fgrp"><label>Account Type</label><select id="acc-f-type"><option value="">— select —</option><option>Developer</option><option>Hotel Operator</option><option>Government</option><option>Private Client</option><option>Contractor</option><option>Architecture / ID Firm</option><option>Fund / Investor</option></select></div>
       <div class="fgrp"><label>Sector</label><select id="acc-f-sector"><option value="">— select —</option><option>Hospitality</option><option>Residential</option><option>Mixed-Use</option><option>Retail</option><option>Commercial</option><option>Government</option></select></div>
       <div class="fgrp"><label>HQ City</label><input id="acc-f-city" type="text" placeholder="e.g. Dubai"></div>
       <div class="fgrp"><label>Country</label><input id="acc-f-country" type="text" placeholder="e.g. UAE"></div>
@@ -4113,6 +4114,7 @@ const CRM_STAGES = [
 
 let crmPipelineFilter = 'active'; // 'active' | 'all' | 'won' | 'lost'
 let crmAccSearch = '';
+let crmAccTypeFilter = 'all';
 let crmConSearch = '';
 let crmTaskFilter = 'open'; // 'open' | 'all'
 let editingCrmId = { opp:null, account:null, contact:null, task:null };
@@ -4367,24 +4369,33 @@ function crmDrop(e, stageId) {
 }
 
 // ── ACCOUNTS ──
+const CRM_REL_TYPES = ['All','Client','Collaborator','Sub-Consultant','Supplier','PMC / CM','Supply Chain','Other'];
+
 function renderCrmAccounts() {
   const el = document.getElementById('crm-accounts-view');
-  const accs = (db.crm.accounts||[]).filter(a => !crmAccSearch || a.name.toLowerCase().includes(crmAccSearch.toLowerCase()) || (a.sector||'').toLowerCase().includes(crmAccSearch.toLowerCase()) || (a.city||'').toLowerCase().includes(crmAccSearch.toLowerCase()));
+  let accs = (db.crm.accounts||[]);
+  if(crmAccTypeFilter !== 'all') accs = accs.filter(a => (a.relType||a.type||'').toLowerCase() === crmAccTypeFilter.toLowerCase());
+  if(crmAccSearch) accs = accs.filter(a => a.name.toLowerCase().includes(crmAccSearch.toLowerCase()) || (a.sector||'').toLowerCase().includes(crmAccSearch.toLowerCase()) || (a.country||'').toLowerCase().includes(crmAccSearch.toLowerCase()));
+  const total = (db.crm.accounts||[]).length;
   el.innerHTML = `
-  <div class="crm-toolbar">
-    <input class="crm-search" placeholder="Search accounts…" value="${crmAccSearch}" oninput="crmAccSearch=this.value;renderCrmAccounts()">
-    <button class="btn btn-ghost btn-sm" onclick="openSpImportModal('accounts')" title="Import from SharePoint list">⬇ Import from SharePoint</button>
+  <div class="crm-toolbar" style="flex-wrap:wrap;gap:6px">
+    <div style="display:flex;gap:4px;flex-wrap:wrap">
+      ${CRM_REL_TYPES.map(t=>`<button class="pipeline-filter-btn${(crmAccTypeFilter==='all'&&t==='All')||(crmAccTypeFilter===t)?' active':''}" onclick="crmAccTypeFilter='${t==='All'?'all':t}';renderCrmAccounts()">${t}</button>`).join('')}
+    </div>
+    <input class="crm-search" placeholder="Search ${crmAccTypeFilter==='all'?'all '+total:accs.length} accounts…" value="${crmAccSearch}" oninput="crmAccSearch=this.value;renderCrmAccounts()" style="min-width:180px;flex:1">
+    <button class="btn btn-ghost btn-sm" onclick="openSpImportModal('accounts')">⬇ Import</button>
   </div>
   ${accs.length ? `<table class="crm-table"><thead><tr>
-    <th>Company</th><th>Type</th><th>Sector</th><th>HQ</th><th>Owner</th><th>Rel.</th><th></th>
+    <th>Company</th><th>Relationship</th><th>Sector</th><th>Country</th><th>BD Owner</th><th>Rel.</th><th></th>
   </tr></thead><tbody>${accs.map(a=>{
     const oppCount = (db.crm.opportunities||[]).filter(o=>o.accountId===a.id).length;
     const conCount = (db.crm.contacts||[]).filter(c=>c.accountId===a.id).length;
+    const relType = a.relType || a.type || '—';
     return `<tr>
       <td><div class="name-cell">${a.name}</div><div class="meta-cell">${conCount} contact${conCount!==1?'s':''} · ${oppCount} opp${oppCount!==1?'s':''}</div></td>
-      <td>${a.type||'—'}</td>
-      <td><span class="badge-sector">${a.sector||'—'}</span></td>
-      <td class="meta-cell">${[a.city,a.country].filter(Boolean).join(', ')||'—'}</td>
+      <td><span class="badge-sector">${relType}</span></td>
+      <td class="meta-cell">${a.sector||'—'}</td>
+      <td class="meta-cell">${a.country||'—'}</td>
       <td class="meta-cell">${a.owner||'—'}</td>
       <td>${crmRelDots(a.rel)}</td>
       <td class="action-cell">
@@ -4392,7 +4403,7 @@ function renderCrmAccounts() {
         <button class="btn btn-ghost btn-xs" onclick="deleteCrmItem('accounts','${a.id}')" style="color:var(--red)">Del</button>
       </td>
     </tr>`;
-  }).join('')}</tbody></table>` : '<div class="empty"><p>No accounts found. Add your first account above.</p></div>'}`;
+  }).join('')}</tbody></table>` : '<div class="empty"><p>No accounts match this filter.</p></div>'}`;
 }
 
 // ── CONTACTS ──
@@ -4570,6 +4581,7 @@ function openNewAccountModal() {
   editingCrmId.account = null;
   document.getElementById('mo-account-title').textContent = 'New Account';
   ['acc-f-name','acc-f-city','acc-f-country','acc-f-owner','acc-f-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('acc-f-reltype').value = '';
   document.getElementById('acc-f-type').value = '';
   document.getElementById('acc-f-sector').value = '';
   document.getElementById('acc-f-rel').value = '3';
@@ -4581,6 +4593,7 @@ function openEditAccountModal(id) {
   editingCrmId.account = id;
   document.getElementById('mo-account-title').textContent = 'Edit Account';
   document.getElementById('acc-f-name').value = a.name||'';
+  document.getElementById('acc-f-reltype').value = a.relType||'';
   document.getElementById('acc-f-type').value = a.type||'';
   document.getElementById('acc-f-sector').value = a.sector||'';
   document.getElementById('acc-f-city').value = a.city||'';
@@ -4595,6 +4608,7 @@ function saveAccount() {
   if(!name) { alert('Company name is required.'); return; }
   const obj = {
     name,
+    relType: document.getElementById('acc-f-reltype').value,
     type: document.getElementById('acc-f-type').value,
     sector: document.getElementById('acc-f-sector').value,
     city: document.getElementById('acc-f-city').value.trim(),
