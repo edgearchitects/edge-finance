@@ -303,7 +303,7 @@ tbody td{padding:8px 11px;vertical-align:middle}
   .kpi-strip { grid-template-columns:repeat(4,1fr); }
   main { padding:10px; max-width:100%; }
   .sec { display:block !important; }
-  #sec-projects,#sec-fees,#sec-vo,#sec-tracker { display:none !important; }
+  #sec-projects,#sec-fees,#sec-vo,#sec-tracker,#sec-home,#sec-sops,#sec-checklists,#sec-admin,#sec-sop-detail,#sec-checklist-run { display:none !important; }
 }
 
 /* Mobile responsive */
@@ -321,6 +321,116 @@ tbody td{padding:8px 11px;vertical-align:middle}
   .g2 { grid-template-columns:1fr; }
   .brand img { height:28px; }
 }
+
+/* HOME SCREEN */
+.home-greeting{padding:40px 0 28px;border-bottom:1px solid var(--gl);margin-bottom:32px}
+.home-title{font-family:var(--font-display);font-size:32px;text-transform:uppercase;letter-spacing:-.02em;line-height:1;margin-bottom:6px}
+.home-sub{font-size:12px;color:var(--gm)}
+.module-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+.module-card{background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:24px 20px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:10px;position:relative}
+.module-card:hover{border-color:var(--black);box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.module-card-soon{cursor:default;opacity:.6}
+.module-card-soon:hover{border-color:var(--gl);box-shadow:none}
+.module-card-icon{width:44px;height:44px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:16px;font-weight:400;flex-shrink:0}
+.module-card-name{font-family:var(--font-display);font-size:13px;text-transform:uppercase;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
+.module-card-desc{font-size:11px;color:var(--gm);line-height:1.5}
+.module-card-arrow{font-size:16px;color:var(--black);margin-top:auto;align-self:flex-end}
+.module-soon-tag{font-family:var(--font);font-size:8px;font-weight:600;background:var(--gl);color:var(--gm);padding:1px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.04em}
+.nav-back{font-family:var(--font);text-transform:none;letter-spacing:0;font-weight:500}
+.nav-module-label{}
+
+/* SOP LIBRARY */
+.sop-card{background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:20px;margin-bottom:12px;cursor:pointer;transition:all .15s}
+.sop-card:hover{border-color:var(--black)}
+.sop-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.sop-card-title{font-family:var(--font-display);font-size:14px;text-transform:uppercase;letter-spacing:-.01em}
+.sop-card-meta{display:flex;gap:12px;margin-top:8px;font-size:10.5px;color:var(--gm)}
+.sop-card-meta span{display:flex;align-items:center;gap:4px}
+.sop-actions{display:flex;gap:8px;flex-shrink:0}
+
+/* SOP DETAIL DOCUMENT */
+.sop-doc{max-width:820px}
+.sop-doc-header{margin-bottom:28px;padding-bottom:20px;border-bottom:2px solid var(--black)}
+.sop-doc-title{font-family:var(--font-display);font-size:26px;text-transform:uppercase;letter-spacing:-.02em;line-height:1;margin-bottom:12px}
+.sop-doc-meta{display:grid;grid-template-columns:auto 1fr;gap:4px 16px;font-size:11px}
+.sop-doc-meta strong{color:var(--gd);font-weight:600}
+.sop-phase-header{margin:32px 0 16px;padding:10px 16px;background:var(--black);color:var(--white)}
+.sop-phase-title{font-family:var(--font-display);font-size:13px;text-transform:uppercase;letter-spacing:.03em}
+.sop-section{margin-bottom:20px;border:1px solid var(--gl);border-radius:var(--r);overflow:hidden}
+.sop-section-head{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--offwhite);border-bottom:1px solid var(--gl);cursor:pointer;user-select:none}
+.sop-section-title{font-size:12px;font-weight:600}
+.sop-section-body{padding:14px 16px}
+.sop-section-body p{font-size:12px;line-height:1.7;margin-bottom:8px;color:var(--gd)}
+.sop-section-body ul,.sop-section-body ol{padding-left:16px;font-size:12px;line-height:1.9;color:var(--gd)}
+.sop-subsection{margin:10px 0}
+.sop-subsection-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;color:var(--black)}
+.sop-roles-table{width:100%;border-collapse:collapse;font-size:11.5px;margin-top:8px}
+.sop-roles-table th{background:var(--black);color:var(--white);padding:6px 12px;text-align:left;font-family:var(--font-display);font-size:9px;text-transform:uppercase;letter-spacing:.04em;font-weight:400}
+.sop-roles-table td{padding:8px 12px;border-bottom:1px solid var(--gl);vertical-align:top}
+.sop-roles-table tr:last-child td{border-bottom:none}
+.sop-roles-table tr:hover td{background:#f5f4f0}
+.sop-checklist-items{display:flex;flex-direction:column;gap:4px}
+.sop-check-item{display:flex;align-items:flex-start;gap:8px;padding:5px 0;border-bottom:1px solid #f5f4f0;font-size:12px;color:var(--gd)}
+.sop-check-item:last-child{border-bottom:none}
+.sop-check-item::before{content:'○';color:var(--gl);flex-shrink:0;font-size:11px;margin-top:1px}
+.sop-back-btn{margin-bottom:20px}
+
+/* CHECKLIST RUN */
+.run-card{background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.run-card-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.run-card-title{font-family:var(--font-display);font-size:12px;text-transform:uppercase;letter-spacing:.02em}
+.run-progress{height:4px;background:var(--gl);border-radius:2px;overflow:hidden;margin-bottom:8px}
+.run-progress-fill{height:100%;background:var(--yellow);transition:width .3s}
+.run-progress-fill.complete{background:var(--green)}
+.run-meta{font-size:10.5px;color:var(--gm);display:flex;gap:12px}
+
+/* CHECKLIST RUN DETAIL */
+.run-phase-header{margin:24px 0 12px;padding:8px 14px;background:var(--black);color:var(--offwhite)}
+.run-phase-title{font-family:var(--font-display);font-size:11px;text-transform:uppercase;letter-spacing:.03em}
+.run-section{margin-bottom:16px;border:1px solid var(--gl);border-radius:var(--r);overflow:hidden}
+.run-section-head{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--offwhite);border-bottom:1px solid var(--gl)}
+.run-section-title{font-size:11px;font-weight:600}
+.run-section-body{padding:8px 0}
+.run-check-row{display:grid;grid-template-columns:32px 1fr auto;align-items:start;gap:8px;padding:8px 14px;border-bottom:1px solid #f5f4f0;cursor:pointer;transition:background .1s}
+.run-check-row:last-child{border-bottom:none}
+.run-check-row:hover{background:#f9f8f5}
+.run-check-box{width:20px;height:20px;border:2px solid var(--gl);border-radius:2px;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;margin-top:1px}
+.run-check-box.checked{background:var(--black);border-color:var(--black);color:var(--white);font-size:12px}
+.run-check-box.checked::after{content:'✓'}
+.run-check-label{font-size:12px;color:var(--gd);line-height:1.5}
+.run-check-label.checked{color:var(--gm);text-decoration:line-through}
+.run-check-done-by{font-size:9.5px;color:var(--gm);white-space:nowrap;text-align:right;margin-top:2px}
+.run-note-input{width:100%;padding:4px 8px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:11px;margin-top:4px;display:none}
+.run-summary-bar{display:flex;gap:16px;padding:12px 14px;background:var(--black);color:var(--offwhite);border-radius:var(--r);margin-bottom:20px;font-size:12px}
+
+/* ADMIN */
+.admin-section{margin-bottom:28px}
+.admin-section-title{font-family:var(--font-display);font-size:11px;text-transform:uppercase;letter-spacing:.04em;margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--gl)}
+.user-row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:14px;border:1px solid var(--gl);border-radius:var(--r);background:var(--white);margin-bottom:8px}
+.user-row-info{display:flex;flex-direction:column;gap:3px}
+.user-row-name{font-size:13px;font-weight:600}
+.user-row-email{font-size:11px;color:var(--gm)}
+.user-row-role{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.04em;padding:1px 6px;border-radius:2px;display:inline-block;margin-top:2px}
+.role-admin{background:var(--black);color:var(--yellow)}
+.role-manager{background:#222;color:#fff}
+.role-lead{background:var(--blue-bg);color:var(--blue)}
+.role-finance{background:var(--green-bg);color:var(--green)}
+.role-viewer{background:var(--gl);color:var(--gd)}
+.perm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:6px;margin-top:8px}
+.perm-item{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--gd)}
+.perm-toggle{width:32px;height:18px;border-radius:9px;border:none;cursor:pointer;transition:background .15s;flex-shrink:0;position:relative}
+.perm-toggle.on{background:var(--black)}
+.perm-toggle.off{background:var(--gl)}
+.perm-toggle::after{content:'';position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#fff;transition:transform .15s}
+.perm-toggle.on::after{transform:translateX(14px)}
+.user-expanded{background:#f9f8f5;border:1px solid var(--gl);border-top:none;border-radius:0 0 var(--r) var(--r);padding:14px}
+.user-expanded-title{font-size:9.5px;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.04em;color:var(--gm);margin-bottom:8px}
+
+/* NEW CHECKLIST MODAL */
+.ncl-project-list{display:flex;flex-direction:column;gap:6px;max-height:240px;overflow-y:auto;margin-bottom:12px}
+.ncl-project-item{display:flex;align-items:center;gap:10px;padding:8px 12px;border:1px solid var(--gl);border-radius:var(--r);cursor:pointer;transition:all .15s;font-size:12px}
+.ncl-project-item:hover,.ncl-project-item.selected{border-color:var(--black);background:var(--offwhite)}
+.ncl-project-item.selected{border-color:var(--yellow);background:#fffef5}
 
 /* SCROLLBAR */
 ::-webkit-scrollbar{width:5px;height:5px}
@@ -401,13 +511,22 @@ tbody td{padding:8px 11px;vertical-align:middle}
 </div>
 
 <nav>
-  <div class="brand" style="margin-right:28px;padding:0"><img src="data:image/jpeg;base64,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" alt="EDGE" style="height:38px;width:auto;display:block"></div>
-  <div class="ntabs" id="navTabs">
+  <div class="brand" style="margin-right:16px;padding:0"><img src="data:image/jpeg;base64,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" alt="EDGE" style="height:38px;width:auto;display:block"></div>
+  <button class="nav-back btn btn-ghost btn-sm" id="nav-back" onclick="goHome()" style="display:none;margin-right:12px;flex-shrink:0">← Home</button>
+  <span class="nav-module-label" id="nav-module-label" style="font-family:var(--font-display);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--gm);margin-right:16px;flex-shrink:0;display:none"></span>
+  <div class="ntabs" id="navTabs-finance" style="display:none">
     <div class="ntab active" onclick="go('dashboard')">Cashflow</div>
     <div class="ntab" onclick="go('projects')">Projects</div>
     <div class="ntab" onclick="go('fees')">Fee Schedules</div>
     <div class="ntab" onclick="go('vo')">Variations (VOs)</div>
     <div class="ntab" onclick="go('tracker')">Invoice Tracker</div>
+  </div>
+  <div class="ntabs" id="navTabs-projects" style="display:none">
+    <div class="ntab active" onclick="goProjects('sops')">SOPs</div>
+    <div class="ntab" onclick="goProjects('checklists')">Checklists</div>
+  </div>
+  <div class="ntabs" id="navTabs-admin" style="display:none">
+    <div class="ntab active" onclick="goAdmin('users')">Users</div>
   </div>
   <div class="nav-right" style="display:flex;align-items:center;gap:8px">
     <div class="sync-status" id="sync-status"><div class="sync-dot ok" id="sync-dot"></div><span id="sync-label">Synced</span></div>
@@ -423,7 +542,7 @@ tbody td{padding:8px 11px;vertical-align:middle}
 <main>
 
 <!-- ═══════════════ CASHFLOW DASHBOARD ═══════════════ -->
-<div class="sec active" id="sec-dashboard">
+<div class="sec" id="sec-dashboard">
   <div class="ph">
     <div><div class="ph-title">Cashflow Overview</div><div class="ph-sub">Money in · Money out · What's overdue</div></div>
     <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
@@ -545,6 +664,94 @@ tbody td{padding:8px 11px;vertical-align:middle}
 </tr></thead>
     <tbody></tbody>
   </table></div></div>
+</div>
+
+<!-- ═══════════════ HOME ═══════════════ -->
+<div class="sec" id="sec-home">
+  <div class="home-greeting" id="home-greeting">
+    <div class="home-title">EDGE ARCHITECTS</div>
+    <div class="home-sub">Select a module to begin</div>
+  </div>
+  <div class="module-cards" id="module-cards">
+    <div class="module-card" onclick="enterModule('finance')">
+      <div class="module-card-icon" style="background:var(--black);color:var(--yellow)">F</div>
+      <div class="module-card-name">Finance</div>
+      <div class="module-card-desc">Cashflow · Invoices · Fee Schedules · Variations</div>
+      <div class="module-card-arrow">→</div>
+    </div>
+    <div class="module-card" onclick="enterModule('projects')">
+      <div class="module-card-icon" style="background:var(--blue);color:#fff">P</div>
+      <div class="module-card-name">Projects</div>
+      <div class="module-card-desc">SOPs · Mobilisation · Checklists · Project Controls</div>
+      <div class="module-card-arrow">→</div>
+    </div>
+    <div class="module-card module-card-soon">
+      <div class="module-card-icon" style="background:var(--plaster,#D9D6D0);color:var(--gd)">D</div>
+      <div class="module-card-name">EDMS <span class="module-soon-tag">Soon</span></div>
+      <div class="module-card-desc">Document Control · Drawing Register · Versioning</div>
+      <div class="module-card-arrow" style="color:var(--gm)">—</div>
+    </div>
+    <div class="module-card module-card-soon">
+      <div class="module-card-icon" style="background:var(--plaster,#D9D6D0);color:var(--gd)">Pr</div>
+      <div class="module-card-name">Procurement <span class="module-soon-tag">Soon</span></div>
+      <div class="module-card-desc">Suppliers · Purchase Orders · Consultant Agreements</div>
+      <div class="module-card-arrow" style="color:var(--gm)">—</div>
+    </div>
+    <div class="module-card module-card-soon">
+      <div class="module-card-icon" style="background:var(--plaster,#D9D6D0);color:var(--gd)">BD</div>
+      <div class="module-card-name">Business Dev <span class="module-soon-tag">Soon</span></div>
+      <div class="module-card-desc">Leads · Proposals · Client CRM · Win/Loss Tracking</div>
+      <div class="module-card-arrow" style="color:var(--gm)">—</div>
+    </div>
+    <div class="module-card module-card-soon">
+      <div class="module-card-icon" style="background:var(--plaster,#D9D6D0);color:var(--gd)">Q</div>
+      <div class="module-card-name">Quality <span class="module-soon-tag">Soon</span></div>
+      <div class="module-card-desc">ISO Procedures · Audit Logs · Document Control</div>
+      <div class="module-card-arrow" style="color:var(--gm)">—</div>
+    </div>
+    <div class="module-card" onclick="enterModule('admin')">
+      <div class="module-card-icon" style="background:#222;color:var(--gm)">⚙</div>
+      <div class="module-card-name">Admin</div>
+      <div class="module-card-desc">Users · Access Rights · Module Permissions</div>
+      <div class="module-card-arrow">→</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ PROJECTS MODULE — SOPs ═══════════════ -->
+<div class="sec" id="sec-sops">
+  <div class="ph">
+    <div><div class="ph-title">Standard Operating Procedures</div><div class="ph-sub">Reference documents and interactive checklists — per project</div></div>
+  </div>
+  <div id="sop-library-view"></div>
+</div>
+
+<!-- ═══════════════ PROJECTS MODULE — CHECKLISTS ═══════════════ -->
+<div class="sec" id="sec-checklists">
+  <div class="ph">
+    <div><div class="ph-title">Active Checklists</div><div class="ph-sub">Per-project SOP checklist runs — track progress and completion</div></div>
+    <button class="btn btn-y" onclick="openNewChecklistModal()">+ Start Checklist</button>
+  </div>
+  <div id="checklist-runs-view"></div>
+</div>
+
+<!-- ═══════════════ ADMIN MODULE ═══════════════ -->
+<div class="sec" id="sec-admin">
+  <div class="ph">
+    <div><div class="ph-title">User Administration</div><div class="ph-sub">Manage users and assign per-module feature permissions</div></div>
+    <button class="btn btn-y" onclick="openAddUserModal()">+ Add User</button>
+  </div>
+  <div id="admin-users-view"></div>
+</div>
+
+<!-- SOP Detail View (full document) -->
+<div class="sec" id="sec-sop-detail">
+  <div id="sop-detail-view"></div>
+</div>
+
+<!-- Checklist Run View -->
+<div class="sec" id="sec-checklist-run">
+  <div id="checklist-run-view"></div>
 </div>
 
 </main>
@@ -906,14 +1113,14 @@ async function onSignedIn() {
     await loadFromSharePoint();
     setSyncStatus('ok', 'Synced');
     markClean();
-    renderDashboard();
+    goHome();
   } catch(e) {
     setSyncStatus('err', 'Load failed');
     console.error('SharePoint load error:', e);
     // Fall back to local data
     loadLocalDB();
     if(!db.projects.length) seed();
-    renderDashboard();
+    goHome();
   }
 }
 
@@ -1132,7 +1339,7 @@ async function loadDB() {
   if(db.projects.length) {
     document.getElementById('auth-overlay').style.display='none';
     setSyncStatus('err','Not signed in');
-    renderDashboard();
+    goHome();
   }
   // else auth overlay stays visible
 }
@@ -1335,7 +1542,7 @@ function allRows() {
 const SECS = ['dashboard','projects','fees','vo','tracker'];
 function go(id) {
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('.ntab').forEach((t,i)=>t.classList.toggle('active',SECS[i]===id));
+  document.querySelectorAll('#navTabs-finance .ntab').forEach((t,i)=>t.classList.toggle('active',SECS[i]===id));
   document.getElementById('sec-'+id).classList.add('active');
   render(id);
 }
@@ -1345,6 +1552,765 @@ function render(id) {
   else if(id==='fees') renderCurrentFeeTab();
   else if(id==='vo') renderVO();
   else if(id==='tracker') renderTracker();
+  else if(id==='home') goHome();
+  else if(id==='sops') { renderSopLibrary(); }
+  else if(id==='checklists') { renderChecklistRuns(); }
+  else if(id==='admin') { renderAdmin(); }
+}
+
+let currentModule = 'home';
+
+function goHome() {
+  currentModule = 'home';
+  // Hide all module navs
+  document.getElementById('navTabs-finance').style.display = 'none';
+  document.getElementById('navTabs-projects').style.display = 'none';
+  document.getElementById('navTabs-admin').style.display = 'none';
+  // Hide back/label
+  document.getElementById('nav-back').style.display = 'none';
+  document.getElementById('nav-module-label').style.display = 'none';
+  // Show home
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-home').classList.add('active');
+}
+
+function enterModule(module) {
+  currentModule = module;
+  document.getElementById('nav-back').style.display = '';
+  document.getElementById('nav-module-label').style.display = '';
+  // Hide all tab groups
+  document.getElementById('navTabs-finance').style.display = 'none';
+  document.getElementById('navTabs-projects').style.display = 'none';
+  document.getElementById('navTabs-admin').style.display = 'none';
+  if(module === 'finance') {
+    document.getElementById('nav-module-label').textContent = 'Finance';
+    document.getElementById('navTabs-finance').style.display = 'flex';
+    go('dashboard');
+  } else if(module === 'projects') {
+    document.getElementById('nav-module-label').textContent = 'Projects';
+    document.getElementById('navTabs-projects').style.display = 'flex';
+    goProjects('sops');
+  } else if(module === 'admin') {
+    document.getElementById('nav-module-label').textContent = 'Admin';
+    document.getElementById('navTabs-admin').style.display = 'flex';
+    goAdmin('users');
+  }
+}
+
+function goProjects(sub) {
+  document.querySelectorAll('#navTabs-projects .ntab').forEach((t,i)=>t.classList.toggle('active',i===(sub==='sops'?0:1)));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  if(sub==='sops') { renderSopLibrary(); document.getElementById('sec-sops').classList.add('active'); }
+  else if(sub==='checklists') { renderChecklistRuns(); document.getElementById('sec-checklists').classList.add('active'); }
+}
+
+function goAdmin(sub) {
+  document.querySelectorAll('#navTabs-admin .ntab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  renderAdmin();
+  document.getElementById('sec-admin').classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// SOP LIBRARY DATA
+// ═══════════════════════════════════════════════════
+const SOP_LIBRARY = [
+  {
+    id: 'sop-mobilisation',
+    title: 'Project Mobilisation and Kick Off',
+    version: 'v2.0',
+    owner: 'Senior Management / Operations',
+    appliesTo: 'All EDGE projects following award, LOI, appointment, or written instruction to proceed',
+    primaryUsers: 'Senior Manager, Project Lead, Bid Coordinator, Finance, Project Team, Sub Consultants',
+    status: 'Internal Rollout Draft',
+    phases: [
+      {
+        id: 'ph1', title: 'Phase 1: Pre Mobilisation Gate',
+        sections: [
+          { id: 's5', num: '5', title: 'Mobilisation Approval Gate',
+            body: 'Before any project is mobilised, the Senior Manager and Project Lead shall confirm that the project has passed the Pre Mobilisation Gate. The project may only proceed where one of the following has been received:',
+            items: ['Signed consultancy agreement','Letter of Award','Letter of Intent','Purchase Order','Formal written instruction to proceed','Client email instruction accepted by EDGE management']
+          },
+          { id: 's6', num: '6', title: 'Mandatory Pre Mobilisation Checks',
+            subsections: [
+              { title: '6.1 Commercial and Contractual Checks', items: [
+                'Confirm client name and contracting entity',
+                'Confirm project name and project location',
+                'Confirm EDGE scope of services',
+                'Confirm fee value and payment schedule',
+                'Confirm payment terms and invoice triggers',
+                'Confirm whether advance payment, mobilisation payment, or first milestone payment is due',
+                'Confirm reimbursables, authority fees, printing costs, travel costs, and other recoverables',
+                'Confirm exclusions and assumptions included in the proposal',
+                'Confirm whether EDGE is acting as Lead Design Consultant, Architect, Interior Designer, Executive Architect, Architect of Record, or another role',
+                'Confirm whether any scope has changed since proposal submission',
+                'Confirm whether the client programme differs from the proposal programme',
+                'Confirm whether contractual terms have been accepted, amended, or remain pending'
+              ]},
+              { title: '6.2 Risk Checks', items: [
+                'Identify any mismatch between fee, scope, programme, and deliverables',
+                'Identify client payment risk or known commercial sensitivity',
+                'Identify authority approval risk',
+                'Identify sub consultant appointment risk',
+                'Identify resource availability risk',
+                'Identify compressed programme risk',
+                'Identify unclear deliverables or open assumptions',
+                'Identify any requirement for professional indemnity review'
+              ]},
+              { title: '6.3 Authority and Appointment Checks', items: [
+                'Confirm whether authority approvals are required',
+                'Confirm which party is responsible for authority submissions',
+                'Confirm whether an Architect of Record is required',
+                'Confirm whether EDGE will appoint the AOR or whether the client will appoint directly',
+                'Confirm whether any specialist NOCs are required',
+                'Confirm whether early authority engagement is required before design development'
+              ]}
+            ]
+          },
+          { id: 's7', num: '7', title: 'Pre Mobilisation Gate Output',
+            body: 'The Project Lead shall prepare a short Mobilisation Gate Note confirming:',
+            items: ['Project can proceed to mobilisation','Key commercial terms are understood','Critical risks are identified','Required internal approvals are obtained','Any limitations or assumptions are recorded'],
+            note: 'The Mobilisation Gate Note shall be saved in the project folder.'
+          }
+        ]
+      },
+      {
+        id: 'ph2', title: 'Phase 2: Project Setup',
+        sections: [
+          { id: 's8', num: '8', title: 'Project Folder Setup',
+            body: 'Once the project passes the Pre Mobilisation Gate, the Bid Coordinator shall create a new project folder in the Projects drive on the server. As a minimum, the following information shall be copied into the project folder:',
+            items: ['RFP','Client brief','Commercial proposal','Technical proposal','Clarifications and tender correspondence','PTCs','Fee breakdown','Scope matrix','Programme submitted with proposal','Client appointment, LOI, LOA, PO, or instruction to proceed','Any relevant presentation, concept, or design material issued during bidding','Sub consultant proposals','Client comments or negotiation records']
+          },
+          { id: 's9', num: '9', title: '.Studio Update',
+            body: 'The Bid Coordinator shall update .Studio as follows:',
+            items: ['Move opportunity status to Won','Convert the opportunity into a project','Confirm project code','Confirm project name','Confirm client details','Confirm fee value','Confirm Project Lead','Confirm Senior Manager','Attach key commercial and appointment information where applicable']
+          },
+          { id: 's10', num: '10', title: 'Microsoft Teams Setup',
+            body: 'The Project Lead or assigned administrator shall create a project channel in Microsoft Teams. The Teams channel shall include, as a minimum:',
+            items: ['Project Team Directory','Drawing Register, incoming and outgoing','RFI Register','Design Change Register','Risk Register','Action Register','Decision Register','Authority Register','Deliverables Register','Minutes of Meeting folder','Client Instructions folder','Sub Consultant folder','Commercial folder, access restricted where required','Programme folder','BIM folder','Submission folder']
+          },
+          { id: 's11', num: '11', title: 'Project Register Setup',
+            body: 'The following registers shall be created before the first external kick off meeting:',
+            roles: [
+              { role: 'Project Team Directory', desc: 'Confirms all project participants, organisations, roles, email addresses, and points of contact.' },
+              { role: 'Drawing Register', desc: 'Tracks incoming and outgoing drawings, revisions, dates, and status.' },
+              { role: 'RFI Register', desc: 'Tracks requests for information, responsibility, due dates, and closure status.' },
+              { role: 'Design Change Register', desc: 'Tracks design changes, originator, reason, status, commercial impact, and approval status.' },
+              { role: 'Risk Register', desc: 'Tracks project risks, owners, probability, impact, mitigation, and status.' },
+              { role: 'Action Register', desc: 'Tracks agreed actions from meetings and workshops.' },
+              { role: 'Decision Register', desc: 'Records key decisions and approvals.' },
+              { role: 'Authority Register', desc: 'Tracks authority requirements, submissions, NOCs, responsibilities, and approval status.' },
+              { role: 'Deliverables Register', desc: 'Tracks stage deliverables, responsibility, format, issue dates, and approval status.' },
+              { role: 'Invoice Schedule', desc: 'Tracks invoice dates, amounts, triggers, expected payment dates, and sub consultant payment exposure.' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ph3', title: 'Phase 3: Internal Project Alignment',
+        sections: [
+          { id: 's12', num: '12', title: 'Internal Kick Off Meeting',
+            body: 'Prior to any sub consultant or client kick off meeting, the Senior Manager shall arrange an internal kick off meeting. The meeting shall be attended by:',
+            items: ['Senior Manager','Project Lead','Bid Coordinator','Finance representative, where required','BIM Lead, where required','Key design team members','Document controller or assigned administrator','Any other relevant internal team members']
+          },
+          { id: 's13', num: '13', title: 'Internal Kick Off Agenda',
+            subsections: [
+              { title: '13.1 Project Overview', items: ['Project name and location','Client and stakeholder overview','Project type and sector','Brief summary','EDGE appointment role','Project value and strategic importance'] },
+              { title: '13.2 Scope and Deliverables', items: ['Confirm EDGE scope of services','Confirm sub consultant scope','Confirm deliverables by stage','Confirm exclusions','Confirm assumptions','Confirm RIBA stage or equivalent project stage alignment','Confirm whether EDGE deliverables are design, coordination, authority, tender, IFC, supervision, or advisory deliverables'] },
+              { title: '13.3 Commercial Alignment', items: ['Confirm total fee','Confirm stage fee breakdown','Confirm payment milestones','Confirm invoice triggers','Confirm payment terms','Confirm expected invoice dates','Confirm sub consultant fees and payment exposure','Confirm reimbursables and recoverables','Identify any commercial risk'] },
+              { title: '13.4 Programme Alignment', items: ['Review proposal programme','Review client required programme','Identify differences between proposal and client expectations','Confirm key milestones','Confirm submission dates','Confirm client review periods','Confirm authority review periods','Identify compressed or unrealistic durations'] },
+              { title: '13.5 Resource Alignment', items: ['Confirm Project Lead','Confirm discipline leads','Confirm production team','Confirm assigned hours','Confirm resource loading','Confirm immediate mobilisation needs','Confirm any external support required'] },
+              { title: '13.6 Authority Strategy', items: ['Identify required authorities','Confirm authority submission responsibility','Confirm AOR responsibility','Confirm expected NOCs','Confirm authority approval sequence','Confirm submission stage requirements','Identify early authority risks'] },
+              { title: '13.7 BIM and Digital Delivery', items: ['Confirm BIM requirement','Confirm BEP status','Confirm LOD requirement','Confirm model exchange dates','Confirm software platforms','Confirm naming protocols','Confirm model responsibility and limitations'] },
+              { title: '13.8 Risk Review', items: ['Identify top 10 project risks','Assign risk owners','Confirm mitigation actions','Confirm escalation triggers'] },
+              { title: '13.9 Change Control', items: ['Confirm change control procedure','Confirm who can instruct change','Confirm how design changes are logged','Confirm when commercial notice is required','Confirm process for variations and additional services'] }
+            ]
+          },
+          { id: 's14', num: '14', title: 'Internal Kick Off Outputs',
+            body: 'The Project Lead shall issue internal minutes within two working days. The following outputs shall be completed after the internal kick off:',
+            items: ['Internal MoM','Action Register updated','Risk Register updated','Deliverables Register updated','Project Team Directory updated','Invoice Schedule issued to Finance','Authority Register initiated','Change Control procedure activated','Project programme baseline prepared or requested']
+          }
+        ]
+      },
+      {
+        id: 'ph4', title: 'Phase 4: Sub Consultant Mobilisation',
+        sections: [
+          { id: 's15', num: '15', title: 'Sub Consultant Notification',
+            body: 'Following the internal kick off, all selected sub consultants shall be formally notified of the project award and introduced to the Project Lead. The notification shall include:',
+            items: ['Project name','Client name, where appropriate','EDGE Project Lead','Confirmation of intended appointment','Kick off meeting date','Immediate information required from the sub consultant','Request to confirm availability, team structure, and primary point of contact']
+          },
+          { id: 's16', num: '16', title: 'Sub Consultant Appointment Package',
+            body: 'The Project Lead shall prepare and distribute the sub consultant appointment package. As a minimum, this shall include:',
+            items: ['Letter of Award or sub consultant instruction','Sub consultant fee proposal','EDGE main agreement or relevant flow down terms, where applicable','Project programme','Scope of services','Deliverables Register','Responsibility Matrix','Payment terms','Communication protocol','Document naming protocol','Title sheet template','BEP, where applicable','Register access or Teams invitation']
+          },
+          { id: 's17', num: '17', title: 'Sub Consultant Kick Off Meeting',
+            body: 'The Project Lead shall chair the sub consultant kick off meeting. The agenda shall include:',
+            items: ['Introduction of project team','Confirmation of points of contact','Project summary','EDGE role and appointment structure','Sub consultant role and responsibilities','Programme and key milestones','Deliverables by stage','Authority responsibilities','BIM requirements','Information required from client or others','Drawing and document protocols','RFI and change control procedures','Risk items and early warnings','Next steps and immediate actions','Q&A']
+          },
+          { id: 's18', num: '18', title: 'Sub Consultant Controls',
+            body: 'Sub consultants shall not issue directly to the client unless authorised by EDGE. All sub consultant outputs shall be issued through the agreed document control process. Sub consultant deliverables shall be reviewed against:',
+            items: ['Scope','Deliverables Register','Programme','Quality requirements','Coordination requirements','Authority requirements','BIM requirements']
+          }
+        ]
+      },
+      {
+        id: 'ph5', title: 'Phase 5: Client and Project Kick Off',
+        sections: [
+          { id: 's19', num: '19', title: 'Client Kick Off Preparation',
+            body: 'Before the client kick off meeting, the Project Lead shall prepare:',
+            items: ['Project introduction slide or agenda','Team structure','Communication protocol','Programme overview','Deliverables overview','Key information required from client','Authority strategy summary','Meeting and reporting rhythm','Change control process','Immediate risks or decisions required']
+          },
+          { id: 's20', num: '20', title: 'Client Kick Off Meeting Agenda',
+            body: 'The client kick off meeting shall be chaired by the Project Lead unless otherwise agreed. The agenda shall include:',
+            items: ['Introduction of project team','Confirmation of client, consultant, and sub consultant points of contact','Project summary and objectives','Scope confirmation','Deliverables and submission expectations','Programme and key milestones','Client review periods and approval process','Authority strategy and responsibilities','Communication protocol','Document control and issue protocol','RFI process','Design change and variation process','Meeting structure and reporting frequency','Immediate information required from the client','Key risks and dependencies','Next steps','Q&A']
+          },
+          { id: 's21', num: '21', title: 'Client Kick Off Outputs',
+            body: 'The Project Lead shall ensure that the following are issued within two working days:',
+            items: ['Minutes of Meeting','Action Register','Updated Project Team Directory','Updated Programme, if amended','Information Request List','Updated Risk Register, if required','Updated Deliverables Register, if required','Confirmation of recurring meeting schedule']
+          }
+        ]
+      },
+      {
+        id: 'ph6', title: 'Phase 6: Project Control Activation',
+        sections: [
+          { id: 's22', num: '22', title: 'Meeting Rhythm',
+            body: 'The Project Lead shall agree the required meeting structure for the project. Meetings may include:',
+            items: ['Client Progress Meeting','Internal Project Review','Technical Coordination Meeting','Design Meeting','BIM Coordination Meeting','Authority Coordination Meeting','Commercial Review Meeting','Sub Consultant Coordination Meeting'],
+            note: 'Meeting frequency may be weekly, bi-weekly, or as required by the project programme. All recurring meetings shall be issued as calendar invitations with clear titles, attendees, and agendas.'
+          },
+          { id: 's23', num: '23', title: 'Daily or Regular Internal Check Ins',
+            body: 'Where appropriate, the Project Lead shall schedule short internal check ins (15-30 minutes) following this format:',
+            items: ['What was completed yesterday or since the last check in?','What remains outstanding?','What is planned today or this week?','What decisions are required?','What risks, concerns, or red flags exist?','What support is required?']
+          },
+          { id: 's24', num: '24', title: 'Minutes of Meeting Protocol',
+            body: 'All key meetings shall be recorded or minuted. Minutes shall be issued within two working days. Minutes shall include:',
+            items: ['Meeting title','Date and time','Attendees','Apologies','Summary by category','Decisions made','Actions agreed','Action owner','Due date','Status of previous actions'],
+            note: 'Meeting categories: Design · Technical · Commercial · Programme · Authority · Risk'
+          },
+          { id: 's25', num: '25', title: 'Document Control Protocol',
+            body: 'The Project Lead shall ensure that all project documents follow the agreed naming convention and filing structure. The following rules apply:',
+            items: ['No uncontrolled issue of drawings or documents','No reliance on WhatsApp instructions unless confirmed by email or MoM','All client instructions must be saved in the Client Instructions folder','All submissions must be recorded in the Drawing Register or Submission Register','All revisions must be clearly identified','Superseded information must be archived and not deleted','All formal submissions must include transmittal records']
+          },
+          { id: 's26', num: '26', title: 'Deliverables Register Control',
+            body: 'The Deliverables Register shall be treated as a live control document. It shall include:',
+            items: ['Stage','Discipline','Deliverable description','Responsible party','Format','Required issue date','Actual issue date','Status','Client approval status','Comments'],
+            note: 'The Deliverables Register shall be reviewed at each stage and before each formal submission.'
+          },
+          { id: 's27', num: '27', title: 'Programme Control',
+            body: 'The Project Lead shall establish a baseline programme. The programme shall identify:',
+            items: ['Internal production milestones','Sub consultant milestones','Client review periods','Authority submission dates','Authority review periods','Design freeze dates','Submission dates','Approval milestones','Invoice triggers'],
+            note: 'Any delay, compression, or deviation shall be recorded and escalated.'
+          },
+          { id: 's28', num: '28', title: 'Design Change Control',
+            body: 'The Design Change Register shall be active from project mobilisation. A design change may arise from:',
+            items: ['Client instruction','Operator instruction','Authority requirement','Site condition','Budget reduction','Value engineering','Change in brief','Change in area or GFA','Change in scope','Change in programme','Late stakeholder comment','Sub consultant technical requirement'],
+            note: 'Each design change shall be assessed for: Scope impact · Programme impact · Fee impact · Authority impact · Coordination impact · Deliverable impact. Where a change has commercial or programme impact, the Project Lead shall notify the Senior Manager before proceeding.'
+          },
+          { id: 's29', num: '29', title: 'Risk Register Control',
+            body: 'The Risk Register shall be established during mobilisation and reviewed regularly. Each risk shall include:',
+            items: ['Risk description','Cause','Impact','Probability','Severity','Owner','Mitigation','Target date','Status'],
+            note: 'High risks shall be escalated to the Senior Manager immediately.'
+          },
+          { id: 's30', num: '30', title: 'Authority Register Control',
+            body: 'The Authority Register shall identify:',
+            items: ['Required authorities','Submission requirements','Responsible party','Submission stage','Required documents','Target submission date','Actual submission date','Review status','Approval date','NOC requirements','Risks or dependencies'],
+            note: 'The authority pathway shall be reviewed early with the AOR or authority consultant.'
+          },
+          { id: 's31', num: '31', title: 'BIM Execution and Model Control',
+            body: 'Where BIM applies, the BIM Lead or Project Lead shall ensure the BEP is prepared and agreed. The BEP shall define:',
+            items: ['Software platform','Model origin and coordinates','LOD requirements','Model naming','File exchange format','Model exchange frequency','Discipline responsibility','Clash detection process','Model limitations','Sheet production requirements','COBie or asset data requirements, where applicable'],
+            note: 'EDGE shall clearly define whether the model is for design coordination, authority submission, tender, construction, or another use.'
+          }
+        ]
+      },
+      {
+        id: 'ph7', title: 'Phase 7: Commercial and Financial Control',
+        sections: [
+          { id: 's32', num: '32', title: 'Invoice Schedule',
+            body: 'The Project Lead shall populate an invoicing schedule for Finance. The schedule shall include:',
+            items: ['Project name','Client name','Total fee','Stage breakdown','Invoice trigger','Proposed invoice date','Invoice amount','Expected payment date','Payment terms','Sub consultant payment due','Retention, if applicable','Reimbursables','Notes on risk or dependency']
+          },
+          { id: 's33', num: '33', title: 'Invoice Trigger Control',
+            body: 'The Project Lead shall confirm the exact trigger for each invoice. Typical triggers include:',
+            items: ['Mobilisation','Stage commencement','Stage submission','Authority submission','Authority approval','Client approval','Monthly retainer','Milestone completion','Site attendance period'],
+            note: 'Where payment is linked to approval, the Project Lead shall actively track approval status and issue formal reminders where required.'
+          },
+          { id: 's34', num: '34', title: 'Sub Consultant Payment Control',
+            body: 'Sub consultant payment exposure shall be reviewed before appointment. The Project Lead and Finance shall confirm:',
+            items: ['Sub consultant fee','Payment terms','Whether payment is back to back with client payment','Whether advance payment is required','Whether invoices require deliverable acceptance','Whether there is a cashflow exposure to EDGE']
+          },
+          { id: 's35', num: '35', title: 'Commercial Escalation',
+            body: 'The Project Lead shall escalate to the Senior Manager where any of the following occur:',
+            items: ['Client instructs work outside scope','Programme is compressed without fee adjustment','Client delays approval or payment','Sub consultant requests additional fee','Authority requires additional deliverables','Project team hours exceed forecast','Client requests redesign due to budget or VE','Deliverables exceed proposal assumptions','Payment is overdue']
+          }
+        ]
+      },
+      {
+        id: 'ph8', title: 'Phase 8: Mobilisation Completion and Handover to Delivery',
+        sections: [
+          { id: 's36', num: '36', title: 'Mobilisation Completion Criteria',
+            body: 'The project shall only be considered fully mobilised when the following are complete:',
+            items: ['Project folder created','.Studio updated','Teams channel created','Core registers created','Internal kick off completed','Sub consultants notified','Sub consultant kick off completed, where applicable','Client kick off completed','Meeting rhythm agreed','Deliverables Register issued or internally approved','Authority Register initiated','Risk Register initiated','Invoice Schedule issued to Finance','Programme baseline prepared or requested','Document control protocol issued','Change control process activated']
+          },
+          { id: 's37', num: '37', title: 'Mobilisation Close Out Note',
+            body: 'The Project Lead shall issue a short Mobilisation Close Out Note to the Senior Manager confirming:',
+            items: ['Mobilisation is complete','Key risks','Immediate actions','Outstanding client information','Outstanding sub consultant information','First submission milestone','First invoice trigger','Required management support'],
+            note: 'Once the Mobilisation Close Out Note is issued, the project moves into active delivery.'
+          },
+          { id: 's39', num: '39', title: 'Minimum Compliance Checklist',
+            body: 'Before moving into active delivery, the Project Lead must confirm the following:',
+            items: ['Formal instruction received','Commercial terms reviewed','Scope, assumptions, and exclusions reviewed','Project folder created','.Studio updated','Teams channel created','Registers created','Internal kick off held','Sub consultants notified','Sub consultant appointment package issued','Client kick off held','Programme reviewed','Deliverables Register created','Risk Register created','Authority Register created','Change Control Register created','Invoice Schedule issued to Finance','Meeting rhythm agreed','Document control protocol confirmed','Mobilisation Close Out Note issued']
+          }
+        ]
+      }
+    ],
+    roles: [
+      { role: 'Managing Director / Senior Manager', desc: 'Confirms commercial alignment, approves mobilisation, reviews key risks, supports escalation.' },
+      { role: 'Bid Coordinator', desc: 'Transfers opportunity information, creates project folder, updates .Studio, provides proposal and tender information to the Project Lead.' },
+      { role: 'Project Lead', desc: 'Leads mobilisation, chairs internal and external kick off meetings, sets up project controls, manages team coordination.' },
+      { role: 'Finance', desc: 'Reviews invoicing schedule, payment terms, expected collection dates, and sub consultant payment exposure.' },
+      { role: 'Project Team', desc: 'Reviews project scope, deliverables, programme, responsibilities, risks, and production requirements.' },
+      { role: 'Sub Consultants', desc: 'Confirm scope, deliverables, programme, responsibilities, assumptions, exclusions, and required inputs.' },
+      { role: 'Document Controller / Assigned Team Member', desc: 'Maintains registers, filing structure, drawing issue records, incoming information, outgoing submissions, and MoM records.' },
+      { role: 'BIM Lead / BIM Coordinator', desc: 'Prepares or reviews BEP, model responsibility, LOD requirements, naming protocols, model exchange process, and BIM deliverables.' }
+    ],
+    keyPrinciples: [
+      'No project should commence without a clear written instruction.',
+      'Scope, fee, programme, deliverables, exclusions, and responsibilities must be understood before work begins.',
+      'Commercial, contractual, authority, and design risks must be identified early.',
+      'Project information must be stored in a controlled location with agreed naming and filing protocols.',
+      'Sub consultants must be formally instructed and aligned before undertaking work.',
+      'All meetings, decisions, instructions, and changes must be recorded.',
+      'Invoice triggers and payment expectations must be agreed internally at mobilisation.',
+      'Change control must be activated from day one.'
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════
+// SOP RENDERING
+// ═══════════════════════════════════════════════════
+function renderSopLibrary() {
+  const el = document.getElementById('sop-library-view');
+  if(!el) return;
+  el.innerHTML = SOP_LIBRARY.map(sop=>{
+    let total = 0;
+    sop.phases.forEach(ph=>ph.sections.forEach(sec=>{
+      if(sec.items) total += sec.items.length;
+      if(sec.subsections) sec.subsections.forEach(sub=>total += (sub.items||[]).length);
+    }));
+    const runs = (db.checklistRuns||[]).filter(r=>r.sopId===sop.id);
+    const activeRuns = runs.filter(r=>r.status!=='Complete').length;
+    return `<div class="sop-card" onclick="viewSop('${sop.id}')">
+      <div class="sop-card-header">
+        <div>
+          <div class="sop-card-title">${sop.title}</div>
+          <div class="sop-card-meta">
+            <span>Version ${sop.version}</span>
+            <span>${sop.phases.length} phases</span>
+            <span>${total} checklist items</span>
+            <span class="badge b-planned">${sop.status}</span>
+          </div>
+        </div>
+        <div class="sop-actions" onclick="event.stopPropagation()">
+          ${activeRuns>0?`<span class="badge b-invoiced">${activeRuns} active run${activeRuns>1?'s':''}</span>`:''}
+          <button class="btn btn-y btn-sm" onclick="openNewChecklistModal('${sop.id}')">Start Checklist</button>
+          <button class="btn btn-ghost btn-sm" onclick="viewSop('${sop.id}')">View SOP →</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('') || '<div class="empty"><p>No SOPs available.</p></div>';
+}
+
+function viewSop(sopId) {
+  const sop = SOP_LIBRARY.find(s=>s.id===sopId);
+  if(!sop) return;
+  const el = document.getElementById('sop-detail-view');
+  if(!el) return;
+  const sectionsHtml = sop.phases.map(ph=>`
+    <div class="sop-phase-header"><div class="sop-phase-title">${ph.title}</div></div>
+    ${ph.sections.map(sec=>{
+      let bodyHtml = '';
+      if(sec.body) bodyHtml += `<p>${sec.body}</p>`;
+      if(sec.items && sec.items.length) bodyHtml += `<ul>${sec.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+      if(sec.note) bodyHtml += `<p style="font-style:italic;color:var(--gm);margin-top:8px">${sec.note}</p>`;
+      if(sec.subsections) bodyHtml += sec.subsections.map(sub=>`
+        <div class="sop-subsection">
+          <div class="sop-subsection-title">${sub.title}</div>
+          <ul>${(sub.items||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
+        </div>`).join('');
+      if(sec.roles) bodyHtml += `<table class="sop-roles-table">
+        <thead><tr><th>Register / Role</th><th>Purpose / Responsibility</th></tr></thead>
+        <tbody>${sec.roles.map(r=>`<tr><td>${r.role}</td><td>${r.desc}</td></tr>`).join('')}</tbody>
+      </table>`;
+      return `<div class="sop-section">
+        <div class="sop-section-head" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
+          <span class="sop-section-title">${sec.num}. ${sec.title}</span>
+          <span style="font-size:10px;color:var(--gm)">▾</span>
+        </div>
+        <div class="sop-section-body">${bodyHtml}</div>
+      </div>`;
+    }).join('')}
+  `).join('');
+  const roleTableHtml = sop.roles ? `
+    <div class="sop-section" style="margin-bottom:24px">
+      <div class="sop-section-head"><span class="sop-section-title">4. Roles and Responsibilities</span></div>
+      <div class="sop-section-body">
+        <table class="sop-roles-table">
+          <thead><tr><th>Role</th><th>Responsibility</th></tr></thead>
+          <tbody>${sop.roles.map(r=>`<tr><td>${r.role}</td><td>${r.desc}</td></tr>`).join('')}</tbody>
+        </table>
+      </div>
+    </div>` : '';
+  el.innerHTML = `
+    <div class="sop-doc">
+      <div class="sop-back-btn">
+        <button class="btn btn-ghost btn-sm" onclick="goProjects('sops')">← Back to SOPs</button>
+        <button class="btn btn-y btn-sm" style="margin-left:8px" onclick="openNewChecklistModal('${sop.id}')">Start Checklist Run</button>
+      </div>
+      <div class="sop-doc-header">
+        <div class="sop-doc-title">${sop.title}</div>
+        <div class="sop-doc-meta">
+          <strong>Document Owner</strong><span>${sop.owner}</span>
+          <strong>Version</strong><span>${sop.version}</span>
+          <strong>Status</strong><span>${sop.status}</span>
+          <strong>Applies To</strong><span>${sop.appliesTo}</span>
+          <strong>Primary Users</strong><span>${sop.primaryUsers}</span>
+        </div>
+      </div>
+      ${sop.keyPrinciples?`
+      <div class="sop-section" style="margin-bottom:24px">
+        <div class="sop-section-head"><span class="sop-section-title">3. Key Principles</span></div>
+        <div class="sop-section-body"><ol>${sop.keyPrinciples.map(p=>`<li>${p}</li>`).join('')}</ol></div>
+      </div>`:''}
+      ${roleTableHtml}
+      ${sectionsHtml}
+    </div>`;
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-sop-detail').classList.add('active');
+}
+
+// ═══════════════════════════════════════════════════
+// CHECKLIST FUNCTIONS
+// ═══════════════════════════════════════════════════
+function openNewChecklistModal(sopId) {
+  const sops = SOP_LIBRARY;
+  const projs = db.projects.filter(p=>p.status!=='Complete');
+  const selSopId = sopId || (sops[0]||{}).id || '';
+  let mo = document.getElementById('mo-new-checklist');
+  if(!mo) {
+    mo = document.createElement('div');
+    mo.id = 'mo-new-checklist';
+    mo.className = 'mo';
+    mo.innerHTML = `<div class="modal">
+      <div class="mhead"><span class="mtitle">Start Checklist Run</span><button class="mclose" onclick="closeMo('mo-new-checklist')">×</button></div>
+      <div class="mbody" id="ncl-body"></div>
+      <div class="mfoot"><button class="btn btn-ghost btn-sm" onclick="closeMo('mo-new-checklist')">Cancel</button><button class="btn btn-y btn-sm" onclick="startChecklist()">Start</button></div>
+    </div>`;
+    document.body.appendChild(mo);
+  }
+  document.getElementById('ncl-body').innerHTML = `
+    <div class="fgrp" style="margin-bottom:12px">
+      <label>SOP</label>
+      <select id="ncl-sop" style="padding:7px 9px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:12px;width:100%">
+        ${sops.map(s=>`<option value="${s.id}" ${s.id===selSopId?'selected':''}>${s.title}</option>`).join('')}
+      </select>
+    </div>
+    <div class="fgrp">
+      <label>Project</label>
+      <select id="ncl-project" style="padding:7px 9px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:12px;width:100%">
+        <option value="">— General (no specific project) —</option>
+        ${projs.map(p=>`<option value="${p.id}">${p.name} [${p.status}]</option>`).join('')}
+      </select>
+    </div>`;
+  openMo('mo-new-checklist');
+}
+
+function startChecklist() {
+  const sopId = document.getElementById('ncl-sop')?.value;
+  const projectId = document.getElementById('ncl-project')?.value || '';
+  if(!sopId) return;
+  const sop = SOP_LIBRARY.find(s=>s.id===sopId);
+  if(!sop) return;
+  const proj = db.projects.find(p=>p.id===projectId);
+  const checks = {};
+  sop.phases.forEach(ph=>ph.sections.forEach(sec=>{
+    if(sec.items) sec.items.forEach((item,i)=>{
+      const key = `${sec.id}-${i}`;
+      checks[key] = { label: item, sectionId: sec.id, sectionTitle: sec.title, phaseId: ph.id, phaseTitle: ph.title, done: false, doneBy: '', doneAt: '' };
+    });
+    if(sec.subsections) sec.subsections.forEach((sub,si)=>sub.items.forEach((item,i)=>{
+      const key = `${sec.id}-sub${si}-${i}`;
+      checks[key] = { label: item, sectionId: sec.id, sectionTitle: `${sec.title} — ${sub.title}`, phaseId: ph.id, phaseTitle: ph.title, done: false, doneBy: '', doneAt: '' };
+    }));
+  }));
+  const run = {
+    id: 'run-' + Date.now(),
+    sopId, sopTitle: sop.title,
+    projectId, projectName: proj ? proj.name : 'General',
+    startedAt: new Date().toISOString().split('T')[0],
+    startedBy: document.getElementById('user-name')?.textContent || '',
+    status: 'In Progress',
+    completedAt: null,
+    checks
+  };
+  if(!db.checklistRuns) db.checklistRuns = [];
+  db.checklistRuns.push(run);
+  markDirty();
+  closeMo('mo-new-checklist');
+  viewChecklistRun(run.id);
+}
+
+function renderChecklistRuns() {
+  const el = document.getElementById('checklist-runs-view');
+  if(!el) return;
+  const runs = db.checklistRuns || [];
+  if(!runs.length) { el.innerHTML = '<div class="empty"><p>No checklist runs yet. Start one from the SOPs tab.</p></div>'; return; }
+  el.innerHTML = runs.slice().reverse().map(run=>{
+    const total = Object.keys(run.checks||{}).length;
+    const done = Object.values(run.checks||{}).filter(c=>c.done).length;
+    const pct = total ? Math.round(done/total*100) : 0;
+    const statusClass = run.status==='Complete' ? 'b-paid' : run.status==='In Progress' ? 'b-invoiced' : 'b-planned';
+    return `<div class="run-card">
+      <div class="run-card-header">
+        <div>
+          <div class="run-card-title">${run.sopTitle}</div>
+          <div class="run-meta">
+            <span>${run.projectName}</span>
+            <span>Started ${run.startedAt}</span>
+            <span>${done} / ${total} items</span>
+            <span class="badge ${statusClass}">${run.status}</span>
+          </div>
+        </div>
+        <div style="display:flex;gap:6px">
+          ${run.status!=='Complete'?`<button class="btn btn-y btn-sm" onclick="viewChecklistRun('${run.id}')">Continue →</button>`:`<button class="btn btn-ghost btn-sm" onclick="viewChecklistRun('${run.id}')">Review</button>`}
+        </div>
+      </div>
+      <div class="run-progress"><div class="run-progress-fill ${pct===100?'complete':''}" style="width:${pct}%"></div></div>
+      <div style="font-size:10.5px;color:var(--gm)">${pct}% complete</div>
+    </div>`;
+  }).join('');
+}
+
+function viewChecklistRun(runId) {
+  const run = (db.checklistRuns||[]).find(r=>r.id===runId);
+  if(!run) return;
+  const el = document.getElementById('checklist-run-view');
+  if(!el) return;
+  const checks = run.checks || {};
+  const total = Object.keys(checks).length;
+  const done = Object.values(checks).filter(c=>c.done).length;
+  const pct = total ? Math.round(done/total*100) : 0;
+  const phases = {};
+  Object.entries(checks).forEach(([key,chk])=>{
+    if(!phases[chk.phaseId]) phases[chk.phaseId] = { title: chk.phaseTitle, sections: {} };
+    if(!phases[chk.phaseId].sections[chk.sectionId]) phases[chk.phaseId].sections[chk.sectionId] = { title: chk.sectionTitle, items: [] };
+    phases[chk.phaseId].sections[chk.sectionId].items.push({key, ...chk});
+  });
+  const phasesHtml = Object.entries(phases).map(([phId,ph])=>`
+    <div class="run-phase-header"><div class="run-phase-title">${ph.title}</div></div>
+    ${Object.entries(ph.sections).map(([secId,sec])=>{
+      const secDone = sec.items.filter(i=>i.done).length;
+      return `<div class="run-section">
+        <div class="run-section-head">
+          <span class="run-section-title">${sec.title}</span>
+          <span style="font-size:10px;color:var(--gm)">${secDone}/${sec.items.length}</span>
+        </div>
+        <div class="run-section-body">
+          ${sec.items.map(item=>`
+            <div class="run-check-row" onclick="toggleCheck('${run.id}','${item.key}')">
+              <div class="run-check-box ${item.done?'checked'}"></div>
+              <div>
+                <div class="run-check-label ${item.done?'checked'}">${item.label}</div>
+                ${item.done&&item.doneBy?`<div style="font-size:9.5px;color:var(--gm)">✓ ${item.doneBy} · ${item.doneAt}</div>`:''}
+              </div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    }).join('')}`
+  ).join('');
+  el.innerHTML = `
+    <div class="sop-back-btn">
+      <button class="btn btn-ghost btn-sm" onclick="goProjects('checklists')">← Back to Checklists</button>
+      ${run.status!=='Complete'&&pct===100?`<button class="btn btn-y btn-sm" style="margin-left:8px" onclick="completeRun('${run.id}')">Mark Complete ✓</button>`:''}
+    </div>
+    <div class="run-summary-bar">
+      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--gm)">Project</div><div style="font-weight:600">${run.projectName}</div></div>
+      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--gm)">SOP</div><div style="font-weight:600">${run.sopTitle}</div></div>
+      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--gm)">Progress</div><div style="font-weight:600">${done} / ${total} (${pct}%)</div></div>
+      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--gm)">Status</div><div style="font-weight:600">${run.status}</div></div>
+    </div>
+    ${phasesHtml}`;
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-checklist-run').classList.add('active');
+}
+
+function toggleCheck(runId, checkKey) {
+  const run = (db.checklistRuns||[]).find(r=>r.id===runId);
+  if(!run || !run.checks[checkKey]) return;
+  const chk = run.checks[checkKey];
+  chk.done = !chk.done;
+  if(chk.done) {
+    chk.doneBy = document.getElementById('user-name')?.textContent || 'Unknown';
+    chk.doneAt = new Date().toISOString().split('T')[0];
+  } else {
+    chk.doneBy = ''; chk.doneAt = '';
+  }
+  markDirty();
+  viewChecklistRun(runId);
+}
+
+function completeRun(runId) {
+  const run = (db.checklistRuns||[]).find(r=>r.id===runId);
+  if(!run) return;
+  run.status = 'Complete';
+  run.completedAt = new Date().toISOString().split('T')[0];
+  markDirty();
+  viewChecklistRun(runId);
+}
+
+// ═══════════════════════════════════════════════════
+// ADMIN FUNCTIONS
+// ═══════════════════════════════════════════════════
+const DEFAULT_PERMISSIONS = {
+  finance: { view: false, add: false, edit: false, delete: false },
+  projects: { view: false, add: false, edit: false, delete: false },
+  admin: { view: false, manage: false }
+};
+
+function renderAdmin() {
+  const el = document.getElementById('admin-users-view');
+  if(!el) return;
+  const users = db.users || [];
+  if(!users.length) {
+    el.innerHTML = `<div class="admin-section">
+      <div class="admin-section-title">Users</div>
+      <div class="empty" style="padding:24px;text-align:center">
+        <p style="margin-bottom:12px">No users added yet. Add users to control who can access each module.</p>
+        <button class="btn btn-y" onclick="openAddUserModal()">+ Add First User</button>
+      </div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = `<div class="admin-section">
+    <div class="admin-section-title">Users (${users.length})</div>
+    ${users.map(u=>renderUserRow(u)).join('')}
+  </div>`;
+}
+
+function renderUserRow(u) {
+  const roleClass = 'role-' + (u.role||'viewer').toLowerCase().replace(/\s/g,'-');
+  const perms = u.permissions || JSON.parse(JSON.stringify(DEFAULT_PERMISSIONS));
+  const allPerms = [
+    { module: 'finance', key: 'view', label: 'Finance: View' },
+    { module: 'finance', key: 'add', label: 'Finance: Add' },
+    { module: 'finance', key: 'edit', label: 'Finance: Edit' },
+    { module: 'finance', key: 'delete', label: 'Finance: Delete' },
+    { module: 'projects', key: 'view', label: 'Projects: View' },
+    { module: 'projects', key: 'add', label: 'Projects: Add' },
+    { module: 'projects', key: 'edit', label: 'Projects: Edit' },
+    { module: 'projects', key: 'delete', label: 'Projects: Delete' },
+    { module: 'admin', key: 'view', label: 'Admin: View' },
+    { module: 'admin', key: 'manage', label: 'Admin: Manage' }
+  ];
+  return `<div class="user-row" id="urow-${u.id}">
+    <div class="user-row-info">
+      <div class="user-row-name">${u.name}</div>
+      <div class="user-row-email">${u.email}</div>
+      <div><span class="user-row-role ${roleClass}">${u.role||'Viewer'}</span></div>
+    </div>
+    <div style="display:flex;gap:6px;align-items:flex-start">
+      <button class="btn btn-ghost btn-sm" onclick="toggleUserExpand('${u.id}')">Permissions ▾</button>
+      <button class="btn btn-del btn-xs" onclick="deleteUser('${u.id}')">Remove</button>
+    </div>
+  </div>
+  <div class="user-expanded" id="uexpand-${u.id}" style="display:none">
+    <div class="user-expanded-title">Module Permissions</div>
+    <div class="perm-grid">
+      ${allPerms.map(p=>{
+        const val = (perms[p.module]||{})[p.key] || false;
+        return `<div class="perm-item">
+          <button class="perm-toggle ${val?'on':'off'}" onclick="togglePerm('${u.id}','${p.module}','${p.key}')"></button>
+          <span>${p.label}</span>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
+
+function toggleUserExpand(userId) {
+  const el = document.getElementById(`uexpand-${userId}`);
+  if(el) el.style.display = el.style.display==='none' ? 'block' : 'none';
+}
+
+function togglePerm(userId, module, key) {
+  const user = (db.users||[]).find(u=>u.id===userId);
+  if(!user) return;
+  if(!user.permissions) user.permissions = JSON.parse(JSON.stringify(DEFAULT_PERMISSIONS));
+  if(!user.permissions[module]) user.permissions[module] = {};
+  user.permissions[module][key] = !user.permissions[module][key];
+  markDirty();
+  renderAdmin();
+  const expEl = document.getElementById(`uexpand-${userId}`);
+  if(expEl) expEl.style.display = 'block';
+}
+
+function deleteUser(userId) {
+  if(!confirm('Remove this user?')) return;
+  db.users = (db.users||[]).filter(u=>u.id!==userId);
+  markDirty();
+  renderAdmin();
+}
+
+function openAddUserModal() {
+  let mo = document.getElementById('mo-add-user');
+  if(!mo) {
+    mo = document.createElement('div');
+    mo.id = 'mo-add-user';
+    mo.className = 'mo';
+    mo.innerHTML = `<div class="modal">
+      <div class="mhead"><span class="mtitle">Add User</span><button class="mclose" onclick="closeMo('mo-add-user')">×</button></div>
+      <div class="mbody">
+        <div class="fg">
+          <div class="fgrp"><label>Full Name</label><input id="au-name" type="text" placeholder="e.g. Alex Jameson"></div>
+          <div class="fgrp"><label>Email</label><input id="au-email" type="email" placeholder="alex@edge.ae"></div>
+          <div class="fgrp full"><label>Role</label>
+            <select id="au-role" style="padding:7px 9px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:12px;width:100%">
+              <option>Admin</option><option>Senior Manager</option><option>Project Lead</option><option>Finance</option><option>Viewer</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="mfoot"><button class="btn btn-ghost btn-sm" onclick="closeMo('mo-add-user')">Cancel</button><button class="btn btn-y btn-sm" onclick="saveNewUser()">Add User</button></div>
+    </div>`;
+    document.body.appendChild(mo);
+  }
+  openMo('mo-add-user');
+}
+
+function saveNewUser() {
+  const name = document.getElementById('au-name')?.value?.trim();
+  const email = document.getElementById('au-email')?.value?.trim();
+  const role = document.getElementById('au-role')?.value;
+  if(!name||!email) { alert('Name and email are required.'); return; }
+  if(!db.users) db.users = [];
+  const perms = JSON.parse(JSON.stringify(DEFAULT_PERMISSIONS));
+  if(role==='Admin') {
+    Object.keys(perms).forEach(m=>Object.keys(perms[m]).forEach(k=>perms[m][k]=true));
+  } else if(role==='Senior Manager'||role==='Project Lead') {
+    perms.finance.view=perms.finance.add=perms.finance.edit=true;
+    perms.projects.view=perms.projects.add=perms.projects.edit=true;
+    perms.admin.view=true;
+  } else if(role==='Finance') {
+    perms.finance.view=perms.finance.add=perms.finance.edit=perms.finance.delete=true;
+    perms.projects.view=true;
+  } else {
+    perms.finance.view=perms.projects.view=true;
+  }
+  db.users.push({ id: 'u-'+Date.now(), name, email, role, permissions: perms });
+  markDirty();
+  closeMo('mo-add-user');
+  renderAdmin();
 }
 
 // ═══════════════════════════════════════════════════
