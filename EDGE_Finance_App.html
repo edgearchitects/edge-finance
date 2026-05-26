@@ -343,7 +343,7 @@ body.home-active .nav .brand{color:#fff}
 .module-card-soon{cursor:default}
 .module-card-soon:hover{border-color:#222;background:#141414}
 .module-card-soon:hover::before{background:transparent}
-.module-card-num{font-family:var(--font-display);font-size:11px;color:#333;letter-spacing:.08em;margin-bottom:20px}
+.module-card-num{font-family:var(--font-display);font-size:32px;color:var(--yellow);letter-spacing:-.03em;line-height:1;margin-bottom:16px}
 .module-card-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:#555;flex-shrink:0}
 .module-card-icon svg{width:28px;height:28px;stroke-width:1.5}
 .module-card:hover .module-card-icon svg{color:var(--yellow)}
@@ -731,18 +731,20 @@ body.home-active .nav .brand{color:#fff}
   </div>
   <div class="module-cards" id="module-cards">
 
-    <!-- 01 Finance -->
-    <div class="module-card" onclick="enterModule('finance')">
+    <!-- 01 Procurement (soon) -->
+    <div class="module-card module-card-soon">
       <div class="module-card-num">01</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <rect x="2" y="14" width="4" height="7" rx=".5"/><rect x="9" y="9" width="4" height="12" rx=".5"/><rect x="16" y="4" width="4" height="17" rx=".5"/>
-          <polyline points="2 8 8 4 14 7 22 2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M3 6h18M3 6l2 14h14L21 6M3 6l2-2h14l2 2" stroke-linejoin="round" stroke-linecap="round"/>
+          <path d="M9 10v4m6-4v4" stroke-linecap="round"/>
+          <circle cx="9" cy="17" r="1" fill="currentColor" stroke="none"/>
+          <circle cx="15" cy="17" r="1" fill="currentColor" stroke="none"/>
         </svg>
       </div>
-      <div class="module-card-name">Finance</div>
-      <div class="module-card-desc">Cashflow · Invoices · Fee Schedules · Variations</div>
-      <div class="module-card-arrow">→</div>
+      <div class="module-card-name">Procurement <span class="module-soon-tag">Soon</span></div>
+      <div class="module-card-desc">Business Dev · CRM · EOI / NDA / RFQ · Bidding & Proposals · Sub-Consultant Portal</div>
+      <div class="module-card-arrow">—</div>
     </div>
 
     <!-- 02 Projects -->
@@ -753,11 +755,11 @@ body.home-active .nav .brand{color:#fff}
           <rect x="2" y="2" width="20" height="20" rx=".5"/>
           <line x1="2" y1="7" x2="22" y2="7"/><line x1="7" y1="2" x2="7" y2="22"/>
           <line x1="12" y1="10" x2="19" y2="10"/><line x1="12" y1="14" x2="19" y2="14"/><line x1="12" y1="18" x2="16" y2="18"/>
-          <circle cx="9.5" cy="14" r="1" fill="currentColor" stroke="none"/>
+          <circle cx="4.5" cy="14" r="1" fill="currentColor" stroke="none"/>
         </svg>
       </div>
       <div class="module-card-name">Projects</div>
-      <div class="module-card-desc">SOPs · Mobilisation · Checklists · Project Controls</div>
+      <div class="module-card-desc">Awarded Projects · Details · Resources · Sub-Consultants · SOPs & Mobilisation</div>
       <div class="module-card-arrow">→</div>
     </div>
 
@@ -769,63 +771,46 @@ body.home-active .nav .brand{color:#fff}
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linejoin="round"/>
           <polyline points="14 2 14 8 20 8" stroke-linejoin="round"/>
           <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>
+          <path d="M8 9h1" stroke-linecap="round"/>
         </svg>
       </div>
       <div class="module-card-name">EDMS <span class="module-soon-tag">Soon</span></div>
-      <div class="module-card-desc">Document Control · Drawing Register · Versioning</div>
+      <div class="module-card-desc">Document Control · Drawing Register · Client, Sub-Consultant & Contractor Access</div>
       <div class="module-card-arrow">—</div>
     </div>
 
-    <!-- 04 EDGE PM (soon) -->
-    <div class="module-card module-card-soon">
+    <!-- 04 Finance -->
+    <div class="module-card" onclick="enterModule('finance')">
       <div class="module-card-num">04</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <rect x="3" y="3" width="18" height="18" rx=".5"/>
-          <line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/>
-          <line x1="9" y1="9" x2="9" y2="21"/><line x1="15" y1="9" x2="15" y2="21"/>
-          <rect x="6" y="5" width="3" height="2" rx=".3" fill="currentColor" stroke="none"/>
-          <rect x="12" y="5" width="3" height="2" rx=".3" fill="currentColor" stroke="none"/>
+          <rect x="2" y="14" width="4" height="7" rx=".5"/><rect x="9" y="9" width="4" height="12" rx=".5"/><rect x="16" y="4" width="4" height="17" rx=".5"/>
+          <polyline points="2 8 8 4 14 7 22 2" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
-      <div class="module-card-name">EDGE PM <span class="module-soon-tag">Soon</span></div>
-      <div class="module-card-desc">Project Setup · Registers · Programme · Client Access</div>
-      <div class="module-card-arrow">—</div>
+      <div class="module-card-name">Finance</div>
+      <div class="module-card-desc">Project Finances · Invoices · Cashflow · Payments & Sub-Consultant Fees</div>
+      <div class="module-card-arrow">→</div>
     </div>
 
-    <!-- 05 Procurement (soon) -->
+    <!-- 05 Quality (soon) -->
     <div class="module-card module-card-soon">
       <div class="module-card-num">05</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke-linejoin="round"/>
-          <rect x="9" y="3" width="6" height="4" rx="1" stroke-linejoin="round"/>
-          <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
-        </svg>
-      </div>
-      <div class="module-card-name">Procurement <span class="module-soon-tag">Soon</span></div>
-      <div class="module-card-desc">Suppliers · Purchase Orders · Consultant Agreements</div>
-      <div class="module-card-arrow">—</div>
-    </div>
-
-    <!-- 06 Quality (soon) -->
-    <div class="module-card module-card-soon">
-      <div class="module-card-num">06</div>
-      <div class="module-card-icon">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2l2.4 4.8 5.3.8-3.85 3.75.9 5.3L12 14l-4.75 2.65.9-5.3L4.3 7.6l5.3-.8z" stroke-linejoin="round"/>
-          <circle cx="12" cy="12" r="3"/>
-          <polyline points="9 12 11 14 15 10" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="12" cy="11" r="2.5"/>
+          <polyline points="10 11 11.2 12.2 14 9.5" stroke-linecap="round" stroke-linejoin="round"/>
         </svg>
       </div>
       <div class="module-card-name">Quality <span class="module-soon-tag">Soon</span></div>
-      <div class="module-card-desc">ISO Procedures · Audit Logs · Document Control</div>
+      <div class="module-card-desc">ISO Procedures · QA/QC · Audit Logs · Compliance Registers</div>
       <div class="module-card-arrow">—</div>
     </div>
 
-    <!-- 07 Admin -->
+    <!-- 06 Admin -->
     <div class="module-card" onclick="enterModule('admin')">
-      <div class="module-card-num">07</div>
+      <div class="module-card-num">06</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="8" r="3"/>
@@ -836,8 +821,8 @@ body.home-active .nav .brand{color:#fff}
           <path d="M3 18v-.5a4.5 4.5 0 0 1 3-4.24"/>
         </svg>
       </div>
-      <div class="module-card-name">Admin</div>
-      <div class="module-card-desc">Users · Access Rights · Module Permissions</div>
+      <div class="module-card-name">Administration</div>
+      <div class="module-card-desc">Users · Access Rights · Module Permissions · System Settings</div>
       <div class="module-card-arrow">→</div>
     </div>
 
