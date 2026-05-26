@@ -2119,9 +2119,9 @@ function viewChecklistRun(runId) {
         <div class="run-section-body">
           ${sec.items.map(item=>`
             <div class="run-check-row" onclick="toggleCheck('${run.id}','${item.key}')">
-              <div class="run-check-box ${item.done?'checked'}"></div>
+              <div class="run-check-box ${item.done?'checked':''}"></div>
               <div>
-                <div class="run-check-label ${item.done?'checked'}">${item.label}</div>
+                <div class="run-check-label ${item.done?'checked':''}">${item.label}</div>
                 ${item.done&&item.doneBy?`<div style="font-size:9.5px;color:var(--gm)">✓ ${item.doneBy} · ${item.doneAt}</div>`:''}
               </div>
             </div>`).join('')}
