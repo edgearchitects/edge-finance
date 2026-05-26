@@ -1102,6 +1102,72 @@ body.home-active .nav .brand{color:#fff}
 
 <!-- CRM MODALS -->
 
+<!-- SharePoint Import Modal -->
+<div class="mo" id="mo-sp-import">
+  <div class="modal" style="max-width:640px">
+    <div class="mhead">
+      <span class="mtitle" id="mo-sp-import-title">Import from SharePoint</span>
+      <button class="mclose" onclick="closeMo('mo-sp-import')">×</button>
+    </div>
+    <div class="mbody">
+
+      <!-- Step 1: Source -->
+      <div id="sp-step-1">
+        <div style="font-size:11px;color:var(--gm);margin-bottom:16px;line-height:1.6">
+          Enter the SharePoint site URL and list name for your Teams tab. You can find the site URL in your browser address bar when you open the Teams tab.
+        </div>
+        <div class="fg">
+          <div class="fgrp full">
+            <label>SharePoint Site URL</label>
+            <input id="sp-site-url" type="text" placeholder="https://yourcompany.sharepoint.com/sites/SiteName" style="font-size:11px">
+            <div style="font-size:10px;color:var(--gm);margin-top:4px">Everything up to and including the site name — no trailing slash.</div>
+          </div>
+          <div class="fgrp full">
+            <label>List Name (as shown in SharePoint)</label>
+            <input id="sp-list-name" type="text" placeholder="e.g. Contacts, Accounts, Client List">
+          </div>
+        </div>
+        <div id="sp-step1-err" style="color:var(--red);font-size:11px;margin-top:8px;display:none"></div>
+      </div>
+
+      <!-- Step 2: Column mapping -->
+      <div id="sp-step-2" style="display:none">
+        <div style="font-size:11px;font-weight:600;margin-bottom:4px">Map SharePoint columns → CRM fields</div>
+        <div style="font-size:10px;color:var(--gm);margin-bottom:14px">Auto-matched where possible. Adjust any that are wrong, skip columns you don't need.</div>
+        <div id="sp-mapping-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px;max-height:320px;overflow-y:auto"></div>
+        <div style="background:var(--offwhite);border:1px solid var(--gl);border-radius:var(--r);padding:10px 12px;font-size:10px;color:var(--gm)">
+          <strong style="color:var(--black);font-size:10px">Preview:</strong> <span id="sp-preview-count">—</span> rows found in list.
+          <div id="sp-preview-sample" style="margin-top:6px;font-size:10px;color:var(--gd)"></div>
+        </div>
+        <div style="margin-top:12px">
+          <label style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm)">Import mode</label>
+          <div style="display:flex;gap:12px;margin-top:6px">
+            <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer">
+              <input type="radio" name="sp-import-mode" value="merge" checked> Merge (keep existing, add new)
+            </label>
+            <label style="font-size:12px;display:flex;align-items:center;gap:6px;cursor:pointer">
+              <input type="radio" name="sp-import-mode" value="replace"> Replace all existing
+            </label>
+          </div>
+        </div>
+        <div id="sp-step2-err" style="color:var(--red);font-size:11px;margin-top:8px;display:none"></div>
+      </div>
+
+      <!-- Step 3: Done -->
+      <div id="sp-step-3" style="display:none;text-align:center;padding:24px 0">
+        <div style="font-size:32px;margin-bottom:12px">✓</div>
+        <div style="font-size:14px;font-weight:600;margin-bottom:6px" id="sp-done-msg">Import complete</div>
+        <div style="font-size:11px;color:var(--gm)" id="sp-done-sub"></div>
+      </div>
+
+    </div>
+    <div class="mfoot" id="sp-import-foot">
+      <button class="btn btn-ghost" onclick="closeMo('mo-sp-import')">Cancel</button>
+      <button class="btn btn-y" id="sp-primary-btn" onclick="spImportNext()">Fetch Columns →</button>
+    </div>
+  </div>
+</div>
+
 <!-- Opportunity Modal -->
 <div class="mo" id="mo-opp">
   <div class="modal" style="max-width:560px">
@@ -4307,6 +4373,7 @@ function renderCrmAccounts() {
   el.innerHTML = `
   <div class="crm-toolbar">
     <input class="crm-search" placeholder="Search accounts…" value="${crmAccSearch}" oninput="crmAccSearch=this.value;renderCrmAccounts()">
+    <button class="btn btn-ghost btn-sm" onclick="openSpImportModal('accounts')" title="Import from SharePoint list">⬇ Import from SharePoint</button>
   </div>
   ${accs.length ? `<table class="crm-table"><thead><tr>
     <th>Company</th><th>Type</th><th>Sector</th><th>HQ</th><th>Owner</th><th>Rel.</th><th></th>
@@ -4335,6 +4402,7 @@ function renderCrmContacts() {
   el.innerHTML = `
   <div class="crm-toolbar">
     <input class="crm-search" placeholder="Search contacts…" value="${crmConSearch}" oninput="crmConSearch=this.value;renderCrmContacts()">
+    <button class="btn btn-ghost btn-sm" onclick="openSpImportModal('contacts')" title="Import from SharePoint list">⬇ Import from SharePoint</button>
   </div>
   ${cons.length ? `<table class="crm-table"><thead><tr>
     <th>Name</th><th>Account</th><th>Role</th><th>Influence</th><th>Contact</th><th></th>
@@ -4663,6 +4731,315 @@ function deleteCrmItem(collection, id) {
   else if(collection==='contacts') renderCrmContacts();
   else if(collection==='tasks') renderCrmTasks();
   else if(collection==='opportunities') renderCrmPipeline();
+}
+
+// ═══════════════════════════════════════════════════
+// SHAREPOINT CRM IMPORT
+// ═══════════════════════════════════════════════════
+
+let spImportTarget = 'accounts'; // 'accounts' | 'contacts'
+let spImportStep = 1;
+let spImportItems = [];   // raw rows fetched from SP
+let spImportSiteId = null;
+
+// CRM field definitions for mapping UI
+const SP_ACCOUNT_FIELDS = [
+  { key:'name',    label:'Company Name *', required:true },
+  { key:'type',    label:'Account Type' },
+  { key:'sector',  label:'Sector / Industry' },
+  { key:'city',    label:'City' },
+  { key:'country', label:'Country' },
+  { key:'owner',   label:'Relationship Owner' },
+  { key:'rel',     label:'Relationship Score (1–5)' },
+  { key:'notes',   label:'Notes' }
+];
+const SP_CONTACT_FIELDS = [
+  { key:'fullname', label:'Full Name (if single column)' },
+  { key:'first',    label:'First Name' },
+  { key:'last',     label:'Last Name' },
+  { key:'account',  label:'Company / Account Name' },
+  { key:'title',    label:'Job Title' },
+  { key:'email',    label:'Email' },
+  { key:'mobile',   label:'Mobile / Phone' },
+  { key:'influence',label:'Influence Type' },
+  { key:'notes',    label:'Notes' }
+];
+
+// Auto-match heuristics: SP column name → CRM field key
+const SP_ACC_HINTS = {
+  name:    ['company','account','organisation','organization','name','client','companyname','accountname'],
+  type:    ['type','accounttype','category','clienttype','kind'],
+  sector:  ['sector','industry','vertical','market','field'],
+  city:    ['city','town','location','hq'],
+  country: ['country','nation','region'],
+  owner:   ['owner','bdowner','responsible','manager','assignedto','assignee','account owner'],
+  rel:     ['relationship','relscore','score','rating','rel'],
+  notes:   ['notes','comments','description','remarks','background']
+};
+const SP_CON_HINTS = {
+  fullname: ['fullname','full name','name'],
+  first:    ['firstname','first name','first','given','givenname'],
+  last:     ['lastname','last name','last','surname','familyname','family name'],
+  account:  ['company','account','organisation','organization','employer','client'],
+  title:    ['title','jobtitle','job title','role','position','designation'],
+  email:    ['email','emailaddress','e-mail','mail'],
+  mobile:   ['mobile','phone','tel','telephone','cell','mobilephone','work phone'],
+  influence:['influence','influencetype','role type','type','stakeholder'],
+  notes:    ['notes','comments','description','remarks','background']
+};
+
+function spNorm(s) { return (s||'').toLowerCase().replace(/[\s_\-]/g,''); }
+
+function spAutoMatch(columns, hints) {
+  const map = {};
+  columns.forEach(col => {
+    const n = spNorm(col);
+    Object.entries(hints).forEach(([field, patterns]) => {
+      if(!map[field] && patterns.some(p => n === spNorm(p) || n.includes(spNorm(p)))) {
+        map[field] = col;
+      }
+    });
+  });
+  return map;
+}
+
+function openSpImportModal(target) {
+  if(!msalInstance || !currentAccount) {
+    alert('You must be signed in to import from SharePoint.');
+    return;
+  }
+  spImportTarget = target;
+  spImportStep = 1;
+  spImportItems = [];
+  spImportSiteId = null;
+  document.getElementById('mo-sp-import-title').textContent =
+    target === 'accounts' ? 'Import Accounts from SharePoint' : 'Import Contacts from SharePoint';
+  // Pre-fill site URL from config
+  document.getElementById('sp-site-url').value = CONFIG.siteUrl;
+  document.getElementById('sp-list-name').value = '';
+  document.getElementById('sp-step-1').style.display = '';
+  document.getElementById('sp-step-2').style.display = 'none';
+  document.getElementById('sp-step-3').style.display = 'none';
+  document.getElementById('sp-step1-err').style.display = 'none';
+  document.getElementById('sp-primary-btn').textContent = 'Fetch Columns →';
+  document.getElementById('sp-primary-btn').disabled = false;
+  openMo('mo-sp-import');
+}
+
+async function spImportNext() {
+  if(spImportStep === 1) await spFetchColumns();
+  else if(spImportStep === 2) await spRunImport();
+  else closeMo('mo-sp-import');
+}
+
+async function spFetchColumns() {
+  const siteUrl = document.getElementById('sp-site-url').value.trim();
+  const listName = document.getElementById('sp-list-name').value.trim();
+  const errEl = document.getElementById('sp-step1-err');
+  errEl.style.display = 'none';
+  if(!siteUrl || !listName) {
+    errEl.textContent = 'Please enter both the site URL and list name.';
+    errEl.style.display = '';
+    return;
+  }
+  const btn = document.getElementById('sp-primary-btn');
+  btn.textContent = 'Loading…'; btn.disabled = true;
+  try {
+    // Resolve the site ID for this URL (may differ from the Finance site)
+    const urlObj = new URL(siteUrl);
+    const host = urlObj.hostname;
+    const path = urlObj.pathname.replace(/\/$/, '');
+    const siteData = await graphRequest(`/sites/${host}:${path}`);
+    spImportSiteId = siteData.id;
+
+    // Fetch up to 500 rows from the list
+    const listsData = await graphRequest(`/sites/${spImportSiteId}/lists?$select=id,name,displayName`);
+    const match = listsData.value.find(l =>
+      l.name.toLowerCase() === listName.toLowerCase() ||
+      l.displayName.toLowerCase() === listName.toLowerCase()
+    );
+    if(!match) {
+      const available = listsData.value
+        .filter(l => !['appdata','appfiles','composed looks','master page gallery','site assets','style library','theme gallery','user information list','web part gallery'].includes(l.name.toLowerCase()))
+        .map(l => l.displayName || l.name).join(', ');
+      throw new Error(`List "${listName}" not found.\n\nAvailable lists: ${available}`);
+    }
+
+    const data = await graphRequest(
+      `/sites/${spImportSiteId}/lists/${match.id}/items?$expand=fields&$select=fields&$top=500`
+    );
+    spImportItems = data.value.map(i => i.fields).filter(Boolean);
+
+    if(!spImportItems.length) throw new Error('The list appears to be empty.');
+
+    // Get column names (exclude SharePoint system fields)
+    const systemCols = new Set(['id','ID','@odata.etag','ContentType','Modified','Created','AuthorLookupId','EditorLookupId','_UIVersionString','Attachments','Edit','LinkTitleNoMenu','LinkTitle','DocIcon','ItemChildCount','FolderChildCount','AppAuthorLookupId','AppEditorLookupId','ComplianceAssetId','_ComplianceFlags','_ComplianceTag','_ComplianceTagWrittenTime','_ComplianceTagUserId','Title0']);
+    const allKeys = new Set();
+    spImportItems.forEach(row => Object.keys(row).forEach(k => { if(!systemCols.has(k) && !k.startsWith('_') && !k.endsWith('LookupId') && !k.endsWith('StringId')) allKeys.add(k); }));
+    const columns = [...allKeys];
+
+    // Auto-match
+    const hints = spImportTarget === 'accounts' ? SP_ACC_HINTS : SP_CON_HINTS;
+    const autoMap = spAutoMatch(columns, hints);
+    const fields = spImportTarget === 'accounts' ? SP_ACCOUNT_FIELDS : SP_CONTACT_FIELDS;
+
+    // Build mapping UI
+    const grid = document.getElementById('sp-mapping-grid');
+    grid.innerHTML = fields.map(f => `
+      <div style="display:flex;flex-direction:column;gap:3px">
+        <label style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm)">${f.label}</label>
+        <select id="spmap-${f.key}" style="font-size:11px;border:1px solid var(--gl);border-radius:var(--r);padding:5px 7px;background:var(--offwhite);font-family:var(--font)">
+          <option value="">— skip —</option>
+          ${columns.map(c => `<option value="${c}" ${autoMap[f.key]===c?'selected':''}>${c}</option>`).join('')}
+        </select>
+      </div>`).join('');
+
+    // Preview
+    document.getElementById('sp-preview-count').textContent = `${spImportItems.length} row${spImportItems.length!==1?'s':''}`;
+    const sample = spImportItems.slice(0,2);
+    document.getElementById('sp-preview-sample').innerHTML = sample.map(row => {
+      const pairs = Object.entries(row).filter(([k])=>![...systemCols].includes(k)&&!k.startsWith('_')).slice(0,4);
+      return `<div style="margin-bottom:4px;padding:4px 6px;background:#fff;border:1px solid var(--gl);border-radius:2px">${pairs.map(([k,v])=>`<span style="margin-right:8px"><strong>${k}:</strong> ${v||'—'}</span>`).join('')}</div>`;
+    }).join('');
+
+    // Go to step 2
+    spImportStep = 2;
+    document.getElementById('sp-step-1').style.display = 'none';
+    document.getElementById('sp-step-2').style.display = '';
+    btn.textContent = 'Import →';
+    btn.disabled = false;
+
+  } catch(e) {
+    errEl.textContent = e.message || 'Failed to fetch list. Check the site URL and list name.';
+    errEl.style.display = '';
+    btn.textContent = 'Fetch Columns →';
+    btn.disabled = false;
+  }
+}
+
+async function spRunImport() {
+  const btn = document.getElementById('sp-primary-btn');
+  const errEl = document.getElementById('sp-step2-err');
+  errEl.style.display = 'none';
+  btn.textContent = 'Importing…'; btn.disabled = true;
+
+  const mode = document.querySelector('input[name="sp-import-mode"]:checked')?.value || 'merge';
+  ensureCrm();
+
+  try {
+    if(spImportTarget === 'accounts') {
+      const getCol = key => {
+        const sel = document.getElementById(`spmap-${key}`);
+        return sel ? sel.value : '';
+      };
+      const imported = spImportItems.map(row => {
+        const name = row[getCol('name')]?.toString().trim();
+        if(!name) return null;
+        return {
+          id: uid(),
+          name,
+          type:    row[getCol('type')]?.toString().trim() || '',
+          sector:  row[getCol('sector')]?.toString().trim() || '',
+          city:    row[getCol('city')]?.toString().trim() || '',
+          country: row[getCol('country')]?.toString().trim() || '',
+          owner:   row[getCol('owner')]?.toString().trim() || '',
+          rel:     Math.min(5, Math.max(1, parseInt(row[getCol('rel')]) || 3)),
+          notes:   row[getCol('notes')]?.toString().trim() || '',
+          createdAt: new Date().toISOString().slice(0,10)
+        };
+      }).filter(Boolean);
+
+      if(mode === 'replace') {
+        db.crm.accounts = imported;
+      } else {
+        // Merge: skip if name already exists
+        const existing = new Set(db.crm.accounts.map(a => a.name.toLowerCase()));
+        const newOnes = imported.filter(a => !existing.has(a.name.toLowerCase()));
+        db.crm.accounts.push(...newOnes);
+        const skipped = imported.length - newOnes.length;
+        document.getElementById('sp-done-sub').textContent =
+          `${newOnes.length} added · ${skipped} skipped (already existed)`;
+      }
+      document.getElementById('sp-done-msg').textContent = `${mode==='replace'?imported.length+' accounts imported':''} ✓`;
+      if(mode === 'replace') document.getElementById('sp-done-sub').textContent = `${imported.length} accounts imported.`;
+
+    } else {
+      // Contacts
+      const getCol = key => {
+        const sel = document.getElementById(`spmap-${key}`);
+        return sel ? sel.value : '';
+      };
+      const imported = spImportItems.map(row => {
+        let first = row[getCol('first')]?.toString().trim() || '';
+        let last  = row[getCol('last')]?.toString().trim() || '';
+        if(!first && !last) {
+          const full = row[getCol('fullname')]?.toString().trim() || '';
+          if(!full) return null;
+          const parts = full.split(' ');
+          first = parts[0] || full;
+          last  = parts.slice(1).join(' ') || '';
+        }
+        if(!first) return null;
+
+        // Match account by company name
+        const companyName = row[getCol('account')]?.toString().trim() || '';
+        const matchedAcc = db.crm.accounts.find(a =>
+          a.name.toLowerCase() === companyName.toLowerCase()
+        );
+
+        const rawInfluence = (row[getCol('influence')]||'').toString().toLowerCase();
+        let influence = '';
+        if(rawInfluence.includes('decision') || rawInfluence === 'dm') influence = 'dm';
+        else if(rawInfluence.includes('champion') || rawInfluence === 'champ') influence = 'champ';
+        else if(rawInfluence.includes('influenc') || rawInfluence === 'inf') influence = 'inf';
+
+        return {
+          id: uid(),
+          first, last,
+          accountId: matchedAcc ? matchedAcc.id : '',
+          title:     row[getCol('title')]?.toString().trim() || '',
+          email:     row[getCol('email')]?.toString().trim() || '',
+          mobile:    row[getCol('mobile')]?.toString().trim() || '',
+          influence,
+          notes:     row[getCol('notes')]?.toString().trim() || '',
+          createdAt: new Date().toISOString().slice(0,10)
+        };
+      }).filter(Boolean);
+
+      if(mode === 'replace') {
+        db.crm.contacts = imported;
+        document.getElementById('sp-done-msg').textContent = `${imported.length} contacts imported ✓`;
+        document.getElementById('sp-done-sub').textContent = `${imported.filter(c=>c.accountId).length} matched to existing accounts.`;
+      } else {
+        const existing = new Set(db.crm.contacts.map(c=>(c.first+c.last).toLowerCase()));
+        const newOnes = imported.filter(c=>!existing.has((c.first+c.last).toLowerCase()));
+        db.crm.contacts.push(...newOnes);
+        const skipped = imported.length - newOnes.length;
+        document.getElementById('sp-done-msg').textContent = `${newOnes.length} contacts added ✓`;
+        document.getElementById('sp-done-sub').textContent =
+          `${newOnes.filter(c=>c.accountId).length} matched to accounts · ${skipped} skipped (already existed)`;
+      }
+    }
+
+    markDirty(); saveDB();
+
+    // Step 3
+    spImportStep = 3;
+    document.getElementById('sp-step-2').style.display = 'none';
+    document.getElementById('sp-step-3').style.display = '';
+    btn.textContent = 'Done';
+    btn.disabled = false;
+
+    // Refresh the view in background
+    if(spImportTarget === 'accounts') renderCrmAccounts();
+    else renderCrmContacts();
+
+  } catch(e) {
+    errEl.textContent = e.message || 'Import failed. Please try again.';
+    errEl.style.display = '';
+    btn.textContent = 'Import →';
+    btn.disabled = false;
+  }
 }
 
 // ═══════════════════════════════════════════════════
