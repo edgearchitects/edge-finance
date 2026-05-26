@@ -354,6 +354,20 @@ body.home-active .nav .brand{color:#fff}
 .module-soon-tag{font-family:var(--font);font-size:8px;font-weight:600;background:#1e1e1e;color:#444;padding:1px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.04em}
 .nav-back{font-family:var(--font);text-transform:none;letter-spacing:0;font-weight:500}
 .nav-module-label{}
+/* SOP LIBRARY HEADER */
+.sop-lib-header{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 0 20px;border-bottom:1px solid var(--gl);margin-bottom:16px}
+.sop-lib-title{font-family:var(--font-display);font-size:16px;text-transform:uppercase;letter-spacing:-.01em;margin-bottom:4px}
+.sop-lib-sub{font-size:11px;color:var(--gm);line-height:1.5}
+.sop-seq-num{font-size:9px;font-family:var(--font-display);letter-spacing:.08em;color:var(--gm);margin-bottom:5px}
+.sop-card-placeholder{opacity:.55;cursor:pointer}
+.sop-card-placeholder:hover{border-color:var(--gl);box-shadow:none;opacity:.7}
+.sop-finance-tag{display:inline-block;margin-left:6px;font-size:9px;font-weight:600;font-family:var(--font);background:var(--blue-bg);color:var(--blue);padding:1px 6px;border-radius:2px;vertical-align:middle;letter-spacing:.02em}
+.run-module-link{font-size:10px!important;padding:3px 8px!important;letter-spacing:.03em}
+/* PROJECT STAGE CHIPS */
+.ps-stage-chip{display:inline-flex;align-items:center;font-size:10.5px;cursor:pointer;padding:5px 9px;border:1px solid var(--gl);border-radius:2px;background:transparent;color:var(--gd);transition:all .12s;user-select:none}
+.ps-stage-chip:hover{border-color:var(--gm)}
+.ps-stage-on{background:var(--black)!important;border-color:var(--black)!important;color:#fff!important}
+.ps-stage-dim{opacity:.45;cursor:not-allowed}
 
 /* SOP LIBRARY */
 .sop-card{background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:20px;margin-bottom:12px;cursor:pointer;transition:all .15s}
@@ -1067,7 +1081,7 @@ const CONFIG = {
 // DATA
 // ═══════════════════════════════════════════════════
 const SK = 'edge_v3';
-let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{}, users:[], checklistRuns:[] };
+let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{}, users:[], checklistRuns:[], projectStages:{} };
 let dbSnapshot = null;   // snapshot of last saved state for dirty detection
 let editState = {};
 let msalInstance = null;
@@ -1804,7 +1818,7 @@ const SOP_LIBRARY = [
               'Create Action Register and Decision Register — agreed actions and key decisions from all meetings',
               'Create Authority Register — required authorities, submission requirements, NOCs, responsible party, target and actual dates',
               'Create Deliverables Register — stage deliverables, discipline, responsible party, format, required and actual issue dates, status and client approval status',
-              'Create Invoice Schedule — triggers, amounts, proposed invoice dates, expected payment dates, sub-consultant payment exposure, reimbursables and risk notes',
+              { label: 'Confirm fee schedule and invoice triggers are entered in the Finance module for this project — verify milestone amounts, trigger events, payment dates and sub-consultant exposure', link: { module: 'finance', sub: 'fees', label: '→ Finance: Fee Schedule' } },
               'Issue register access invitations to all project team members'
             ]
           }
@@ -1909,7 +1923,7 @@ const SOP_LIBRARY = [
         sections: [
           { id: 's7a', num: '14', title: 'Invoice and Payment Controls',
             items: [
-              'Confirm Invoice Schedule is complete and issued to Finance — all triggers, amounts, proposed dates, expected payment dates, sub-consultant exposure, retention and reimbursables',
+              { label: 'Confirm invoice schedule is complete in the Finance module — verify all triggers, amounts, proposed dates, expected payment dates, sub-consultant exposure, retention and reimbursables', link: { module: 'finance', sub: 'fees', label: '→ Finance: Fee Schedule' } },
               'Confirm exact trigger for each invoice — actively track approval status for all approval-linked invoices and issue formal reminders where required',
               'Confirm sub-consultant payment exposure is managed — back-to-back terms agreed, advance payment requirements identified, deliverable acceptance requirements confirmed',
               'Issue first invoice if a mobilisation or advance payment trigger applies',
@@ -1930,7 +1944,7 @@ const SOP_LIBRARY = [
               'Confirm client kick off has been completed and MoM issued',
               'Confirm meeting rhythm is agreed and recurring calendar invitations are issued',
               'Confirm Deliverables Register, Risk Register, Authority Register and Change Control Register are live',
-              'Confirm Invoice Schedule is issued to Finance and first invoice trigger is identified',
+              { label: 'Confirm invoice schedule is issued to Finance and first invoice trigger is identified', link: { module: 'finance', sub: 'fees', label: '→ Finance' } },
               'Confirm programme baseline is prepared or formally requested',
               'Confirm document control protocol is active and change control is activated'
             ]
@@ -1944,6 +1958,93 @@ const SOP_LIBRARY = [
         ]
       }
     ]
+  },
+
+  // ─── PLACEHOLDER SOPs — checklists in development ───
+
+  {
+    id: 'sop-feasibility',
+    title: 'Feasibility Study',
+    version: '1.0 Draft',
+    status: 'In Development',
+    placeholder: true,
+    owner: 'EDGE Architects',
+    appliesTo: 'Projects requiring site or planning feasibility assessment',
+    primaryUsers: 'Project Lead, Senior Manager',
+    description: 'Site investigation, planning viability, initial cost assessment, client briefing scope confirmation and go/no-go recommendation to client.',
+    phases: []
+  },
+  {
+    id: 'sop-preconcept',
+    title: 'Pre-Concept Design',
+    version: '1.0 Draft',
+    status: 'In Development',
+    placeholder: true,
+    owner: 'EDGE Architects',
+    appliesTo: 'Projects requiring a pre-concept or options study stage',
+    primaryUsers: 'Project Lead, Design Team',
+    description: 'Options study, initial massing and planning strategy, pre-application engagement, client design brief confirmation and stage deliverables definition.',
+    phases: []
+  },
+  {
+    id: 'sop-concept',
+    title: 'Concept Design',
+    version: '1.0 Draft',
+    status: 'In Development',
+    placeholder: true,
+    owner: 'EDGE Architects',
+    appliesTo: 'All architectural projects',
+    primaryUsers: 'Project Lead, Design Team, Sub-Consultants',
+    description: 'Concept design development, authority pre-application strategy, sub-consultant coordination, cost plan review and formal client sign-off.',
+    phases: []
+  },
+  {
+    id: 'sop-spatial',
+    title: 'Spatial Coordination',
+    version: '1.0 Draft',
+    status: 'In Development',
+    placeholder: true,
+    owner: 'EDGE Architects',
+    appliesTo: 'Projects with multi-discipline coordination requirements',
+    primaryUsers: 'Project Lead, BIM Coordinator, Sub-Consultants',
+    description: 'Developed design, multi-discipline coordination, BIM clash detection and management, and authority submission preparation.',
+    phases: []
+  },
+  {
+    id: 'sop-technical',
+    title: 'Technical Design',
+    version: '1.0 Draft',
+    status: 'In Development',
+    placeholder: true,
+    owner: 'EDGE Architects',
+    appliesTo: 'All architectural projects',
+    primaryUsers: 'Project Lead, Technical Team, Sub-Consultants',
+    description: 'Technical documentation, specification preparation, authority approvals, contractor engagement and full construction documentation.',
+    phases: []
+  },
+  {
+    id: 'sop-tendering',
+    title: 'Tendering',
+    version: '1.0 Draft',
+    status: 'In Development',
+    placeholder: true,
+    owner: 'EDGE Architects',
+    appliesTo: 'Projects with a tender or procurement stage',
+    primaryUsers: 'Project Lead, Contract Administrator',
+    description: 'Tender documentation, contractor shortlisting, RFT issue, tender evaluation, commercial negotiation and contract award.',
+    phases: []
+  },
+  {
+    id: 'sop-ifc',
+    title: 'Issued for Construction',
+    version: '1.0 Draft',
+    status: 'In Development',
+    placeholder: true,
+    owner: 'EDGE Architects',
+    appliesTo: 'All projects proceeding to construction',
+    primaryUsers: 'Project Lead, Contract Administrator, Site Team',
+    description: 'IFC drawing issue, shop drawing review, site administration, RFI management, variation assessment, progress claims and practical completion.',
+    phases: []
   }
 ];
 
@@ -1953,7 +2054,30 @@ const SOP_LIBRARY = [
 function renderSopLibrary() {
   const el = document.getElementById('sop-library-view');
   if(!el) return;
-  el.innerHTML = SOP_LIBRARY.map(sop=>{
+  const headerHtml = `
+    <div class="sop-lib-header">
+      <div>
+        <div class="sop-lib-title">Project Lifecycle</div>
+        <div class="sop-lib-sub">SOPs execute in sequence. Configure which stages apply per project to filter checklist options.</div>
+      </div>
+      <button class="btn btn-ghost btn-sm" onclick="openProjectStagesModal()">Configure Project Stages</button>
+    </div>`;
+  const sopCards = SOP_LIBRARY.map((sop,idx)=>{
+    const seqNum = String(idx+1).padStart(2,'0');
+    if(sop.placeholder) {
+      return `<div class="sop-card sop-card-placeholder" onclick="viewSop('${sop.id}')">
+        <div class="sop-card-header">
+          <div style="flex:1">
+            <div class="sop-seq-num">${seqNum}</div>
+            <div class="sop-card-title" style="color:var(--gm)">${sop.title}</div>
+            <div class="sop-card-meta"><span style="color:var(--gl)">${sop.description}</span></div>
+          </div>
+          <div class="sop-actions">
+            <span class="badge" style="background:var(--gl);color:var(--gm)">In Development</span>
+          </div>
+        </div>
+      </div>`;
+    }
     let total = 0;
     sop.phases.forEach(ph=>ph.sections.forEach(sec=>{
       if(sec.items) total += sec.items.length;
@@ -1963,7 +2087,8 @@ function renderSopLibrary() {
     const activeRuns = runs.filter(r=>r.status!=='Complete').length;
     return `<div class="sop-card" onclick="viewSop('${sop.id}')">
       <div class="sop-card-header">
-        <div>
+        <div style="flex:1">
+          <div class="sop-seq-num">${seqNum}</div>
           <div class="sop-card-title">${sop.title}</div>
           <div class="sop-card-meta">
             <span>Version ${sop.version}</span>
@@ -1979,7 +2104,8 @@ function renderSopLibrary() {
         </div>
       </div>
     </div>`;
-  }).join('') || '<div class="empty"><p>No SOPs available.</p></div>';
+  }).join('');
+  el.innerHTML = headerHtml + (sopCards || '<div class="empty"><p>No SOPs available.</p></div>');
 }
 
 function viewSop(sopId) {
@@ -1987,17 +2113,44 @@ function viewSop(sopId) {
   if(!sop) return;
   const el = document.getElementById('sop-detail-view');
   if(!el) return;
+
+  if(sop.placeholder) {
+    el.innerHTML = `<div class="sop-doc">
+      <div class="sop-back-btn"><button class="btn btn-ghost btn-sm" onclick="goProjects('sops')">← Back to SOPs</button></div>
+      <div class="sop-doc-header">
+        <div class="sop-doc-title">${sop.title}</div>
+        <div class="sop-doc-meta">
+          <strong>Status</strong><span>In Development</span>
+          <strong>Applies To</strong><span>${sop.appliesTo}</span>
+          <strong>Primary Users</strong><span>${sop.primaryUsers}</span>
+        </div>
+      </div>
+      <div style="padding:48px 0;text-align:center;color:var(--gm);border-top:1px solid var(--gl)">
+        <div style="font-size:28px;margin-bottom:14px;opacity:.4">⚙</div>
+        <div style="font-family:var(--font-display);font-size:15px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">SOP In Development</div>
+        <div style="font-size:12px;max-width:480px;margin:0 auto;line-height:1.7;color:var(--gm)">${sop.description}</div>
+        <div style="font-size:11px;margin-top:20px;color:var(--gl)">This checklist will be available in a future release.</div>
+      </div>
+    </div>`;
+    document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+    document.getElementById('sec-sop-detail').classList.add('active');
+    return;
+  }
+
+  const sopItemLabel = i => typeof i === 'string' ? i : i.label;
+  const sopItemLink = i => typeof i === 'object' && i.link ? `<span class="sop-finance-tag">${i.link.label}</span>` : '';
+
   const sectionsHtml = sop.phases.map(ph=>`
     <div class="sop-phase-header"><div class="sop-phase-title">${ph.title}</div></div>
     ${ph.sections.map(sec=>{
       let bodyHtml = '';
       if(sec.body) bodyHtml += `<p>${sec.body}</p>`;
-      if(sec.items && sec.items.length) bodyHtml += `<ul>${sec.items.map(i=>`<li>${i}</li>`).join('')}</ul>`;
+      if(sec.items && sec.items.length) bodyHtml += `<ul>${sec.items.map(i=>`<li>${sopItemLabel(i)}${sopItemLink(i)}</li>`).join('')}</ul>`;
       if(sec.note) bodyHtml += `<p style="font-style:italic;color:var(--gm);margin-top:8px">${sec.note}</p>`;
       if(sec.subsections) bodyHtml += sec.subsections.map(sub=>`
         <div class="sop-subsection">
           <div class="sop-subsection-title">${sub.title}</div>
-          <ul>${(sub.items||[]).map(i=>`<li>${i}</li>`).join('')}</ul>
+          <ul>${(sub.items||[]).map(i=>`<li>${sopItemLabel(i)}${sopItemLink(i)}</li>`).join('')}</ul>
         </div>`).join('');
       if(sec.roles) bodyHtml += `<table class="sop-roles-table">
         <thead><tr><th>Register / Role</th><th>Purpose / Responsibility</th></tr></thead>
@@ -2050,13 +2203,68 @@ function viewSop(sopId) {
   document.getElementById('sec-sop-detail').classList.add('active');
 }
 
+function openProjectStagesModal() {
+  if(!db.projectStages) db.projectStages = {};
+  const projs = db.projects || [];
+  const stageOpts = SOP_LIBRARY.map((s,i)=>({ id: s.id, title: s.title, num: String(i+1).padStart(2,'0'), placeholder: s.placeholder }));
+  let mo = document.getElementById('mo-project-stages');
+  if(!mo) {
+    mo = document.createElement('div');
+    mo.id = 'mo-project-stages';
+    mo.className = 'mo';
+    mo.innerHTML = `<div class="modal" style="max-width:640px">
+      <div class="mhead"><span class="mtitle">Configure Project Stages</span><button class="mclose" onclick="closeMo('mo-project-stages')">×</button></div>
+      <div class="mbody" id="ps-body" style="max-height:70vh;overflow-y:auto"></div>
+      <div class="mfoot"><button class="btn btn-ghost btn-sm" onclick="closeMo('mo-project-stages')">Close</button></div>
+    </div>`;
+    document.body.appendChild(mo);
+  }
+  const el = document.getElementById('ps-body');
+  if(!el) { openMo('mo-project-stages'); return; }
+  if(!projs.length) { el.innerHTML = '<div class="empty"><p>No projects found. Add projects in the Finance module first.</p></div>'; openMo('mo-project-stages'); return; }
+  el.innerHTML = `<div style="font-size:11.5px;color:var(--gm);margin-bottom:16px;line-height:1.6">Select which lifecycle stages apply to each project. When configured, only applicable stages appear when starting a checklist run. Leave all unchecked to show all active SOPs.</div>
+    ${projs.map(proj=>{
+      const sel = db.projectStages[proj.id] || [];
+      return `<div style="border:1px solid var(--gl);border-radius:var(--r);padding:14px 16px;margin-bottom:8px">
+        <div style="font-family:var(--font-display);font-size:12px;text-transform:uppercase;letter-spacing:.03em;margin-bottom:10px">${proj.name}</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px">
+          ${stageOpts.map(st=>{
+            const on = sel.includes(st.id);
+            const isDev = !!st.placeholder;
+            return `<label class="ps-stage-chip${on?' ps-stage-on':''}${isDev?' ps-stage-dim':''}" title="${isDev?'In Development':''}">
+              <input type="checkbox" style="display:none" data-proj="${proj.id}" data-sop="${st.id}" ${on?'checked':''} ${isDev?'disabled':''} onchange="toggleProjectStage('${proj.id}','${st.id}',this.checked)">
+              ${st.num} ${st.title}${isDev?' ⚙':''}
+            </label>`;
+          }).join('')}
+        </div>
+      </div>`;
+    }).join('')}`;
+  openMo('mo-project-stages');
+}
+
+function toggleProjectStage(projId, sopId, checked) {
+  if(!db.projectStages) db.projectStages = {};
+  if(!db.projectStages[projId]) db.projectStages[projId] = [];
+  if(checked) { if(!db.projectStages[projId].includes(sopId)) db.projectStages[projId].push(sopId); }
+  else { db.projectStages[projId] = db.projectStages[projId].filter(s=>s!==sopId); }
+  markDirty();
+  openProjectStagesModal();
+}
+
 // ═══════════════════════════════════════════════════
 // CHECKLIST FUNCTIONS
 // ═══════════════════════════════════════════════════
+function nclSopOptions(projId, selSopId) {
+  const activeSops = SOP_LIBRARY.filter(s=>!s.placeholder);
+  const projStages = projId && db.projectStages ? (db.projectStages[projId] || []) : [];
+  const filtered = projId && projStages.length > 0 ? activeSops.filter(s=>projStages.includes(s.id)) : activeSops;
+  return { options: filtered.map(s=>`<option value="${s.id}" ${s.id===selSopId?'selected':''}>${s.title}</option>`).join(''), count: filtered.length, configured: projStages.length > 0 };
+}
+
 function openNewChecklistModal(sopId) {
-  const sops = SOP_LIBRARY;
   const projs = db.projects.filter(p=>p.status!=='Complete');
-  const selSopId = sopId || (sops[0]||{}).id || '';
+  const activeSops = SOP_LIBRARY.filter(s=>!s.placeholder);
+  const selSopId = sopId || (activeSops[0]||{}).id || '';
   let mo = document.getElementById('mo-new-checklist');
   if(!mo) {
     mo = document.createElement('div');
@@ -2069,21 +2277,43 @@ function openNewChecklistModal(sopId) {
     </div>`;
     document.body.appendChild(mo);
   }
+  const selStyle = 'padding:7px 9px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:12px;width:100%';
   document.getElementById('ncl-body').innerHTML = `
     <div class="fgrp" style="margin-bottom:12px">
-      <label>SOP</label>
-      <select id="ncl-sop" style="padding:7px 9px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:12px;width:100%">
-        ${sops.map(s=>`<option value="${s.id}" ${s.id===selSopId?'selected':''}>${s.title}</option>`).join('')}
-      </select>
-    </div>
-    <div class="fgrp">
       <label>Project</label>
-      <select id="ncl-project" style="padding:7px 9px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:12px;width:100%">
+      <select id="ncl-project" style="${selStyle}" onchange="refreshNclSops(this.value,'')">
         <option value="">— General (no specific project) —</option>
         ${projs.map(p=>`<option value="${p.id}">${p.name} [${p.status}]</option>`).join('')}
       </select>
+    </div>
+    <div class="fgrp" id="ncl-sop-wrap">
+      <label>SOP / Stage</label>
+      <select id="ncl-sop" style="${selStyle}">
+        ${nclSopOptions('', selSopId).options}
+      </select>
+      <div id="ncl-stages-note" style="font-size:10.5px;margin-top:5px;display:none"></div>
     </div>`;
   openMo('mo-new-checklist');
+}
+
+function refreshNclSops(projId, preferSopId) {
+  const sel = document.getElementById('ncl-sop');
+  const note = document.getElementById('ncl-stages-note');
+  if(!sel) return;
+  const current = preferSopId || sel.value;
+  const { options, count, configured } = nclSopOptions(projId, current);
+  sel.innerHTML = options;
+  if(note) {
+    if(projId && configured) {
+      note.innerHTML = `${count} stage${count!==1?'s':''} configured for this project. <button class="btn btn-ghost btn-xs" onclick="openProjectStagesModal()">Edit</button>`;
+      note.style.color = 'var(--gm)'; note.style.display = '';
+    } else if(projId && !configured) {
+      note.innerHTML = `No stages configured — showing all SOPs. <button class="btn btn-ghost btn-xs" onclick="openProjectStagesModal()">Configure stages</button>`;
+      note.style.color = 'var(--amber)'; note.style.display = '';
+    } else {
+      note.style.display = 'none';
+    }
+  }
 }
 
 function startChecklist() {
@@ -2093,16 +2323,20 @@ function startChecklist() {
   const sop = SOP_LIBRARY.find(s=>s.id===sopId);
   if(!sop) return;
   const proj = db.projects.find(p=>p.id===projectId);
-  // Build checks map
+  // Build checks map (items may be strings or {label, link} objects)
   const checks = {};
   sop.phases.forEach(ph=>ph.sections.forEach(sec=>{
     if(sec.items) sec.items.forEach((item,i)=>{
       const key = `${sec.id}-${i}`;
-      checks[key] = { label: item, sectionId: sec.id, sectionTitle: sec.title, phaseId: ph.id, phaseTitle: ph.title, done: false, doneBy: '', doneAt: '', comment: '' };
+      const label = typeof item === 'string' ? item : item.label;
+      const link = typeof item === 'object' ? (item.link || null) : null;
+      checks[key] = { label, link, sectionId: sec.id, sectionTitle: sec.title, phaseId: ph.id, phaseTitle: ph.title, done: false, doneBy: '', doneAt: '', comment: '' };
     });
     if(sec.subsections) sec.subsections.forEach((sub,si)=>sub.items.forEach((item,i)=>{
       const key = `${sec.id}-sub${si}-${i}`;
-      checks[key] = { label: item, sectionId: sec.id, sectionTitle: `${sec.title} — ${sub.title}`, phaseId: ph.id, phaseTitle: ph.title, done: false, doneBy: '', doneAt: '', comment: '' };
+      const label = typeof item === 'string' ? item : item.label;
+      const link = typeof item === 'object' ? (item.link || null) : null;
+      checks[key] = { label, link, sectionId: sec.id, sectionTitle: `${sec.title} — ${sub.title}`, phaseId: ph.id, phaseTitle: ph.title, done: false, doneBy: '', doneAt: '', comment: '' };
     }));
   }));
   const run = {
@@ -2215,6 +2449,7 @@ function viewChecklistRun(runId) {
               <div class="run-check-box ${chk.done?'checked':''}" onclick="toggleCheck('${run.id}','${key}')"></div>
               <div style="flex:1;min-width:0">
                 <div class="run-check-label ${chk.done?'checked':''}" onclick="toggleCheck('${run.id}','${key}')">${chk.label}</div>
+                ${chk.link?`<button class="btn btn-ghost btn-xs run-module-link" onclick="event.stopPropagation();enterModule('${chk.link.module}');go('${chk.link.sub}')" style="margin-top:5px">${chk.link.label}</button>`:''}
                 ${chk.done&&chk.doneBy?`<div style="font-size:9.5px;color:var(--gm);margin-top:2px">✓ ${chk.doneBy} · ${chk.doneAt}</div>`:''}
                 <div class="run-comment-wrap" id="cmtwrap-${key}">
                   ${chk.comment?`<div class="run-comment-text" onclick="expandComment('${run.id}','${key}')">${chk.comment}</div>`:`<button class="run-comment-btn" onclick="expandComment('${run.id}','${key}')">+ Add note</button>`}
