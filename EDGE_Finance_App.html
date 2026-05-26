@@ -1564,44 +1564,28 @@ async function signIn() {
   document.getElementById('auth-loading').style.display='block';
   document.getElementById('auth-error').style.display='none';
   try {
-    // Ensure MSAL is ready (guard against button click before init completes)
     if(!msalInstance) { await waitForMSAL(); await initMSAL(); }
-    const result = await msalInstance.loginPopup({
+    // Use redirect (more reliable than popup — no popup blocker issues)
+    await msalInstance.loginRedirect({
       scopes: CONFIG.scopes,
       prompt: 'select_account'
     });
-    currentAccount = result.account;
-    await onSignedIn();
+    // Page will redirect to Microsoft and back — execution stops here
   } catch(e) {
     document.getElementById('auth-loading').style.display='none';
-    // Build detailed error message for diagnosis
-    const errorCode = e.errorCode || '';
-    const errorMsg = e.message || '';
-    const subError = e.subError || '';
-    const correlationId = e.correlationId || '';
-    let display = '';
-    if(errorCode.includes('popup') || errorCode.includes('user_cancelled') || errorMsg.includes('user_cancelled')) {
-      display = 'Pop-up was blocked or closed. Please allow pop-ups for this site and try again.';
-    } else {
-      display = `Error: ${errorCode || 'unknown'}\n${errorMsg}`;
-      if(subError) display += `\nSub-error: ${subError}`;
-      if(correlationId) display += `\nCorrelation ID: ${correlationId}`;
-    }
     const errEl = document.getElementById('auth-error');
     errEl.style.whiteSpace = 'pre-wrap';
     errEl.style.fontSize = '10px';
     errEl.style.textAlign = 'left';
-    errEl.textContent = display;
+    errEl.textContent = `Sign-in error: ${e.errorCode||''} ${e.message||''}`.trim();
     errEl.style.display='block';
-    console.error('MSAL full error object:', JSON.stringify(e, null, 2));
-    console.error('MSAL errorCode:', errorCode);
-    console.error('MSAL message:', errorMsg);
+    console.error('MSAL signIn error:', e);
   }
 }
 
 async function signOut() {
   if(!confirm('Sign out of EDGE Finance?')) return;
-  await msalInstance.logoutPopup({ account: currentAccount });
+  await msalInstance.logoutRedirect({ account: currentAccount });
   currentAccount = null;
   document.getElementById('auth-overlay').style.display='flex';
   document.getElementById('user-chip').style.display='none';
