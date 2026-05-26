@@ -504,6 +504,176 @@ body.home-active .nav .brand{color:#fff}
 .run-comment-input-wrap{margin-top:6px}
 .run-comment-input{width:100%;padding:6px 8px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:11.5px;resize:vertical;background:var(--offwhite)}
 .run-comment-input:focus{outline:none;border-color:var(--black)}
+
+/* ═══════════════ PROCUREMENT / CRM ═══════════════ */
+/* Dashboard metrics */
+.crm-dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px;margin-bottom:28px}
+.crm-metric{background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:18px}
+.crm-metric-val{font-family:var(--font-display);font-size:30px;letter-spacing:-.03em;line-height:1;margin-bottom:4px}
+.crm-metric-label{font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--gm);font-family:var(--font-display)}
+.crm-metric-sub{font-size:10.5px;color:var(--gm);margin-top:5px}
+.crm-dash-cols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
+.crm-panel{background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:16px 20px}
+.crm-panel-title{font-family:var(--font-display);font-size:11px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px}
+
+/* Kanban pipeline */
+.pipeline-wrap{overflow-x:auto;padding-bottom:20px;margin:-4px}
+.pipeline-board{display:flex;gap:10px;min-width:max-content;padding:4px}
+.pipeline-col{width:228px;flex-shrink:0;display:flex;flex-direction:column;background:var(--offwhite);border-radius:var(--r)}
+.pipeline-col-head{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;border-left:3px solid transparent;border-radius:var(--r) var(--r) 0 0}
+.pipeline-col-title{font-family:var(--font-display);font-size:9.5px;text-transform:uppercase;letter-spacing:.06em}
+.pipeline-col-meta{font-size:9.5px;color:var(--gm);text-align:right}
+.pipeline-cards{padding:6px;min-height:80px;flex:1;border-radius:0 0 var(--r) var(--r);transition:background .1s}
+.pipeline-cards.drag-over{background:rgba(255,208,51,.12)}
+.opp-card{background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:12px;margin-bottom:6px;cursor:grab;transition:border-color .12s,box-shadow .12s;user-select:none}
+.opp-card:hover{border-color:#aaa;box-shadow:0 2px 6px rgba(0,0,0,.07)}
+.opp-card:active,.opp-card.dragging{cursor:grabbing;opacity:.6}
+.opp-card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px}
+.opp-card-name{font-family:var(--font-display);font-size:11.5px;text-transform:uppercase;letter-spacing:-.01em;line-height:1.3;flex:1;margin-right:6px}
+.opp-priority{width:7px;height:7px;border-radius:50%;flex-shrink:0;margin-top:2px}
+.opp-card-client{font-size:10.5px;color:var(--gm);margin-bottom:8px}
+.opp-card-fee{font-size:12.5px;font-weight:600;margin-bottom:6px}
+.opp-prob-bar{height:2px;background:var(--gl);border-radius:1px;margin-bottom:8px}
+.opp-prob-fill{height:100%;border-radius:1px;background:var(--yellow);transition:width .3s}
+.opp-card-footer{display:flex;align-items:center;justify-content:space-between}
+.opp-next{font-size:9.5px;color:var(--gm);flex:1;margin-right:4px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.opp-next.overdue{color:var(--red)}
+.opp-avatar{width:22px;height:22px;border-radius:50%;background:var(--black);color:var(--yellow);font-size:8px;font-family:var(--font-display);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.badge-sector{font-size:8px;font-weight:600;padding:2px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.04em;background:var(--blue-bg);color:var(--blue);font-family:var(--font);display:inline-block;margin-bottom:6px}
+
+/* Pipeline filter bar */
+.pipeline-filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.crm-filter{padding:5px 9px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:11px;background:var(--white);cursor:pointer}
+.crm-filter:focus{outline:none;border-color:var(--black)}
+
+/* Stage header colours */
+.stg-prospect{border-left-color:#666}.stg-initiated{border-left-color:#6B7FD4}.stg-engaged{border-left-color:#4A9FD4}.stg-qualified{border-left-color:#45B7A0}.stg-proposal{border-left-color:#F7B731}.stg-submitted{border-left-color:#E8913A}.stg-negotiation{border-left-color:#E85D75}.stg-verbal{border-left-color:#A855F7}.stg-signed{border-left-color:#1a7a40}.stg-hold{border-left-color:#999}.stg-lost{border-left-color:var(--red)}
+
+/* CRM table */
+.crm-table{width:100%;border-collapse:collapse}
+.crm-table th{font-size:9.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--gm);font-family:var(--font-display);padding:9px 12px;text-align:left;border-bottom:1px solid var(--gl);font-weight:400}
+.crm-table td{padding:11px 12px;border-bottom:1px solid var(--gl);font-size:12px;vertical-align:middle}
+.crm-table tr:last-child td{border-bottom:none}
+.crm-table tbody tr:hover td{background:var(--offwhite);cursor:pointer}
+.crm-search{padding:7px 10px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:12px;width:260px}
+.crm-search:focus{outline:none;border-color:var(--black)}
+
+/* Relationship score */
+.rel-score{display:inline-flex;gap:2px;align-items:center}
+.rel-dot{width:7px;height:7px;border-radius:50%;background:var(--gl)}
+.rel-dot.on{background:var(--yellow)}
+
+/* Influence badge */
+.influence-dm{background:#faeee9;color:#7a3220;font-size:9px;padding:2px 6px;border-radius:2px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.influence-inf{background:var(--blue-bg);color:var(--blue);font-size:9px;padding:2px 6px;border-radius:2px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+.influence-champ{background:var(--green-bg);color:var(--green);font-size:9px;padding:2px 6px;border-radius:2px;font-weight:600;text-transform:uppercase;letter-spacing:.04em}
+
+/* Tasks */
+.task-section-lbl{font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;font-family:var(--font-display);color:var(--gm);padding:14px 0 6px;border-bottom:2px solid var(--gl);margin-bottom:4px}
+.task-row{display:flex;align-items:flex-start;gap:10px;padding:10px 2px;border-bottom:1px solid var(--gl)}
+.task-check-box{width:16px;height:16px;border:1.5px solid var(--gl);border-radius:2px;flex-shrink:0;margin-top:1px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.task-check-box:hover{border-color:var(--black)}
+.task-check-box.ticked{background:var(--green);border-color:var(--green);color:#fff;font-size:10px}
+.task-title-wrap{flex:1}
+.task-title{font-size:12px;line-height:1.4}
+.task-meta-row{font-size:10px;color:var(--gm);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.task-overdue .task-title{color:var(--red)}
+.task-overdue .task-meta-row{color:#e87070}
+.task-type-chip{font-size:8.5px;font-weight:600;padding:1px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.04em;background:var(--gl);color:var(--gd)}
+.task-pri-high{color:var(--red);font-size:9px;font-weight:700;text-transform:uppercase}
+.task-pri-med{color:var(--amber);font-size:9px;font-weight:700;text-transform:uppercase}
+
+/* ═══════════════ CRM / PROCUREMENT ═══════════════ */
+.crm-dash-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;margin-bottom:24px}
+.crm-metric{background:var(--offwhite);border:1px solid var(--gl);border-radius:var(--r);padding:18px 16px;cursor:default}
+.crm-metric-val{font-family:var(--font-display);font-size:28px;color:var(--black);letter-spacing:-.02em;line-height:1}
+.crm-metric-lbl{font-size:10px;color:var(--gm);margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
+.crm-metric-sub{font-size:10px;color:var(--gm);margin-top:2px}
+.crm-dash-row{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px}
+@media(max-width:700px){.crm-dash-row{grid-template-columns:1fr}}
+.crm-dash-panel{background:var(--offwhite);border:1px solid var(--gl);border-radius:var(--r);padding:16px}
+.crm-dash-panel-title{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:12px}
+.crm-recent-item{display:flex;justify-content:space-between;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--gl);font-size:11px;gap:8px}
+.crm-recent-item:last-child{border-bottom:none}
+.crm-recent-name{font-weight:500;color:var(--black)}
+.crm-recent-meta{font-size:10px;color:var(--gm);margin-top:2px}
+.crm-recent-val{font-weight:600;color:var(--black);white-space:nowrap;font-size:11px}
+.stg-pill{display:inline-block;padding:2px 7px;border-radius:2px;font-size:9px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;white-space:nowrap}
+/* Pipeline */
+.pipeline-filters{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap;align-items:center}
+.pipeline-filter-btn{background:var(--offwhite);border:1px solid var(--gl);border-radius:var(--r);padding:4px 10px;font-size:10px;font-weight:600;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;color:var(--gm);transition:all .15s}
+.pipeline-filter-btn.active{background:var(--black);color:var(--yellow);border-color:var(--black)}
+.pipeline-wrap{overflow-x:auto;padding-bottom:12px}
+.pipeline-board{display:flex;gap:10px;min-width:max-content;align-items:flex-start}
+.pipeline-col{width:220px;flex-shrink:0;background:var(--offwhite);border:1px solid var(--gl);border-radius:var(--r)}
+.pipeline-col-header{padding:10px 12px;border-bottom:1px solid var(--gl);display:flex;justify-content:space-between;align-items:center}
+.pipeline-col-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.pipeline-col-count{font-size:10px;color:var(--gm);background:var(--gl);padding:1px 6px;border-radius:2px;font-weight:600}
+.pipeline-col-cards{padding:8px;min-height:80px;display:flex;flex-direction:column;gap:6px}
+.pipeline-col.drag-over{background:#e8f0fe}
+.opp-card{background:#fff;border:1px solid var(--gl);border-radius:var(--r);padding:10px 11px;cursor:pointer;transition:box-shadow .15s,border-color .15s;border-left:3px solid transparent}
+.opp-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);border-color:#ccc}
+.opp-card[draggable=true]{user-select:none}
+.opp-card.dragging{opacity:.4}
+.opp-card-name{font-size:11px;font-weight:600;color:var(--black);line-height:1.3;margin-bottom:4px}
+.opp-card-account{font-size:10px;color:var(--gm);margin-bottom:6px}
+.opp-card-footer{display:flex;justify-content:space-between;align-items:center;margin-top:6px}
+.opp-card-val{font-size:11px;font-weight:700;color:var(--black)}
+.opp-card-date{font-size:9px;color:var(--gm)}
+.opp-card-age{font-size:9px;padding:1px 5px;border-radius:2px;font-weight:600}
+.age-warm{background:#fff3cd;color:#856404}
+.age-hot{background:#faeee9;color:#7a3220}
+.age-stale{background:var(--gl);color:var(--gm)}
+/* Stage colours */
+.stg-prospect{border-left-color:#888;color:#555}
+.stg-initiated{border-left-color:#6B7FD4}
+.stg-engaged{border-left-color:#4A9FD4}
+.stg-qualified{border-left-color:#45B7A0}
+.stg-proposal{border-left-color:#F7B731}
+.stg-submitted{border-left-color:#E8913A}
+.stg-negotiation{border-left-color:#E85D75}
+.stg-verbal{border-left-color:#A855F7}
+.stg-signed{border-left-color:#1a7a40}
+.stg-hold{border-left-color:#999}
+.stg-lost{border-left-color:#C65D3B}
+/* CRM Tables */
+.crm-toolbar{display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap}
+.crm-search{flex:1;min-width:160px;border:1px solid var(--gl);border-radius:var(--r);padding:6px 10px;font-size:12px;background:var(--offwhite);font-family:var(--font);color:var(--black)}
+.crm-search:focus{outline:none;border-color:var(--black)}
+.crm-table{width:100%;border-collapse:collapse;font-size:11.5px}
+.crm-table th{text-align:left;padding:6px 10px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gm);border-bottom:2px solid var(--gl);white-space:nowrap}
+.crm-table td{padding:9px 10px;border-bottom:1px solid var(--gl);vertical-align:top}
+.crm-table tr:hover td{background:#fafafa}
+.crm-table .name-cell{font-weight:500;color:var(--black)}
+.crm-table .meta-cell{color:var(--gm);font-size:10px}
+.crm-table .action-cell{white-space:nowrap;text-align:right}
+/* Relationship score */
+.rel-score{display:flex;gap:2px;align-items:center}
+.rel-dot{width:7px;height:7px;border-radius:50%;background:var(--gl)}
+.rel-dot.on{background:var(--yellow)}
+/* Influence badges */
+.influence-badge{display:inline-block;padding:1px 6px;border-radius:2px;font-size:8.5px;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+.influence-dm{background:#eaebf5;color:#484F7C}
+.influence-inf{background:#e8f8ef;color:#1a7a40}
+.influence-champ{background:#fff8e1;color:#856404}
+.influence-neutral{background:var(--gl);color:var(--gm)}
+/* Sector badge */
+.badge-sector{display:inline-block;padding:1px 6px;border-radius:2px;font-size:9px;font-weight:600;background:var(--gl);color:var(--gd)}
+/* Task list CRM */
+.crm-task-section-hdr{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gm);padding:10px 0 4px;border-top:1px solid var(--gl);margin-top:6px}
+.crm-task-section-hdr:first-child{border-top:none;margin-top:0}
+.crm-task-row{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--gl)}
+.crm-task-row:last-child{border-bottom:none}
+.crm-task-check{width:16px;height:16px;border:2px solid var(--gl);border-radius:2px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;margin-top:1px}
+.crm-task-check:hover{border-color:var(--black)}
+.crm-task-check.done{background:var(--green);border-color:var(--green);color:#fff;font-size:9px}
+.crm-task-body{flex:1}
+.crm-task-title{font-size:12px;color:var(--black);line-height:1.35}
+.crm-task-done .crm-task-title{text-decoration:line-through;color:var(--gm)}
+.crm-task-meta{font-size:10px;color:var(--gm);margin-top:2px;display:flex;gap:8px;flex-wrap:wrap}
+.crm-task-overdue .crm-task-title{color:var(--red)}
+.crm-task-overdue .crm-task-meta{color:#e87070}
+.crm-task-actions{display:flex;gap:4px;flex-shrink:0}
 </style>
 <script>
 // MSAL loader — tries multiple CDNs in sequence, never fails silently
@@ -585,6 +755,13 @@ body.home-active .nav .brand{color:#fff}
   </div>
   <div class="ntabs" id="navTabs-admin" style="display:none">
     <div class="ntab active" onclick="goAdmin('users')">Users</div>
+  </div>
+  <div class="ntabs" id="navTabs-procurement" style="display:none">
+    <div class="ntab active" onclick="goProcurement('dashboard')">Dashboard</div>
+    <div class="ntab" onclick="goProcurement('pipeline')">Pipeline</div>
+    <div class="ntab" onclick="goProcurement('accounts')">Accounts</div>
+    <div class="ntab" onclick="goProcurement('contacts')">Contacts</div>
+    <div class="ntab" onclick="goProcurement('tasks')">Tasks</div>
   </div>
   <div class="nav-right" style="display:flex;align-items:center;gap:8px">
     <div class="sync-status" id="sync-status"><div class="sync-dot ok" id="sync-dot"></div><span id="sync-label">Synced</span></div>
@@ -732,25 +909,40 @@ body.home-active .nav .brand{color:#fff}
   </div>
   <div class="module-cards" id="module-cards">
 
-    <!-- 01 Procurement (soon) -->
-    <div class="module-card module-card-soon">
+    <!-- 01 Procurement -->
+    <div class="module-card" onclick="enterModule('procurement')">
       <div class="module-card-num">01</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 6h18M3 6l2 14h14L21 6M3 6l2-2h14l2 2" stroke-linejoin="round" stroke-linecap="round"/>
-          <path d="M9 10v4m6-4v4" stroke-linecap="round"/>
-          <circle cx="9" cy="17" r="1" fill="currentColor" stroke="none"/>
-          <circle cx="15" cy="17" r="1" fill="currentColor" stroke="none"/>
+          <rect x="2" y="7" width="20" height="14" rx=".5" stroke-linejoin="round"/>
+          <path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2" stroke-linejoin="round"/>
+          <line x1="12" y1="12" x2="12" y2="16"/><line x1="10" y1="14" x2="14" y2="14"/>
         </svg>
       </div>
-      <div class="module-card-name">Procurement <span class="module-soon-tag">Soon</span></div>
-      <div class="module-card-desc">Business Dev · CRM · EOI / NDA / RFQ · Bidding & Proposals · Sub-Consultant Portal</div>
+      <div class="module-card-name">Procurement</div>
+      <div class="module-card-desc">Business Dev · CRM · Accounts · Contacts · Pipeline</div>
+      <div class="module-card-arrow">→</div>
+    </div>
+
+    <!-- 02 Bidding & Proposals (soon) -->
+    <div class="module-card module-card-soon">
+      <div class="module-card-num">02</div>
+      <div class="module-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linejoin="round"/>
+          <polyline points="14 2 14 8 20 8" stroke-linejoin="round"/>
+          <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>
+          <path d="M8 9h1" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="module-card-name">Bidding &amp; Proposals <span class="module-soon-tag">Soon</span></div>
+      <div class="module-card-desc">EOI · NDA · RFQ · Proposal Builder · Sub-Consultant Portal</div>
       <div class="module-card-arrow">—</div>
     </div>
 
-    <!-- 02 Projects -->
+    <!-- 03 Projects -->
     <div class="module-card" onclick="enterModule('projects')">
-      <div class="module-card-num">02</div>
+      <div class="module-card-num">03</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <rect x="2" y="2" width="20" height="20" rx=".5"/>
@@ -760,13 +952,13 @@ body.home-active .nav .brand{color:#fff}
         </svg>
       </div>
       <div class="module-card-name">Projects</div>
-      <div class="module-card-desc">Awarded Projects · Details · Resources · Sub-Consultants · SOPs & Mobilisation</div>
+      <div class="module-card-desc">Awarded Projects · Details · Resources · Sub-Consultants · SOPs &amp; Mobilisation</div>
       <div class="module-card-arrow">→</div>
     </div>
 
-    <!-- 03 EDMS (soon) -->
+    <!-- 04 EDMS (soon) -->
     <div class="module-card module-card-soon">
-      <div class="module-card-num">03</div>
+      <div class="module-card-num">04</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linejoin="round"/>
@@ -776,13 +968,13 @@ body.home-active .nav .brand{color:#fff}
         </svg>
       </div>
       <div class="module-card-name">EDMS <span class="module-soon-tag">Soon</span></div>
-      <div class="module-card-desc">Document Control · Drawing Register · Client, Sub-Consultant & Contractor Access</div>
+      <div class="module-card-desc">Document Control · Drawing Register · Client, Sub-Consultant &amp; Contractor Access</div>
       <div class="module-card-arrow">—</div>
     </div>
 
-    <!-- 04 Finance -->
+    <!-- 05 Finance -->
     <div class="module-card" onclick="enterModule('finance')">
-      <div class="module-card-num">04</div>
+      <div class="module-card-num">05</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <rect x="2" y="14" width="4" height="7" rx=".5"/><rect x="9" y="9" width="4" height="12" rx=".5"/><rect x="16" y="4" width="4" height="17" rx=".5"/>
@@ -790,13 +982,13 @@ body.home-active .nav .brand{color:#fff}
         </svg>
       </div>
       <div class="module-card-name">Finance</div>
-      <div class="module-card-desc">Project Finances · Invoices · Cashflow · Payments & Sub-Consultant Fees</div>
+      <div class="module-card-desc">Project Finances · Invoices · Cashflow · Payments &amp; Sub-Consultant Fees</div>
       <div class="module-card-arrow">→</div>
     </div>
 
-    <!-- 05 Quality (soon) -->
+    <!-- 06 Quality (soon) -->
     <div class="module-card module-card-soon">
-      <div class="module-card-num">05</div>
+      <div class="module-card-num">06</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 2l2.4 4.8 5.3.8-3.85 3.75.9 5.3L12 14l-4.75 2.65.9-5.3L4.3 7.6l5.3-.8z" stroke-linejoin="round"/>
@@ -809,9 +1001,9 @@ body.home-active .nav .brand{color:#fff}
       <div class="module-card-arrow">—</div>
     </div>
 
-    <!-- 06 Admin -->
+    <!-- 07 Admin -->
     <div class="module-card" onclick="enterModule('admin')">
-      <div class="module-card-num">06</div>
+      <div class="module-card-num">07</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
           <circle cx="12" cy="8" r="3"/>
@@ -828,6 +1020,46 @@ body.home-active .nav .brand{color:#fff}
     </div>
 
   </div>
+</div>
+
+<!-- CRM DASHBOARD -->
+<div class="sec" id="sec-crm-dashboard"></div>
+
+<!-- CRM PIPELINE -->
+<div class="sec" id="sec-crm-pipeline">
+  <div class="ph">
+    <div><div class="ph-title">Opportunity Pipeline</div><div class="ph-sub">Drag cards between stages to update status</div></div>
+    <button class="btn btn-y btn-sm" onclick="openNewOppModal()">+ New Opportunity</button>
+  </div>
+  <div class="pipeline-filters" id="pipeline-filters"></div>
+  <div class="pipeline-wrap"><div class="pipeline-board" id="pipeline-board"></div></div>
+</div>
+
+<!-- CRM ACCOUNTS -->
+<div class="sec" id="sec-crm-accounts">
+  <div class="ph">
+    <div><div class="ph-title">Accounts</div><div class="ph-sub">Companies · Developers · Operators · Government</div></div>
+    <button class="btn btn-y btn-sm" onclick="openNewAccountModal()">+ New Account</button>
+  </div>
+  <div id="crm-accounts-view"></div>
+</div>
+
+<!-- CRM CONTACTS -->
+<div class="sec" id="sec-crm-contacts">
+  <div class="ph">
+    <div><div class="ph-title">Contacts</div><div class="ph-sub">Key people at client organisations</div></div>
+    <button class="btn btn-y btn-sm" onclick="openNewContactModal()">+ New Contact</button>
+  </div>
+  <div id="crm-contacts-view"></div>
+</div>
+
+<!-- CRM TASKS -->
+<div class="sec" id="sec-crm-tasks">
+  <div class="ph">
+    <div><div class="ph-title">Tasks &amp; Follow Ups</div><div class="ph-sub">Next actions · Overdue alerts · Accountability</div></div>
+    <button class="btn btn-y btn-sm" onclick="openNewTaskModal()">+ New Task</button>
+  </div>
+  <div id="crm-tasks-view"></div>
 </div>
 
 <!-- ═══════════════ PROJECTS MODULE — SOPs ═══════════════ -->
@@ -867,6 +1099,101 @@ body.home-active .nav .brand{color:#fff}
 </div>
 
 </main>
+
+<!-- CRM MODALS -->
+
+<!-- Opportunity Modal -->
+<div class="mo" id="mo-opp">
+  <div class="modal" style="max-width:560px">
+    <div class="mhead"><span class="mtitle" id="mo-opp-title">New Opportunity</span><button class="mclose" onclick="closeMo('mo-opp')">×</button></div>
+    <div class="mbody"><div class="fg">
+      <div class="fgrp full"><label>Opportunity Name *</label><input id="opp-f-name" type="text" placeholder="e.g. Four Seasons Hotel — Interior Design"></div>
+      <div class="fgrp"><label>Account *</label><select id="opp-f-account"></select></div>
+      <div class="fgrp"><label>Stage</label><select id="opp-f-stage"></select></div>
+      <div class="fgrp"><label>Estimated Value (AED)</label><input id="opp-f-value" type="number" placeholder="0"></div>
+      <div class="fgrp"><label>Probability %</label><input id="opp-f-prob" type="number" min="0" max="100" placeholder="50"></div>
+      <div class="fgrp"><label>Expected Close Date</label><input id="opp-f-close" type="date"></div>
+      <div class="fgrp"><label>Sector</label><select id="opp-f-sector"><option value="">— select —</option><option>Hospitality</option><option>Residential</option><option>Mixed-Use</option><option>Retail</option><option>Commercial</option><option>Government</option><option>Healthcare</option><option>Education</option></select></div>
+      <div class="fgrp"><label>Scope Type</label><select id="opp-f-scope"><option value="">— select —</option><option>Interior Design</option><option>Architecture</option><option>FF&E</option><option>Masterplan</option><option>Concept Only</option><option>Full RIBA</option></select></div>
+      <div class="fgrp full"><label>Notes</label><textarea id="opp-f-notes" rows="2" placeholder="Key context, source of lead…"></textarea></div>
+    </div></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeMo('mo-opp')">Cancel</button>
+      <button class="btn btn-y" onclick="saveOpp()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Account Modal -->
+<div class="mo" id="mo-account">
+  <div class="modal" style="max-width:520px">
+    <div class="mhead"><span class="mtitle" id="mo-account-title">New Account</span><button class="mclose" onclick="closeMo('mo-account')">×</button></div>
+    <div class="mbody"><div class="fg">
+      <div class="fgrp full"><label>Company Name *</label><input id="acc-f-name" type="text" placeholder="e.g. Emaar Properties"></div>
+      <div class="fgrp"><label>Type</label><select id="acc-f-type"><option value="">— select —</option><option>Developer</option><option>Hotel Operator</option><option>Government</option><option>Private Client</option><option>Contractor</option><option>Fund / Investor</option></select></div>
+      <div class="fgrp"><label>Sector</label><select id="acc-f-sector"><option value="">— select —</option><option>Hospitality</option><option>Residential</option><option>Mixed-Use</option><option>Retail</option><option>Commercial</option><option>Government</option></select></div>
+      <div class="fgrp"><label>HQ City</label><input id="acc-f-city" type="text" placeholder="e.g. Dubai"></div>
+      <div class="fgrp"><label>Country</label><input id="acc-f-country" type="text" placeholder="e.g. UAE"></div>
+      <div class="fgrp"><label>Relationship Owner</label><input id="acc-f-owner" type="text" placeholder="Staff name"></div>
+      <div class="fgrp"><label>Relationship Score (1–5)</label><input id="acc-f-rel" type="number" min="1" max="5" placeholder="3"></div>
+      <div class="fgrp full"><label>Notes</label><textarea id="acc-f-notes" rows="2" placeholder="Strategic notes about this account…"></textarea></div>
+    </div></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeMo('mo-account')">Cancel</button>
+      <button class="btn btn-y" onclick="saveAccount()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Contact Modal -->
+<div class="mo" id="mo-contact">
+  <div class="modal" style="max-width:520px">
+    <div class="mhead"><span class="mtitle" id="mo-contact-title">New Contact</span><button class="mclose" onclick="closeMo('mo-contact')">×</button></div>
+    <div class="mbody"><div class="fg">
+      <div class="fgrp"><label>First Name *</label><input id="con-f-first" type="text"></div>
+      <div class="fgrp"><label>Last Name *</label><input id="con-f-last" type="text"></div>
+      <div class="fgrp"><label>Account</label><select id="con-f-account"></select></div>
+      <div class="fgrp"><label>Job Title</label><input id="con-f-title" type="text" placeholder="e.g. Head of Development"></div>
+      <div class="fgrp"><label>Email</label><input id="con-f-email" type="email"></div>
+      <div class="fgrp"><label>Mobile</label><input id="con-f-mobile" type="tel" placeholder="+971 50 …"></div>
+      <div class="fgrp"><label>Influence Type</label><select id="con-f-influence"><option value="">— select —</option><option value="dm">Decision Maker</option><option value="inf">Influencer</option><option value="champ">Champion</option><option value="neutral">Neutral</option></select></div>
+      <div class="fgrp full"><label>Notes</label><textarea id="con-f-notes" rows="2" placeholder="Background, preferences, key context…"></textarea></div>
+    </div></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeMo('mo-contact')">Cancel</button>
+      <button class="btn btn-y" onclick="saveContact()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Task Modal -->
+<div class="mo" id="mo-crm-task">
+  <div class="modal" style="max-width:480px">
+    <div class="mhead"><span class="mtitle" id="mo-crm-task-title">New Task</span><button class="mclose" onclick="closeMo('mo-crm-task')">×</button></div>
+    <div class="mbody"><div class="fg">
+      <div class="fgrp full"><label>Task *</label><input id="ctask-f-title" type="text" placeholder="e.g. Follow up on proposal — Aldar"></div>
+      <div class="fgrp"><label>Type</label><select id="ctask-f-type"><option value="call">Call</option><option value="email">Email</option><option value="meeting">Meeting</option><option value="proposal">Proposal</option><option value="followup">Follow Up</option><option value="internal">Internal</option></select></div>
+      <div class="fgrp"><label>Priority</label><select id="ctask-f-pri"><option value="high">High</option><option value="med" selected>Medium</option><option value="low">Low</option></select></div>
+      <div class="fgrp"><label>Due Date</label><input id="ctask-f-due" type="date"></div>
+      <div class="fgrp"><label>Linked Account</label><select id="ctask-f-account"><option value="">— none —</option></select></div>
+      <div class="fgrp"><label>Linked Opportunity</label><select id="ctask-f-opp"><option value="">— none —</option></select></div>
+      <div class="fgrp full"><label>Notes</label><textarea id="ctask-f-notes" rows="2"></textarea></div>
+    </div></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeMo('mo-crm-task')">Cancel</button>
+      <button class="btn btn-y" onclick="saveCrmTask()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Opportunity Detail Modal -->
+<div class="mo" id="mo-opp-detail">
+  <div class="modal" style="max-width:600px">
+    <div class="mhead"><span class="mtitle" id="mo-opp-detail-title">Opportunity</span><button class="mclose" onclick="closeMo('mo-opp-detail')">×</button></div>
+    <div class="mbody" id="mo-opp-detail-body"></div>
+    <div class="mfoot" id="mo-opp-detail-foot"></div>
+  </div>
+</div>
 
 <!-- NOTES MODAL -->
 <div class="mo" id="mo-notes">
@@ -1067,7 +1394,7 @@ const CONFIG = {
 // DATA
 // ═══════════════════════════════════════════════════
 const SK = 'edge_v3';
-let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{}, users:[], checklistRuns:[], projectStages:{} };
+let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{}, users:[], checklistRuns:[], projectStages:{}, crm:{ accounts:[], contacts:[], opportunities:[], tasks:[] } };
 let dbSnapshot = null;   // snapshot of last saved state for dirty detection
 let editState = {};
 let msalInstance = null;
@@ -1225,6 +1552,7 @@ async function onSignedIn() {
     await loadFromSharePoint();
     setSyncStatus('ok', 'Synced');
     markClean();
+    initCRM();
     goHome();
   } catch(e) {
     setSyncStatus('err', 'Load failed');
@@ -1232,6 +1560,7 @@ async function onSignedIn() {
     // Fall back to local data
     loadLocalDB();
     if(!db.projects.length) seed();
+    initCRM();
     goHome();
   }
 }
@@ -1451,6 +1780,7 @@ async function loadDB() {
   if(db.projects.length) {
     document.getElementById('auth-overlay').style.display='none';
     setSyncStatus('err','Not signed in');
+    initCRM();
     goHome();
   }
   // else auth overlay stays visible
@@ -1677,6 +2007,7 @@ function goHome() {
   document.getElementById('navTabs-finance').style.display = 'none';
   document.getElementById('navTabs-projects').style.display = 'none';
   document.getElementById('navTabs-admin').style.display = 'none';
+  document.getElementById('navTabs-procurement').style.display = 'none';
   document.getElementById('nav-back').style.display = 'none';
   document.getElementById('nav-module-label').style.display = 'none';
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
@@ -1692,6 +2023,7 @@ function enterModule(module) {
   document.getElementById('navTabs-finance').style.display = 'none';
   document.getElementById('navTabs-projects').style.display = 'none';
   document.getElementById('navTabs-admin').style.display = 'none';
+  document.getElementById('navTabs-procurement').style.display = 'none';
   if(module === 'finance') {
     document.getElementById('nav-module-label').textContent = 'Finance';
     document.getElementById('navTabs-finance').style.display = 'flex';
@@ -1704,6 +2036,10 @@ function enterModule(module) {
     document.getElementById('nav-module-label').textContent = 'Admin';
     document.getElementById('navTabs-admin').style.display = 'flex';
     goAdmin('users');
+  } else if(module === 'procurement') {
+    document.getElementById('nav-module-label').textContent = 'Procurement';
+    document.getElementById('navTabs-procurement').style.display = 'flex';
+    goProcurement('dashboard');
   }
 }
 
@@ -3689,6 +4025,644 @@ function rowClass(invdate, recdate, actdate, status) {
 // ── 7. VO Pipeline value on dashboard ──
 function getVOPipeline() {
   return db.voRegister.filter(v=>v.status==='Identified'||v.status==='Submitted').reduce((a,v)=>a+(+v.est||0),0);
+}
+
+// ═══════════════════════════════════════════════════
+// CRM / PROCUREMENT MODULE
+// ═══════════════════════════════════════════════════
+
+const CRM_STAGES = [
+  { id:'prospect',    label:'Prospect Identified', color:'#888' },
+  { id:'initiated',   label:'Contact Initiated',   color:'#6B7FD4' },
+  { id:'engaged',     label:'Engaged',              color:'#4A9FD4' },
+  { id:'qualified',   label:'Qualified',            color:'#45B7A0' },
+  { id:'proposal',    label:'Proposal Stage',       color:'#F7B731' },
+  { id:'submitted',   label:'Submitted',            color:'#E8913A' },
+  { id:'negotiation', label:'Negotiation',          color:'#E85D75' },
+  { id:'verbal',      label:'Verbal Award',         color:'#A855F7' },
+  { id:'signed',      label:'Contract Signed',      color:'#1a7a40' },
+  { id:'hold',        label:'On Hold',              color:'#999' },
+  { id:'lost',        label:'Lost',                 color:'#C65D3B' }
+];
+
+let crmPipelineFilter = 'active'; // 'active' | 'all' | 'won' | 'lost'
+let crmAccSearch = '';
+let crmConSearch = '';
+let crmTaskFilter = 'open'; // 'open' | 'all'
+let editingCrmId = { opp:null, account:null, contact:null, task:null };
+
+function ensureCrm() {
+  if(!db.crm) db.crm = { accounts:[], contacts:[], opportunities:[], tasks:[] };
+  if(!db.crm.accounts) db.crm.accounts = [];
+  if(!db.crm.contacts) db.crm.contacts = [];
+  if(!db.crm.opportunities) db.crm.opportunities = [];
+  if(!db.crm.tasks) db.crm.tasks = [];
+}
+
+function initCRM() {
+  ensureCrm();
+  if(!db.crm.accounts.length && !db.crm.opportunities.length) seedCRM();
+}
+
+function seedCRM() {
+  const today = new Date();
+  const d = (offsetDays) => {
+    const dt = new Date(today);
+    dt.setDate(dt.getDate() + offsetDays);
+    return dt.toISOString().slice(0,10);
+  };
+  db.crm.accounts = [
+    { id:'acc1', name:'IHG Hotels & Resorts', type:'Hotel Operator', sector:'Hospitality', city:'Dubai', country:'UAE', owner:'Sarah Mitchell', rel:4, notes:'Long-standing operator relationship. Primary contact is Head of Development MENA.', createdAt: d(-180) },
+    { id:'acc2', name:'Emaar Properties', type:'Developer', sector:'Mixed-Use', city:'Dubai', country:'UAE', owner:'James Harrington', rel:5, notes:'Key developer partner in Dubai. Multiple touchpoints across residential and hospitality divisions.', createdAt: d(-200) },
+    { id:'acc3', name:'Aldar Properties', type:'Developer', sector:'Residential', city:'Abu Dhabi', country:'UAE', owner:'Sarah Mitchell', rel:3, notes:'Abu Dhabi developer. Growing relationship through Yas Island opportunities.', createdAt: d(-90) },
+    { id:'acc4', name:'Meraas Holding', type:'Developer', sector:'Mixed-Use', city:'Dubai', country:'UAE', owner:'James Harrington', rel:3, notes:'Luxury mixed-use developer. Early stage relationship building.', createdAt: d(-60) },
+    { id:'acc5', name:'Marriott International', type:'Hotel Operator', sector:'Hospitality', city:'Dubai', country:'UAE', owner:'Sarah Mitchell', rel:2, notes:'Global operator. Working through regional BD manager.', createdAt: d(-45) },
+    { id:'acc6', name:'ADNEC Group', type:'Government', sector:'Government', city:'Abu Dhabi', country:'UAE', owner:'James Harrington', rel:2, notes:'Abu Dhabi National Exhibition Centre. Potential large-scale project.', createdAt: d(-30) }
+  ];
+  db.crm.contacts = [
+    { id:'con1', accountId:'acc1', first:'Marcus', last:'Webb', title:'VP Development MENA', email:'m.webb@ihg.com', mobile:'+971 50 123 4567', influence:'dm', notes:'Primary decision maker for all new hotel projects in MENA.', createdAt: d(-180) },
+    { id:'con2', accountId:'acc2', first:'Nadia', last:'Al Rashidi', title:'Head of Design', email:'n.rashidi@emaar.ae', mobile:'+971 55 234 5678', influence:'inf', notes:'Heavily influences design consultant selection. Strong preference for boutique firms.', createdAt: d(-200) },
+    { id:'con3', accountId:'acc3', first:'Khalid', last:'Al Mansoori', title:'Development Director', email:'k.mansoori@aldar.ae', mobile:'+971 50 345 6789', influence:'dm', notes:'Champions design quality internally. Referred by Sarah.', createdAt: d(-90) },
+    { id:'con4', accountId:'acc4', first:'Priya', last:'Sharma', title:'Senior Project Manager', email:'p.sharma@meraas.ae', mobile:'+971 52 456 7890', influence:'champ', notes:'Key internal champion for EDGE. Evaluate scope fit and provide warm intro to DM.', createdAt: d(-60) },
+    { id:'con5', accountId:'acc2', first:'Tom', last:'Greenway', title:'Regional Director', email:'t.greenway@emaar.ae', mobile:'+971 56 567 8901', influence:'champ', notes:'Strong supporter of our work. Building relationship with residential division.', createdAt: d(-120) }
+  ];
+  db.crm.opportunities = [
+    { id:'opp1', name:'Four Seasons Hotel — Interior Design', accountId:'acc1', stage:'negotiation', value:3800000, prob:70, closeDate:d(30), sector:'Hospitality', scope:'Interior Design', notes:'Full interior design scope for 280-key hotel. Final fee negotiation ongoing.', createdAt: d(-120), updatedAt: d(-5) },
+    { id:'opp2', name:'Emaar Beachfront Residences', accountId:'acc2', stage:'submitted', value:2100000, prob:50, closeDate:d(45), sector:'Residential', scope:'Interior Design', notes:'Proposal submitted. Awaiting evaluation board decision.', createdAt: d(-90), updatedAt: d(-14) },
+    { id:'opp3', name:'Yas Island Retail District', accountId:'acc3', stage:'proposal', value:1500000, prob:40, closeDate:d(60), sector:'Retail', scope:'Architecture', notes:'Working on proposal document. Deadline in 2 weeks.', createdAt: d(-60), updatedAt: d(-3) },
+    { id:'opp4', name:'Marriott Autograph Collection', accountId:'acc5', stage:'engaged', value:2800000, prob:25, closeDate:d(90), sector:'Hospitality', scope:'Full RIBA', notes:'Initial meeting done. Scope alignment in progress.', createdAt: d(-45), updatedAt: d(-10) },
+    { id:'opp5', name:'Meraas Bluewaters Villas', accountId:'acc4', stage:'qualified', value:950000, prob:30, closeDate:d(75), sector:'Residential', scope:'Interior Design', notes:'Scope confirmed — villas interior. Moving to proposal stage.', createdAt: d(-30), updatedAt: d(-7) },
+    { id:'opp6', name:'ADNEC Masterplan Study', accountId:'acc6', stage:'initiated', value:450000, prob:15, closeDate:d(120), sector:'Government', scope:'Masterplan', notes:'Initial contact made via industry event. Exploratory discussions.', createdAt: d(-20), updatedAt: d(-2) },
+    { id:'opp7', name:'IHG Crowne Plaza Refurb', accountId:'acc1', stage:'verbal', value:1200000, prob:85, closeDate:d(14), sector:'Hospitality', scope:'Interior Design', notes:'Verbal award received. Awaiting contract from IHG legal.', createdAt: d(-150), updatedAt: d(-1) }
+  ];
+  db.crm.tasks = [
+    { id:'t1', title:'Send revised fee proposal to Marcus Webb', type:'email', pri:'high', due:d(-2), accountId:'acc1', oppId:'opp1', done:false, notes:'Include revised scope split per their feedback.', createdAt: d(-5) },
+    { id:'t2', title:'Follow up on Emaar submission — call Nadia', type:'call', pri:'high', due:d(-1), accountId:'acc2', oppId:'opp2', done:false, notes:'Check decision timeline.', createdAt: d(-14) },
+    { id:'t3', title:'Draft Yas Island proposal — scope section', type:'proposal', pri:'high', due:d(0), accountId:'acc3', oppId:'opp3', done:false, notes:'James to review before sending.', createdAt: d(-10) },
+    { id:'t4', title:'Intro meeting with Priya re Bluewaters scope', type:'meeting', pri:'med', due:d(0), accountId:'acc4', oppId:'opp5', done:false, notes:'Virtual meeting booked for 10am.', createdAt: d(-7) },
+    { id:'t5', title:'Circulate contract review internally — IHG Crowne', type:'internal', pri:'high', due:d(1), accountId:'acc1', oppId:'opp7', done:false, notes:'MD + Finance to review.', createdAt: d(-1) },
+    { id:'t6', title:'Prepare Marriott capability deck', type:'proposal', pri:'med', due:d(7), accountId:'acc5', oppId:'opp4', done:false, notes:'Tailored to F&B + lobby scope.', createdAt: d(-10) },
+    { id:'t7', title:'ADNEC — intro call with BD manager', type:'call', pri:'low', due:d(14), accountId:'acc6', oppId:'opp6', done:false, notes:'Soft touch — understand brief timeline.', createdAt: d(-5) }
+  ];
+}
+
+// ── Navigation ──
+function goProcurement(sub) {
+  ensureCrm();
+  const tabs = document.querySelectorAll('#navTabs-procurement .ntab');
+  const subOrder = ['dashboard','pipeline','accounts','contacts','tasks'];
+  tabs.forEach((t,i) => t.classList.toggle('active', i === subOrder.indexOf(sub)));
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  if(sub === 'dashboard') { renderCrmDashboard(); document.getElementById('sec-crm-dashboard').classList.add('active'); }
+  else if(sub === 'pipeline') { renderCrmPipeline(); document.getElementById('sec-crm-pipeline').classList.add('active'); }
+  else if(sub === 'accounts') { renderCrmAccounts(); document.getElementById('sec-crm-accounts').classList.add('active'); }
+  else if(sub === 'contacts') { renderCrmContacts(); document.getElementById('sec-crm-contacts').classList.add('active'); }
+  else if(sub === 'tasks') { renderCrmTasks(); document.getElementById('sec-crm-tasks').classList.add('active'); }
+}
+
+// ── Helpers ──
+function crmFmtVal(v) {
+  if(!v) return '—';
+  const n = +v;
+  if(n >= 1000000) return 'AED ' + (n/1000000).toFixed(1) + 'M';
+  if(n >= 1000) return 'AED ' + (n/1000).toFixed(0) + 'K';
+  return 'AED ' + n.toLocaleString();
+}
+function crmDaysAgo(dateStr) {
+  if(!dateStr) return null;
+  return Math.floor((Date.now() - new Date(dateStr+'T00:00').getTime()) / 86400000);
+}
+function crmAgeClass(dateStr) {
+  const d = crmDaysAgo(dateStr);
+  if(d === null) return '';
+  if(d > 30) return 'age-hot';
+  if(d > 14) return 'age-warm';
+  return 'age-stale';
+}
+function crmStagePill(stageId) {
+  const s = CRM_STAGES.find(x => x.id === stageId);
+  if(!s) return '';
+  return `<span class="stg-pill" style="background:${s.color}18;color:${s.color}">${s.label}</span>`;
+}
+function crmRelDots(score) {
+  let h = '<div class="rel-score">';
+  for(let i=1;i<=5;i++) h += `<div class="rel-dot${i<=(+score||0)?' on':''}"></div>`;
+  return h + '</div>';
+}
+function crmInfluenceBadge(inf) {
+  const map = { dm:'Decision Maker', inf:'Influencer', champ:'Champion', neutral:'Neutral' };
+  const cls = { dm:'influence-dm', inf:'influence-inf', champ:'influence-champ', neutral:'influence-neutral' };
+  return `<span class="influence-badge ${cls[inf]||'influence-neutral'}">${map[inf]||inf||'—'}</span>`;
+}
+function crmAccName(accId) {
+  const a = (db.crm.accounts||[]).find(x=>x.id===accId);
+  return a ? a.name : '—';
+}
+function crmOppName(oppId) {
+  const o = (db.crm.opportunities||[]).find(x=>x.id===oppId);
+  return o ? o.name : '—';
+}
+function crmFmtDate(d) {
+  if(!d) return '—';
+  return new Date(d+'T00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
+}
+function crmIsOverdue(due) {
+  if(!due) return false;
+  return new Date(due+'T00:00') < new Date(new Date().toDateString());
+}
+
+// ── DASHBOARD ──
+function renderCrmDashboard() {
+  const el = document.getElementById('sec-crm-dashboard');
+  const opps = db.crm.opportunities || [];
+  const tasks = db.crm.tasks || [];
+  const activeStages = ['prospect','initiated','engaged','qualified','proposal','submitted','negotiation','verbal'];
+  const active = opps.filter(o => activeStages.includes(o.stage));
+  const totalPipeline = active.reduce((a,o)=>a+(+o.value||0),0);
+  const weightedPipeline = active.reduce((a,o)=>a+(+o.value||0)*(+o.prob||0)/100,0);
+  const wonThisQ = opps.filter(o=>o.stage==='signed').reduce((a,o)=>a+(+o.value||0),0);
+  const overdueCount = tasks.filter(t=>!t.done && crmIsOverdue(t.due)).length;
+  const todayTasks = tasks.filter(t=>!t.done && t.due===new Date().toISOString().slice(0,10)).length;
+  const recentOpps = [...active].sort((a,b)=>new Date(b.updatedAt||b.createdAt||0)-new Date(a.updatedAt||a.createdAt||0)).slice(0,5);
+  const openTasks = tasks.filter(t=>!t.done).sort((a,b)=>new Date(a.due||'2099-01-01')-new Date(b.due||'2099-01-01')).slice(0,5);
+  el.innerHTML = `
+  <div class="ph">
+    <div><div class="ph-title">BD Dashboard</div><div class="ph-sub">Pipeline health · Recent activity · Open tasks</div></div>
+    <button class="btn btn-y btn-sm" onclick="openNewOppModal()">+ New Opportunity</button>
+  </div>
+  <div class="crm-dash-grid">
+    <div class="crm-metric"><div class="crm-metric-val">${active.length}</div><div class="crm-metric-lbl">Active Opportunities</div></div>
+    <div class="crm-metric"><div class="crm-metric-val">${crmFmtVal(totalPipeline)}</div><div class="crm-metric-lbl">Total Pipeline</div></div>
+    <div class="crm-metric"><div class="crm-metric-val">${crmFmtVal(weightedPipeline)}</div><div class="crm-metric-lbl">Weighted Pipeline</div><div class="crm-metric-sub">Probability-adjusted</div></div>
+    <div class="crm-metric"><div class="crm-metric-val">${crmFmtVal(wonThisQ)}</div><div class="crm-metric-lbl">Signed</div></div>
+    <div class="crm-metric" style="${overdueCount?'border-color:var(--red);background:var(--red-bg)':''}"><div class="crm-metric-val" style="${overdueCount?'color:var(--red)':''}">${overdueCount}</div><div class="crm-metric-lbl">Overdue Tasks</div></div>
+    <div class="crm-metric"><div class="crm-metric-val">${todayTasks}</div><div class="crm-metric-lbl">Due Today</div></div>
+  </div>
+  <div class="crm-dash-row">
+    <div class="crm-dash-panel">
+      <div class="crm-dash-panel-title">Recent Pipeline Activity</div>
+      ${recentOpps.length ? recentOpps.map(o=>`
+        <div class="crm-recent-item">
+          <div>
+            <div class="crm-recent-name">${o.name}</div>
+            <div class="crm-recent-meta">${crmAccName(o.accountId)} · ${crmStagePill(o.stage)}</div>
+          </div>
+          <div class="crm-recent-val">${crmFmtVal(o.value)}</div>
+        </div>`).join('') : '<div style="color:var(--gm);font-size:11px">No active opportunities yet.</div>'}
+    </div>
+    <div class="crm-dash-panel">
+      <div class="crm-dash-panel-title">Upcoming Tasks</div>
+      ${openTasks.length ? openTasks.map(t=>`
+        <div class="crm-recent-item ${crmIsOverdue(t.due)?'crm-task-overdue':''}">
+          <div>
+            <div class="crm-recent-name" style="${crmIsOverdue(t.due)?'color:var(--red)':''}">${t.title}</div>
+            <div class="crm-recent-meta">${crmAccName(t.accountId)} · ${crmFmtDate(t.due)}</div>
+          </div>
+          <div style="font-size:9px;color:var(--gm);text-transform:uppercase;white-space:nowrap">${t.type||''}</div>
+        </div>`).join('') : '<div style="color:var(--gm);font-size:11px">No open tasks.</div>'}
+    </div>
+  </div>`;
+}
+
+// ── PIPELINE ──
+function renderCrmPipeline() {
+  const board = document.getElementById('pipeline-board');
+  const filters = document.getElementById('pipeline-filters');
+  if(!board) return;
+  const filterDefs = [
+    { id:'active', label:'Active' },
+    { id:'all', label:'All' },
+    { id:'won', label:'Won' },
+    { id:'lost', label:'Lost' }
+  ];
+  filters.innerHTML = filterDefs.map(f=>`<button class="pipeline-filter-btn${crmPipelineFilter===f.id?' active':''}" onclick="crmPipelineFilter='${f.id}';renderCrmPipeline()">${f.label}</button>`).join('');
+  const activeStages = ['prospect','initiated','engaged','qualified','proposal','submitted','negotiation','verbal'];
+  let visibleStages = CRM_STAGES;
+  if(crmPipelineFilter === 'active') visibleStages = CRM_STAGES.filter(s => activeStages.includes(s.id));
+  else if(crmPipelineFilter === 'won') visibleStages = CRM_STAGES.filter(s => s.id === 'signed');
+  else if(crmPipelineFilter === 'lost') visibleStages = CRM_STAGES.filter(s => s.id === 'lost');
+  const opps = db.crm.opportunities || [];
+  board.innerHTML = visibleStages.map(stage => {
+    const cards = opps.filter(o => o.stage === stage.id);
+    const stageVal = cards.reduce((a,o)=>a+(+o.value||0),0);
+    return `
+    <div class="pipeline-col" id="col-${stage.id}" ondragover="crmDragOver(event,'${stage.id}')" ondragleave="crmDragLeave(event)" ondrop="crmDrop(event,'${stage.id}')">
+      <div class="pipeline-col-header">
+        <div class="pipeline-col-title" style="color:${stage.color}">${stage.label}</div>
+        <div class="pipeline-col-count">${cards.length}</div>
+      </div>
+      <div class="pipeline-col-cards" id="cards-${stage.id}">
+        ${cards.length ? cards.map(o => crmOppCardHTML(o, stage)).join('') : `<div style="color:var(--gm);font-size:10px;padding:8px 4px;text-align:center">—</div>`}
+        ${stageVal ? `<div style="font-size:9px;color:var(--gm);text-align:right;padding:4px 2px 0;font-weight:600">${crmFmtVal(stageVal)}</div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function crmOppCardHTML(o, stage) {
+  const age = crmDaysAgo(o.updatedAt || o.createdAt);
+  const ageLabel = age===null?'':(age<1?'today':age===1?'1d':age+'d');
+  const ageCls = crmAgeClass(o.updatedAt || o.createdAt);
+  return `<div class="opp-card stg-${stage.id}" draggable="true" onclick="openOppDetail('${o.id}')"
+    ondragstart="crmDragStart(event,'${o.id}')" ondragend="crmDragEnd(event)">
+    <div class="opp-card-name">${o.name}</div>
+    <div class="opp-card-account">${crmAccName(o.accountId)}</div>
+    <div class="opp-card-footer">
+      <div class="opp-card-val">${crmFmtVal(o.value)}</div>
+      ${ageLabel ? `<div class="opp-card-age ${ageCls}">${ageLabel}</div>` : ''}
+    </div>
+    ${o.prob ? `<div style="font-size:9px;color:var(--gm);margin-top:4px">${o.prob}% · ${crmFmtDate(o.closeDate)}</div>` : ''}
+  </div>`;
+}
+
+// Drag-and-drop
+let dragOppId = null;
+function crmDragStart(e, oppId) {
+  dragOppId = oppId;
+  e.dataTransfer.effectAllowed = 'move';
+  e.currentTarget.classList.add('dragging');
+}
+function crmDragEnd(e) { e.currentTarget.classList.remove('dragging'); }
+function crmDragOver(e, stageId) { e.preventDefault(); document.getElementById('col-'+stageId).classList.add('drag-over'); }
+function crmDragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+function crmDrop(e, stageId) {
+  e.preventDefault();
+  document.getElementById('col-'+stageId).classList.remove('drag-over');
+  if(!dragOppId) return;
+  const opp = (db.crm.opportunities||[]).find(o=>o.id===dragOppId);
+  if(opp && opp.stage !== stageId) {
+    opp.stage = stageId;
+    opp.updatedAt = new Date().toISOString().slice(0,10);
+    markDirty();
+    saveDB();
+    renderCrmPipeline();
+  }
+  dragOppId = null;
+}
+
+// ── ACCOUNTS ──
+function renderCrmAccounts() {
+  const el = document.getElementById('crm-accounts-view');
+  const accs = (db.crm.accounts||[]).filter(a => !crmAccSearch || a.name.toLowerCase().includes(crmAccSearch.toLowerCase()) || (a.sector||'').toLowerCase().includes(crmAccSearch.toLowerCase()) || (a.city||'').toLowerCase().includes(crmAccSearch.toLowerCase()));
+  el.innerHTML = `
+  <div class="crm-toolbar">
+    <input class="crm-search" placeholder="Search accounts…" value="${crmAccSearch}" oninput="crmAccSearch=this.value;renderCrmAccounts()">
+  </div>
+  ${accs.length ? `<table class="crm-table"><thead><tr>
+    <th>Company</th><th>Type</th><th>Sector</th><th>HQ</th><th>Owner</th><th>Rel.</th><th></th>
+  </tr></thead><tbody>${accs.map(a=>{
+    const oppCount = (db.crm.opportunities||[]).filter(o=>o.accountId===a.id).length;
+    const conCount = (db.crm.contacts||[]).filter(c=>c.accountId===a.id).length;
+    return `<tr>
+      <td><div class="name-cell">${a.name}</div><div class="meta-cell">${conCount} contact${conCount!==1?'s':''} · ${oppCount} opp${oppCount!==1?'s':''}</div></td>
+      <td>${a.type||'—'}</td>
+      <td><span class="badge-sector">${a.sector||'—'}</span></td>
+      <td class="meta-cell">${[a.city,a.country].filter(Boolean).join(', ')||'—'}</td>
+      <td class="meta-cell">${a.owner||'—'}</td>
+      <td>${crmRelDots(a.rel)}</td>
+      <td class="action-cell">
+        <button class="btn btn-ghost btn-xs" onclick="openEditAccountModal('${a.id}')">Edit</button>
+        <button class="btn btn-ghost btn-xs" onclick="deleteCrmItem('accounts','${a.id}')" style="color:var(--red)">Del</button>
+      </td>
+    </tr>`;
+  }).join('')}</tbody></table>` : '<div class="empty"><p>No accounts found. Add your first account above.</p></div>'}`;
+}
+
+// ── CONTACTS ──
+function renderCrmContacts() {
+  const el = document.getElementById('crm-contacts-view');
+  const cons = (db.crm.contacts||[]).filter(c => !crmConSearch || (c.first+' '+c.last).toLowerCase().includes(crmConSearch.toLowerCase()) || (c.title||'').toLowerCase().includes(crmConSearch.toLowerCase()) || crmAccName(c.accountId).toLowerCase().includes(crmConSearch.toLowerCase()));
+  el.innerHTML = `
+  <div class="crm-toolbar">
+    <input class="crm-search" placeholder="Search contacts…" value="${crmConSearch}" oninput="crmConSearch=this.value;renderCrmContacts()">
+  </div>
+  ${cons.length ? `<table class="crm-table"><thead><tr>
+    <th>Name</th><th>Account</th><th>Role</th><th>Influence</th><th>Contact</th><th></th>
+  </tr></thead><tbody>${cons.map(c=>`<tr>
+    <td><div class="name-cell">${c.first} ${c.last}</div></td>
+    <td class="meta-cell">${crmAccName(c.accountId)}</td>
+    <td class="meta-cell">${c.title||'—'}</td>
+    <td>${crmInfluenceBadge(c.influence)}</td>
+    <td class="meta-cell">${c.email?`<div>${c.email}</div>`:''}${c.mobile?`<div>${c.mobile}</div>`:''}</td>
+    <td class="action-cell">
+      <button class="btn btn-ghost btn-xs" onclick="openEditContactModal('${c.id}')">Edit</button>
+      <button class="btn btn-ghost btn-xs" onclick="deleteCrmItem('contacts','${c.id}')" style="color:var(--red)">Del</button>
+    </td>
+  </tr>`).join('')}</tbody></table>` : '<div class="empty"><p>No contacts found.</p></div>'}`;
+}
+
+// ── TASKS ──
+function renderCrmTasks() {
+  const el = document.getElementById('crm-tasks-view');
+  const today = new Date().toISOString().slice(0,10);
+  let tasks = db.crm.tasks || [];
+  if(crmTaskFilter === 'open') tasks = tasks.filter(t=>!t.done);
+  const overdue = tasks.filter(t=>!t.done && crmIsOverdue(t.due));
+  const dueToday = tasks.filter(t=>!t.done && t.due===today);
+  const upcoming = tasks.filter(t=>!t.done && t.due && t.due>today).sort((a,b)=>new Date(a.due)-new Date(b.due));
+  const done = tasks.filter(t=>t.done);
+  const noDate = tasks.filter(t=>!t.done && !t.due);
+  function taskHTML(t) {
+    const priLabel = t.pri==='high'?'<span class="task-pri-high">!</span>':'';
+    return `<div class="crm-task-row ${t.done?'crm-task-done':''} ${!t.done&&crmIsOverdue(t.due)?'crm-task-overdue':''}" id="ctrow-${t.id}">
+      <div class="crm-task-check ${t.done?'done':''}" onclick="crmToggleTask('${t.id}')">${t.done?'✓':''}</div>
+      <div class="crm-task-body">
+        <div class="crm-task-title">${priLabel} ${t.title}</div>
+        <div class="crm-task-meta">
+          ${t.accountId?`<span>${crmAccName(t.accountId)}</span>`:''}
+          ${t.due?`<span>${crmFmtDate(t.due)}</span>`:''}
+          ${t.type?`<span style="text-transform:uppercase;font-size:9px">${t.type}</span>`:''}
+        </div>
+      </div>
+      <div class="crm-task-actions">
+        <button class="btn btn-ghost btn-xs" onclick="openEditTaskModal('${t.id}')">Edit</button>
+        <button class="btn btn-ghost btn-xs" onclick="deleteCrmItem('tasks','${t.id}')" style="color:var(--red)">Del</button>
+      </div>
+    </div>`;
+  }
+  let html = `<div class="crm-toolbar">
+    <button class="pipeline-filter-btn${crmTaskFilter==='open'?' active':''}" onclick="crmTaskFilter='open';renderCrmTasks()">Open</button>
+    <button class="pipeline-filter-btn${crmTaskFilter==='all'?' active':''}" onclick="crmTaskFilter='all';renderCrmTasks()">All</button>
+    <button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="openNewTaskModal()">+ New Task</button>
+  </div>`;
+  if(overdue.length) { html += `<div class="crm-task-section-hdr" style="color:var(--red)">Overdue (${overdue.length})</div>${overdue.map(taskHTML).join('')}`; }
+  if(dueToday.length) { html += `<div class="crm-task-section-hdr">Due Today</div>${dueToday.map(taskHTML).join('')}`; }
+  if(upcoming.length) { html += `<div class="crm-task-section-hdr">Upcoming</div>${upcoming.map(taskHTML).join('')}`; }
+  if(noDate.length) { html += `<div class="crm-task-section-hdr">No Due Date</div>${noDate.map(taskHTML).join('')}`; }
+  if(done.length && crmTaskFilter==='all') { html += `<div class="crm-task-section-hdr">Completed</div>${done.map(taskHTML).join('')}`; }
+  if(!overdue.length && !dueToday.length && !upcoming.length && !noDate.length && !done.length) html += '<div class="empty"><p>No tasks. Add your first task above.</p></div>';
+  el.innerHTML = html;
+}
+
+function crmToggleTask(id) {
+  const t = (db.crm.tasks||[]).find(x=>x.id===id);
+  if(!t) return;
+  t.done = !t.done;
+  markDirty();
+  saveDB();
+  renderCrmTasks();
+}
+
+// ── OPPORTUNITY DETAIL ──
+function openOppDetail(oppId) {
+  const o = (db.crm.opportunities||[]).find(x=>x.id===oppId);
+  if(!o) return;
+  const stage = CRM_STAGES.find(s=>s.id===o.stage);
+  const tasks = (db.crm.tasks||[]).filter(t=>t.oppId===oppId);
+  document.getElementById('mo-opp-detail-title').textContent = o.name;
+  document.getElementById('mo-opp-detail-body').innerHTML = `
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
+    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Account</div><div style="font-size:13px;font-weight:500">${crmAccName(o.accountId)}</div></div>
+    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Stage</div>${crmStagePill(o.stage)}</div>
+    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Value</div><div style="font-size:16px;font-weight:700">${crmFmtVal(o.value)}</div></div>
+    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Probability</div><div style="font-size:13px">${o.prob||0}%</div></div>
+    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Expected Close</div><div style="font-size:12px">${crmFmtDate(o.closeDate)}</div></div>
+    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Sector / Scope</div><div style="font-size:12px">${[o.sector,o.scope].filter(Boolean).join(' · ')||'—'}</div></div>
+  </div>
+  ${o.notes?`<div style="background:var(--offwhite);border:1px solid var(--gl);border-radius:var(--r);padding:12px;font-size:11.5px;line-height:1.6;margin-bottom:16px">${o.notes}</div>`:''}
+  <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:8px">Tasks (${tasks.length})</div>
+  ${tasks.length ? tasks.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gl);font-size:11px">
+    <div class="crm-task-check ${t.done?'done':''}" style="width:14px;height:14px;flex-shrink:0" onclick="crmToggleTask('${t.id}')">${t.done?'✓':''}</div>
+    <div style="${t.done?'text-decoration:line-through;color:var(--gm)':crmIsOverdue(t.due)?'color:var(--red)':''}">${t.title}</div>
+    <div style="margin-left:auto;font-size:10px;color:var(--gm);white-space:nowrap">${crmFmtDate(t.due)}</div>
+  </div>`).join('') : '<div style="font-size:11px;color:var(--gm)">No tasks linked.</div>'}`;
+  document.getElementById('mo-opp-detail-foot').innerHTML = `
+    <button class="btn btn-ghost" onclick="closeMo('mo-opp-detail')">Close</button>
+    <button class="btn btn-ghost" onclick="closeMo('mo-opp-detail');openEditOppModal('${oppId}')">Edit</button>
+    <button class="btn btn-y btn-sm" onclick="closeMo('mo-opp-detail');openNewTaskModal('${oppId}')">+ Task</button>`;
+  openMo('mo-opp-detail');
+}
+
+// ── MODALS — Opportunity ──
+function openNewOppModal(linkedOppId) {
+  editingCrmId.opp = null;
+  document.getElementById('mo-opp-title').textContent = 'New Opportunity';
+  document.getElementById('opp-f-name').value = '';
+  document.getElementById('opp-f-value').value = '';
+  document.getElementById('opp-f-prob').value = '30';
+  document.getElementById('opp-f-close').value = '';
+  document.getElementById('opp-f-sector').value = '';
+  document.getElementById('opp-f-scope').value = '';
+  document.getElementById('opp-f-notes').value = '';
+  const accSel = document.getElementById('opp-f-account');
+  accSel.innerHTML = '<option value="">— select account —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  const stageSel = document.getElementById('opp-f-stage');
+  stageSel.innerHTML = CRM_STAGES.map(s=>`<option value="${s.id}">${s.label}</option>`).join('');
+  stageSel.value = 'prospect';
+  openMo('mo-opp');
+}
+function openEditOppModal(id) {
+  const o = (db.crm.opportunities||[]).find(x=>x.id===id);
+  if(!o) return;
+  editingCrmId.opp = id;
+  document.getElementById('mo-opp-title').textContent = 'Edit Opportunity';
+  document.getElementById('opp-f-name').value = o.name||'';
+  document.getElementById('opp-f-value').value = o.value||'';
+  document.getElementById('opp-f-prob').value = o.prob||'';
+  document.getElementById('opp-f-close').value = o.closeDate||'';
+  document.getElementById('opp-f-sector').value = o.sector||'';
+  document.getElementById('opp-f-scope').value = o.scope||'';
+  document.getElementById('opp-f-notes').value = o.notes||'';
+  const accSel = document.getElementById('opp-f-account');
+  accSel.innerHTML = '<option value="">— select account —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  accSel.value = o.accountId||'';
+  const stageSel = document.getElementById('opp-f-stage');
+  stageSel.innerHTML = CRM_STAGES.map(s=>`<option value="${s.id}">${s.label}</option>`).join('');
+  stageSel.value = o.stage||'prospect';
+  openMo('mo-opp');
+}
+function saveOpp() {
+  const name = document.getElementById('opp-f-name').value.trim();
+  if(!name) { alert('Opportunity name is required.'); return; }
+  const obj = {
+    name,
+    accountId: document.getElementById('opp-f-account').value,
+    stage: document.getElementById('opp-f-stage').value,
+    value: +document.getElementById('opp-f-value').value || 0,
+    prob: +document.getElementById('opp-f-prob').value || 0,
+    closeDate: document.getElementById('opp-f-close').value,
+    sector: document.getElementById('opp-f-sector').value,
+    scope: document.getElementById('opp-f-scope').value,
+    notes: document.getElementById('opp-f-notes').value.trim(),
+    updatedAt: new Date().toISOString().slice(0,10)
+  };
+  ensureCrm();
+  if(editingCrmId.opp) {
+    const idx = db.crm.opportunities.findIndex(x=>x.id===editingCrmId.opp);
+    if(idx>=0) db.crm.opportunities[idx] = { ...db.crm.opportunities[idx], ...obj };
+  } else {
+    db.crm.opportunities.push({ id:uid(), createdAt:new Date().toISOString().slice(0,10), ...obj });
+  }
+  markDirty(); saveDB(); closeMo('mo-opp');
+  if(currentModule==='procurement') goProcurement('pipeline');
+}
+
+// ── MODALS — Account ──
+function openNewAccountModal() {
+  editingCrmId.account = null;
+  document.getElementById('mo-account-title').textContent = 'New Account';
+  ['acc-f-name','acc-f-city','acc-f-country','acc-f-owner','acc-f-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('acc-f-type').value = '';
+  document.getElementById('acc-f-sector').value = '';
+  document.getElementById('acc-f-rel').value = '3';
+  openMo('mo-account');
+}
+function openEditAccountModal(id) {
+  const a = (db.crm.accounts||[]).find(x=>x.id===id);
+  if(!a) return;
+  editingCrmId.account = id;
+  document.getElementById('mo-account-title').textContent = 'Edit Account';
+  document.getElementById('acc-f-name').value = a.name||'';
+  document.getElementById('acc-f-type').value = a.type||'';
+  document.getElementById('acc-f-sector').value = a.sector||'';
+  document.getElementById('acc-f-city').value = a.city||'';
+  document.getElementById('acc-f-country').value = a.country||'';
+  document.getElementById('acc-f-owner').value = a.owner||'';
+  document.getElementById('acc-f-rel').value = a.rel||3;
+  document.getElementById('acc-f-notes').value = a.notes||'';
+  openMo('mo-account');
+}
+function saveAccount() {
+  const name = document.getElementById('acc-f-name').value.trim();
+  if(!name) { alert('Company name is required.'); return; }
+  const obj = {
+    name,
+    type: document.getElementById('acc-f-type').value,
+    sector: document.getElementById('acc-f-sector').value,
+    city: document.getElementById('acc-f-city').value.trim(),
+    country: document.getElementById('acc-f-country').value.trim(),
+    owner: document.getElementById('acc-f-owner').value.trim(),
+    rel: +document.getElementById('acc-f-rel').value || 3,
+    notes: document.getElementById('acc-f-notes').value.trim()
+  };
+  ensureCrm();
+  if(editingCrmId.account) {
+    const idx = db.crm.accounts.findIndex(x=>x.id===editingCrmId.account);
+    if(idx>=0) db.crm.accounts[idx] = { ...db.crm.accounts[idx], ...obj };
+  } else {
+    db.crm.accounts.push({ id:uid(), createdAt:new Date().toISOString().slice(0,10), ...obj });
+  }
+  markDirty(); saveDB(); closeMo('mo-account');
+  if(currentModule==='procurement') goProcurement('accounts');
+}
+
+// ── MODALS — Contact ──
+function openNewContactModal() {
+  editingCrmId.contact = null;
+  document.getElementById('mo-contact-title').textContent = 'New Contact';
+  ['con-f-first','con-f-last','con-f-title','con-f-email','con-f-mobile','con-f-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('con-f-influence').value = '';
+  const sel = document.getElementById('con-f-account');
+  sel.innerHTML = '<option value="">— none —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  openMo('mo-contact');
+}
+function openEditContactModal(id) {
+  const c = (db.crm.contacts||[]).find(x=>x.id===id);
+  if(!c) return;
+  editingCrmId.contact = id;
+  document.getElementById('mo-contact-title').textContent = 'Edit Contact';
+  document.getElementById('con-f-first').value = c.first||'';
+  document.getElementById('con-f-last').value = c.last||'';
+  document.getElementById('con-f-title').value = c.title||'';
+  document.getElementById('con-f-email').value = c.email||'';
+  document.getElementById('con-f-mobile').value = c.mobile||'';
+  document.getElementById('con-f-influence').value = c.influence||'';
+  document.getElementById('con-f-notes').value = c.notes||'';
+  const sel = document.getElementById('con-f-account');
+  sel.innerHTML = '<option value="">— none —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  sel.value = c.accountId||'';
+  openMo('mo-contact');
+}
+function saveContact() {
+  const first = document.getElementById('con-f-first').value.trim();
+  const last = document.getElementById('con-f-last').value.trim();
+  if(!first || !last) { alert('First and last name are required.'); return; }
+  const obj = {
+    first, last,
+    accountId: document.getElementById('con-f-account').value,
+    title: document.getElementById('con-f-title').value.trim(),
+    email: document.getElementById('con-f-email').value.trim(),
+    mobile: document.getElementById('con-f-mobile').value.trim(),
+    influence: document.getElementById('con-f-influence').value,
+    notes: document.getElementById('con-f-notes').value.trim()
+  };
+  ensureCrm();
+  if(editingCrmId.contact) {
+    const idx = db.crm.contacts.findIndex(x=>x.id===editingCrmId.contact);
+    if(idx>=0) db.crm.contacts[idx] = { ...db.crm.contacts[idx], ...obj };
+  } else {
+    db.crm.contacts.push({ id:uid(), createdAt:new Date().toISOString().slice(0,10), ...obj });
+  }
+  markDirty(); saveDB(); closeMo('mo-contact');
+  if(currentModule==='procurement') goProcurement('contacts');
+}
+
+// ── MODALS — Task ──
+function openNewTaskModal(linkedOppId) {
+  editingCrmId.task = null;
+  document.getElementById('mo-crm-task-title').textContent = 'New Task';
+  document.getElementById('ctask-f-title').value = '';
+  document.getElementById('ctask-f-type').value = 'followup';
+  document.getElementById('ctask-f-pri').value = 'med';
+  document.getElementById('ctask-f-due').value = new Date(Date.now()+86400000).toISOString().slice(0,10);
+  document.getElementById('ctask-f-notes').value = '';
+  const accSel = document.getElementById('ctask-f-account');
+  accSel.innerHTML = '<option value="">— none —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  const oppSel = document.getElementById('ctask-f-opp');
+  oppSel.innerHTML = '<option value="">— none —</option>' + (db.crm.opportunities||[]).map(o=>`<option value="${o.id}">${o.name}</option>`).join('');
+  if(linkedOppId) { oppSel.value = linkedOppId; const opp = (db.crm.opportunities||[]).find(x=>x.id===linkedOppId); if(opp) accSel.value = opp.accountId||''; }
+  openMo('mo-crm-task');
+}
+function openEditTaskModal(id) {
+  const t = (db.crm.tasks||[]).find(x=>x.id===id);
+  if(!t) return;
+  editingCrmId.task = id;
+  document.getElementById('mo-crm-task-title').textContent = 'Edit Task';
+  document.getElementById('ctask-f-title').value = t.title||'';
+  document.getElementById('ctask-f-type').value = t.type||'followup';
+  document.getElementById('ctask-f-pri').value = t.pri||'med';
+  document.getElementById('ctask-f-due').value = t.due||'';
+  document.getElementById('ctask-f-notes').value = t.notes||'';
+  const accSel = document.getElementById('ctask-f-account');
+  accSel.innerHTML = '<option value="">— none —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  accSel.value = t.accountId||'';
+  const oppSel = document.getElementById('ctask-f-opp');
+  oppSel.innerHTML = '<option value="">— none —</option>' + (db.crm.opportunities||[]).map(o=>`<option value="${o.id}">${o.name}</option>`).join('');
+  oppSel.value = t.oppId||'';
+  openMo('mo-crm-task');
+}
+function saveCrmTask() {
+  const title = document.getElementById('ctask-f-title').value.trim();
+  if(!title) { alert('Task title is required.'); return; }
+  const obj = {
+    title,
+    type: document.getElementById('ctask-f-type').value,
+    pri: document.getElementById('ctask-f-pri').value,
+    due: document.getElementById('ctask-f-due').value,
+    accountId: document.getElementById('ctask-f-account').value,
+    oppId: document.getElementById('ctask-f-opp').value,
+    notes: document.getElementById('ctask-f-notes').value.trim()
+  };
+  ensureCrm();
+  if(editingCrmId.task) {
+    const idx = db.crm.tasks.findIndex(x=>x.id===editingCrmId.task);
+    if(idx>=0) db.crm.tasks[idx] = { ...db.crm.tasks[idx], ...obj };
+  } else {
+    db.crm.tasks.push({ id:uid(), createdAt:new Date().toISOString().slice(0,10), done:false, ...obj });
+  }
+  markDirty(); saveDB(); closeMo('mo-crm-task');
+  if(currentModule==='procurement') goProcurement('tasks');
+}
+
+// ── DELETE ──
+function deleteCrmItem(collection, id) {
+  if(!confirm('Delete this item?')) return;
+  db.crm[collection] = (db.crm[collection]||[]).filter(x=>x.id!==id);
+  markDirty(); saveDB();
+  if(collection==='accounts') renderCrmAccounts();
+  else if(collection==='contacts') renderCrmContacts();
+  else if(collection==='tasks') renderCrmTasks();
+  else if(collection==='opportunities') renderCrmPipeline();
 }
 
 // ═══════════════════════════════════════════════════
