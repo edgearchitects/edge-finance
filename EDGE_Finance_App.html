@@ -329,19 +329,29 @@ tbody td{padding:8px 11px;vertical-align:middle}
 }
 
 /* HOME SCREEN */
-.home-greeting{padding:40px 0 28px;border-bottom:1px solid var(--gl);margin-bottom:32px}
-.home-title{font-family:var(--font-display);font-size:32px;text-transform:uppercase;letter-spacing:-.02em;line-height:1;margin-bottom:6px}
-.home-sub{font-size:12px;color:var(--gm)}
-.module-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.module-card{background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:24px 20px;cursor:pointer;transition:all .15s;display:flex;flex-direction:column;gap:10px;position:relative}
-.module-card:hover{border-color:var(--black);box-shadow:0 2px 8px rgba(0,0,0,.08)}
-.module-card-soon{cursor:default;opacity:.6}
-.module-card-soon:hover{border-color:var(--gl);box-shadow:none}
-.module-card-icon{width:44px;height:44px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:16px;font-weight:400;flex-shrink:0}
-.module-card-name{font-family:var(--font-display);font-size:13px;text-transform:uppercase;letter-spacing:.02em;display:flex;align-items:center;gap:8px}
-.module-card-desc{font-size:11px;color:var(--gm);line-height:1.5}
-.module-card-arrow{font-size:16px;color:var(--black);margin-top:auto;align-self:flex-end}
-.module-soon-tag{font-family:var(--font);font-size:8px;font-weight:600;background:var(--gl);color:var(--gm);padding:1px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.04em}
+body.home-active main{background:#0d0d0d;transition:background .2s}
+body.home-active .nav{background:#0d0d0d;border-bottom:1px solid #1e1e1e}
+body.home-active .nav .brand{color:#fff}
+#sec-home .home-greeting{padding:40px 0 28px;border-bottom:1px solid #1e1e1e;margin-bottom:32px}
+#sec-home .home-title{font-family:var(--font-display);font-size:36px;text-transform:uppercase;letter-spacing:-.02em;line-height:1;margin-bottom:6px;color:#fff}
+#sec-home .home-sub{font-size:12px;color:#666}
+.module-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.module-card{background:#141414;border:1px solid #222;border-radius:var(--r);padding:28px 24px 22px;cursor:pointer;transition:border-color .15s,background .15s;display:flex;flex-direction:column;gap:0;position:relative;overflow:hidden}
+.module-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:transparent;transition:background .15s}
+.module-card:hover{border-color:#333;background:#181818}
+.module-card:hover::before{background:var(--yellow)}
+.module-card-soon{cursor:default}
+.module-card-soon:hover{border-color:#222;background:#141414}
+.module-card-soon:hover::before{background:transparent}
+.module-card-num{font-family:var(--font-display);font-size:11px;color:#333;letter-spacing:.08em;margin-bottom:20px}
+.module-card-icon{width:40px;height:40px;display:flex;align-items:center;justify-content:center;margin-bottom:16px;color:#555;flex-shrink:0}
+.module-card-icon svg{width:28px;height:28px;stroke-width:1.5}
+.module-card:hover .module-card-icon svg{color:var(--yellow)}
+.module-card-name{font-family:var(--font-display);font-size:14px;text-transform:uppercase;letter-spacing:.04em;color:#fff;display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.module-card-desc{font-size:10.5px;color:#555;line-height:1.6;flex:1}
+.module-card-arrow{font-size:13px;color:#333;margin-top:20px;align-self:flex-start;transition:color .15s,transform .15s}
+.module-card:hover .module-card-arrow{color:var(--yellow);transform:translateX(3px)}
+.module-soon-tag{font-family:var(--font);font-size:8px;font-weight:600;background:#1e1e1e;color:#444;padding:1px 5px;border-radius:2px;text-transform:uppercase;letter-spacing:.04em}
 .nav-back{font-family:var(--font);text-transform:none;letter-spacing:0;font-weight:500}
 .nav-module-label{}
 
@@ -706,48 +716,117 @@ tbody td{padding:8px 11px;vertical-align:middle}
     <div class="home-sub">Select a module to begin</div>
   </div>
   <div class="module-cards" id="module-cards">
+
+    <!-- 01 Finance -->
     <div class="module-card" onclick="enterModule('finance')">
-      <div class="module-card-icon" style="background:var(--black);color:var(--yellow)">F</div>
+      <div class="module-card-num">01</div>
+      <div class="module-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="14" width="4" height="7" rx=".5"/><rect x="9" y="9" width="4" height="12" rx=".5"/><rect x="16" y="4" width="4" height="17" rx=".5"/>
+          <polyline points="2 8 8 4 14 7 22 2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <div class="module-card-name">Finance</div>
       <div class="module-card-desc">Cashflow · Invoices · Fee Schedules · Variations</div>
       <div class="module-card-arrow">→</div>
     </div>
+
+    <!-- 02 Projects -->
     <div class="module-card" onclick="enterModule('projects')">
-      <div class="module-card-icon" style="background:var(--blue);color:#fff">P</div>
+      <div class="module-card-num">02</div>
+      <div class="module-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="20" height="20" rx=".5"/>
+          <line x1="2" y1="7" x2="22" y2="7"/><line x1="7" y1="2" x2="7" y2="22"/>
+          <line x1="12" y1="10" x2="19" y2="10"/><line x1="12" y1="14" x2="19" y2="14"/><line x1="12" y1="18" x2="16" y2="18"/>
+          <circle cx="9.5" cy="14" r="1" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
       <div class="module-card-name">Projects</div>
       <div class="module-card-desc">SOPs · Mobilisation · Checklists · Project Controls</div>
       <div class="module-card-arrow">→</div>
     </div>
+
+    <!-- 03 EDMS (soon) -->
     <div class="module-card module-card-soon">
-      <div class="module-card-icon" style="background:var(--plaster,#D9D6D0);color:var(--gd)">D</div>
+      <div class="module-card-num">03</div>
+      <div class="module-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linejoin="round"/>
+          <polyline points="14 2 14 8 20 8" stroke-linejoin="round"/>
+          <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>
+        </svg>
+      </div>
       <div class="module-card-name">EDMS <span class="module-soon-tag">Soon</span></div>
       <div class="module-card-desc">Document Control · Drawing Register · Versioning</div>
-      <div class="module-card-arrow" style="color:var(--gm)">—</div>
+      <div class="module-card-arrow">—</div>
     </div>
+
+    <!-- 04 EDGE PM (soon) -->
     <div class="module-card module-card-soon">
-      <div class="module-card-icon" style="background:var(--plaster,#D9D6D0);color:var(--gd)">Pr</div>
+      <div class="module-card-num">04</div>
+      <div class="module-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <rect x="3" y="3" width="18" height="18" rx=".5"/>
+          <line x1="3" y1="9" x2="21" y2="9"/><line x1="3" y1="15" x2="21" y2="15"/>
+          <line x1="9" y1="9" x2="9" y2="21"/><line x1="15" y1="9" x2="15" y2="21"/>
+          <rect x="6" y="5" width="3" height="2" rx=".3" fill="currentColor" stroke="none"/>
+          <rect x="12" y="5" width="3" height="2" rx=".3" fill="currentColor" stroke="none"/>
+        </svg>
+      </div>
+      <div class="module-card-name">EDGE PM <span class="module-soon-tag">Soon</span></div>
+      <div class="module-card-desc">Project Setup · Registers · Programme · Client Access</div>
+      <div class="module-card-arrow">—</div>
+    </div>
+
+    <!-- 05 Procurement (soon) -->
+    <div class="module-card module-card-soon">
+      <div class="module-card-num">05</div>
+      <div class="module-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2" stroke-linejoin="round"/>
+          <rect x="9" y="3" width="6" height="4" rx="1" stroke-linejoin="round"/>
+          <line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="12" y2="16"/>
+        </svg>
+      </div>
       <div class="module-card-name">Procurement <span class="module-soon-tag">Soon</span></div>
       <div class="module-card-desc">Suppliers · Purchase Orders · Consultant Agreements</div>
-      <div class="module-card-arrow" style="color:var(--gm)">—</div>
+      <div class="module-card-arrow">—</div>
     </div>
+
+    <!-- 06 Quality (soon) -->
     <div class="module-card module-card-soon">
-      <div class="module-card-icon" style="background:var(--plaster,#D9D6D0);color:var(--gd)">BD</div>
-      <div class="module-card-name">Business Dev <span class="module-soon-tag">Soon</span></div>
-      <div class="module-card-desc">Leads · Proposals · Client CRM · Win/Loss Tracking</div>
-      <div class="module-card-arrow" style="color:var(--gm)">—</div>
-    </div>
-    <div class="module-card module-card-soon">
-      <div class="module-card-icon" style="background:var(--plaster,#D9D6D0);color:var(--gd)">Q</div>
+      <div class="module-card-num">06</div>
+      <div class="module-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2l2.4 4.8 5.3.8-3.85 3.75.9 5.3L12 14l-4.75 2.65.9-5.3L4.3 7.6l5.3-.8z" stroke-linejoin="round"/>
+          <circle cx="12" cy="12" r="3"/>
+          <polyline points="9 12 11 14 15 10" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
       <div class="module-card-name">Quality <span class="module-soon-tag">Soon</span></div>
       <div class="module-card-desc">ISO Procedures · Audit Logs · Document Control</div>
-      <div class="module-card-arrow" style="color:var(--gm)">—</div>
+      <div class="module-card-arrow">—</div>
     </div>
+
+    <!-- 07 Admin -->
     <div class="module-card" onclick="enterModule('admin')">
-      <div class="module-card-icon" style="background:#222;color:var(--gm)">⚙</div>
+      <div class="module-card-num">07</div>
+      <div class="module-card-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="12" cy="8" r="3"/>
+          <path d="M6 20v-1a6 6 0 0 1 12 0v1"/>
+          <circle cx="18" cy="8" r="2.5"/>
+          <path d="M21 18v-.5a4.5 4.5 0 0 0-3-4.24"/>
+          <circle cx="6" cy="8" r="2.5"/>
+          <path d="M3 18v-.5a4.5 4.5 0 0 1 3-4.24"/>
+        </svg>
+      </div>
       <div class="module-card-name">Admin</div>
       <div class="module-card-desc">Users · Access Rights · Module Permissions</div>
       <div class="module-card-arrow">→</div>
     </div>
+
   </div>
 </div>
 
@@ -1595,23 +1674,21 @@ let currentModule = 'home';
 
 function goHome() {
   currentModule = 'home';
-  // Hide all module navs
   document.getElementById('navTabs-finance').style.display = 'none';
   document.getElementById('navTabs-projects').style.display = 'none';
   document.getElementById('navTabs-admin').style.display = 'none';
-  // Hide back/label
   document.getElementById('nav-back').style.display = 'none';
   document.getElementById('nav-module-label').style.display = 'none';
-  // Show home
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-home').classList.add('active');
+  document.body.classList.add('home-active');
 }
 
 function enterModule(module) {
   currentModule = module;
+  document.body.classList.remove('home-active');
   document.getElementById('nav-back').style.display = '';
   document.getElementById('nav-module-label').style.display = '';
-  // Hide all tab groups
   document.getElementById('navTabs-finance').style.display = 'none';
   document.getElementById('navTabs-projects').style.display = 'none';
   document.getElementById('navTabs-admin').style.display = 'none';
@@ -1714,9 +1791,7 @@ const SOP_LIBRARY = [
           { id: 's2a', num: '4', title: 'Folder and System Setup',
             items: [
               'Create project folder on server with correct project code and naming protocol',
-              'Copy all proposal and tender documents into project folder: RFP, client brief, commercial and technical proposals, PTCs, fee breakdown, scope matrix, programme, appointment letter, sub-consultant proposals, client negotiation records',
-              'Update .Studio: convert opportunity to Won, confirm project code, name, client details, fee value, Project Lead and Senior Manager, and attach key commercial and appointment information',
-              'Create Microsoft Teams project channel for the project'
+              'Copy all proposal and tender documents into project folder: RFP, client brief, commercial and technical proposals, PTCs, fee breakdown, scope matrix, programme, appointment letter, sub-consultant proposals, client negotiation records'
             ]
           },
           { id: 's2b', num: '5', title: 'Core Register Creation',
@@ -1730,7 +1805,7 @@ const SOP_LIBRARY = [
               'Create Authority Register — required authorities, submission requirements, NOCs, responsible party, target and actual dates',
               'Create Deliverables Register — stage deliverables, discipline, responsible party, format, required and actual issue dates, status and client approval status',
               'Create Invoice Schedule — triggers, amounts, proposed invoice dates, expected payment dates, sub-consultant payment exposure, reimbursables and risk notes',
-              'Issue register access and Teams invitations to all project team members'
+              'Issue register access invitations to all project team members'
             ]
           }
         ]
@@ -1771,7 +1846,7 @@ const SOP_LIBRARY = [
               'Formally notify all selected sub-consultants of project award and introduce to Project Lead — include project name, client name, EDGE role, kick off date and immediate information required',
               'Confirm sub-consultant availability, team structure and primary point of contact',
               'Prepare and issue sub-consultant appointment package: LOA or instruction, fee proposal, EDGE main agreement or flow-down terms, project programme, scope of services, Deliverables Register, Responsibility Matrix',
-              'Include in appointment package: payment terms, communication protocol, document naming protocol, title sheet template, BEP where applicable, register access or Teams invitation',
+              'Include in appointment package: payment terms, communication protocol, document naming protocol, title sheet template, BEP where applicable, register access',
               'Confirm sub-consultant payment terms — confirm whether back-to-back with client payment, whether advance payment is required, whether invoices require deliverable acceptance and whether there is any cashflow exposure to EDGE'
             ]
           },
@@ -1849,8 +1924,6 @@ const SOP_LIBRARY = [
           { id: 's8a', num: '15', title: 'Completion Criteria',
             items: [
               'Confirm project folder is created and all documents are correctly filed',
-              'Confirm .Studio is updated and project status is Active',
-              'Confirm Teams channel is set up with all required folders',
               'Confirm all core registers are created, populated and issued to the team',
               'Confirm internal kick off has been completed and MoM issued',
               'Confirm sub-consultants are notified, appointment packages issued, and kick off completed where applicable',
@@ -2049,6 +2122,15 @@ function startChecklist() {
   viewChecklistRun(run.id);
 }
 
+function deleteChecklistRun(runId) {
+  const run = (db.checklistRuns||[]).find(r=>r.id===runId);
+  if(!run) return;
+  if(!confirm(`Delete "${run.sopTitle} — ${run.projectName}"?\n\nThis cannot be undone.`)) return;
+  db.checklistRuns = (db.checklistRuns||[]).filter(r=>r.id!==runId);
+  markDirty();
+  renderChecklistRuns();
+}
+
 function renderChecklistRuns() {
   const el = document.getElementById('checklist-runs-view');
   if(!el) return;
@@ -2070,8 +2152,9 @@ function renderChecklistRuns() {
             <span class="badge ${statusClass}">${run.status}</span>
           </div>
         </div>
-        <div style="display:flex;gap:6px">
+        <div style="display:flex;gap:6px;align-items:center">
           ${run.status!=='Complete'?`<button class="btn btn-y btn-sm" onclick="viewChecklistRun('${run.id}')">Continue →</button>`:`<button class="btn btn-ghost btn-sm" onclick="viewChecklistRun('${run.id}')">Review</button>`}
+          <button class="btn btn-sm" style="background:transparent;border:1px solid #ddd;color:var(--gm)" onclick="deleteChecklistRun('${run.id}')" title="Delete run">✕</button>
         </div>
       </div>
       <div class="run-progress"><div class="run-progress-fill ${pct===100?'complete':''}" style="width:${pct}%"></div></div>
