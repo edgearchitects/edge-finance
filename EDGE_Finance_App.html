@@ -203,18 +203,24 @@ tbody td{padding:8px 11px;vertical-align:middle}
 
 
 
-/* AUTH & SAVE BAR */
-.auth-overlay{position:fixed;inset:0;background:var(--black);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:20px}
-.auth-box{background:var(--white);border-radius:6px;padding:40px 48px;text-align:center;max-width:400px;width:100%}
-.auth-logo{margin-bottom:20px}
-.auth-logo img{height:52px}
-.auth-title{font-size:18px;font-family:var(--font-display);text-transform:uppercase;letter-spacing:-.02em;margin-bottom:6px;line-height:1.1}
-.auth-sub{font-size:12px;color:var(--gm);margin-bottom:24px;line-height:1.5}
-.auth-btn{width:100%;padding:12px;background:var(--black);color:var(--white);border:none;border-radius:var(--r);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s}
-.auth-btn:hover{background:#222}
-.auth-btn svg{flex-shrink:0}
-.auth-error{font-size:11.5px;color:var(--red);margin-top:12px;display:none}
-.auth-loading{font-size:12px;color:var(--gm);margin-top:8px;display:none}
+/* AUTH OVERLAY — dark split screen */
+.auth-overlay{position:fixed;inset:0;background:#0a0a0a;z-index:9999;display:flex;align-items:stretch}
+.auth-split-left{flex:0 0 45%;background:#111;display:flex;flex-direction:column;justify-content:space-between;padding:40px 48px;border-right:1px solid #1e1e1e}
+.auth-split-logo{display:flex;align-items:center;gap:10px}
+.auth-logo-square{width:18px;height:18px;background:var(--yellow);flex-shrink:0}
+.auth-logo-text{font-family:var(--font-display);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:#fff}
+.auth-split-headline{font-family:var(--font-display);font-size:clamp(36px,5vw,64px);text-transform:uppercase;letter-spacing:-.02em;line-height:.95;color:#fff;margin:auto 0}
+.auth-split-tagline{font-size:11px;color:#555;letter-spacing:.02em}
+.auth-split-right{flex:1;background:#0d0d0d;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 48px;position:relative}
+.auth-inner-box{width:100%;max-width:400px}
+.auth-title{font-size:26px;font-weight:600;color:#fff;margin-bottom:6px;letter-spacing:-.01em}
+.auth-sub{font-size:12px;color:#666;margin-bottom:28px;line-height:1.5}
+.auth-btn{width:100%;padding:13px;background:var(--yellow);color:var(--black);border:none;border-radius:var(--r);font-family:var(--font);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;transition:background .15s;letter-spacing:.02em}
+.auth-btn:hover{background:var(--yd)}
+.auth-error{font-size:11px;color:#ff6b47;margin-top:12px;display:none;white-space:pre-wrap}
+.auth-loading{font-size:12px;color:#555;margin-top:10px;display:none}
+.auth-split-footer{position:absolute;bottom:24px;font-size:10px;color:#333;letter-spacing:.06em;text-transform:uppercase}
+@media(max-width:640px){.auth-split-left{display:none}.auth-split-right{padding:32px 24px}}
 
 .save-bar{position:fixed;bottom:0;left:0;right:0;background:var(--black);border-top:2px solid var(--yellow);padding:10px 24px;display:none;align-items:center;justify-content:space-between;z-index:500;gap:12px}
 .save-bar.visible{display:flex}
@@ -456,6 +462,23 @@ tbody td{padding:8px 11px;vertical-align:middle}
 .pm-bal-input-wrap{display:flex;align-items:center;gap:8px}
 .pm-bal-input-wrap label{font-size:9.5px;font-family:var(--font-display);text-transform:uppercase;letter-spacing:.03em;color:var(--gm);white-space:nowrap}
 .pm-bal-input-wrap input{width:140px;padding:5px 9px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:12px;text-align:right;background:var(--offwhite)}
+
+/* LOCKED PHASE */
+.run-phase-locked{background:#111;border:1px dashed #333;border-radius:var(--r);margin:16px 0;padding:12px 16px;opacity:.7}
+.run-phase-locked .run-phase-title{color:#555}
+
+/* CHECK ROW DONE STATE */
+.run-check-done{opacity:.65}
+
+/* COMMENT UI */
+.run-comment-wrap{margin-top:4px}
+.run-comment-btn{background:none;border:none;font-family:var(--font);font-size:10px;color:var(--gm);cursor:pointer;padding:0;text-decoration:underline;text-underline-offset:2px}
+.run-comment-btn:hover{color:var(--black)}
+.run-comment-text{font-size:11px;color:var(--blue);font-style:italic;cursor:pointer;padding:3px 0;line-height:1.4}
+.run-comment-text:hover{text-decoration:underline}
+.run-comment-input-wrap{margin-top:6px}
+.run-comment-input{width:100%;padding:6px 8px;border:1px solid var(--gl);border-radius:var(--r);font-family:var(--font);font-size:11.5px;resize:vertical;background:var(--offwhite)}
+.run-comment-input:focus{outline:none;border-color:var(--black)}
 </style>
 <script>
 // MSAL loader — tries multiple CDNs in sequence, never fails silently
@@ -487,17 +510,27 @@ tbody td{padding:8px 11px;vertical-align:middle}
 
 <!-- AUTH OVERLAY -->
 <div class="auth-overlay" id="auth-overlay">
-  <div class="auth-box">
-    <div class="auth-logo" id="auth-logo-wrap"></div>
-    <div class="auth-title">EDGE Architects</div>
-    <div class="auth-sub">Sign in with your Microsoft 365 account to access the EDGE platform.</div>
-    <div id="auth-debug" style="font-size:9px;color:#aaa;margin-bottom:8px;word-break:break-all"></div>
-    <button class="auth-btn" onclick="signIn()">
-      <svg width="20" height="20" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="9" height="9" fill="#F25022"/><rect x="11" y="1" width="9" height="9" fill="#7FBA00"/><rect x="1" y="11" width="9" height="9" fill="#00A4EF"/><rect x="11" y="11" width="9" height="9" fill="#FFB900"/></svg>
-      Sign in with Microsoft
-    </button>
-    <div class="auth-error" id="auth-error"></div>
-    <div class="auth-loading" id="auth-loading">Signing in…</div>
+  <div class="auth-split-left">
+    <div class="auth-split-logo">
+      <div class="auth-logo-square"></div>
+      <span class="auth-logo-text">EDGE ARCHITECTS</span>
+    </div>
+    <div class="auth-split-headline">EDGE<br>Platform</div>
+    <div class="auth-split-tagline">Finance · Projects · Document Control · Quality</div>
+  </div>
+  <div class="auth-split-right">
+    <div class="auth-inner-box">
+      <div class="auth-title">Sign in</div>
+      <div class="auth-sub">Access your EDGE account using Microsoft 365.</div>
+      <div id="auth-debug" style="font-size:9px;color:#666;margin-bottom:8px;word-break:break-all"></div>
+      <button class="auth-btn" onclick="signIn()">
+        <svg width="20" height="20" viewBox="0 0 21 21" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="1" y="1" width="9" height="9" fill="#F25022"/><rect x="11" y="1" width="9" height="9" fill="#7FBA00"/><rect x="1" y="11" width="9" height="9" fill="#00A4EF"/><rect x="11" y="11" width="9" height="9" fill="#FFB900"/></svg>
+        Sign in with Microsoft
+      </button>
+      <div class="auth-error" id="auth-error"></div>
+      <div class="auth-loading" id="auth-loading">Signing in…</div>
+    </div>
+    <div class="auth-split-footer">© 2026 EDGE ARCHITECTS</div>
   </div>
 </div>
 
@@ -1623,247 +1656,6 @@ const SOP_LIBRARY = [
     appliesTo: 'All EDGE projects following award, LOI, appointment, or written instruction to proceed',
     primaryUsers: 'Senior Manager, Project Lead, Bid Coordinator, Finance, Project Team, Sub Consultants',
     status: 'Internal Rollout Draft',
-    phases: [
-      {
-        id: 'ph1', title: 'Phase 1: Pre Mobilisation Gate',
-        sections: [
-          { id: 's5', num: '5', title: 'Mobilisation Approval Gate',
-            body: 'Before any project is mobilised, the Senior Manager and Project Lead shall confirm that the project has passed the Pre Mobilisation Gate. The project may only proceed where one of the following has been received:',
-            items: ['Signed consultancy agreement','Letter of Award','Letter of Intent','Purchase Order','Formal written instruction to proceed','Client email instruction accepted by EDGE management']
-          },
-          { id: 's6', num: '6', title: 'Mandatory Pre Mobilisation Checks',
-            subsections: [
-              { title: '6.1 Commercial and Contractual Checks', items: [
-                'Confirm client name and contracting entity',
-                'Confirm project name and project location',
-                'Confirm EDGE scope of services',
-                'Confirm fee value and payment schedule',
-                'Confirm payment terms and invoice triggers',
-                'Confirm whether advance payment, mobilisation payment, or first milestone payment is due',
-                'Confirm reimbursables, authority fees, printing costs, travel costs, and other recoverables',
-                'Confirm exclusions and assumptions included in the proposal',
-                'Confirm whether EDGE is acting as Lead Design Consultant, Architect, Interior Designer, Executive Architect, Architect of Record, or another role',
-                'Confirm whether any scope has changed since proposal submission',
-                'Confirm whether the client programme differs from the proposal programme',
-                'Confirm whether contractual terms have been accepted, amended, or remain pending'
-              ]},
-              { title: '6.2 Risk Checks', items: [
-                'Identify any mismatch between fee, scope, programme, and deliverables',
-                'Identify client payment risk or known commercial sensitivity',
-                'Identify authority approval risk',
-                'Identify sub consultant appointment risk',
-                'Identify resource availability risk',
-                'Identify compressed programme risk',
-                'Identify unclear deliverables or open assumptions',
-                'Identify any requirement for professional indemnity review'
-              ]},
-              { title: '6.3 Authority and Appointment Checks', items: [
-                'Confirm whether authority approvals are required',
-                'Confirm which party is responsible for authority submissions',
-                'Confirm whether an Architect of Record is required',
-                'Confirm whether EDGE will appoint the AOR or whether the client will appoint directly',
-                'Confirm whether any specialist NOCs are required',
-                'Confirm whether early authority engagement is required before design development'
-              ]}
-            ]
-          },
-          { id: 's7', num: '7', title: 'Pre Mobilisation Gate Output',
-            body: 'The Project Lead shall prepare a short Mobilisation Gate Note confirming:',
-            items: ['Project can proceed to mobilisation','Key commercial terms are understood','Critical risks are identified','Required internal approvals are obtained','Any limitations or assumptions are recorded'],
-            note: 'The Mobilisation Gate Note shall be saved in the project folder.'
-          }
-        ]
-      },
-      {
-        id: 'ph2', title: 'Phase 2: Project Setup',
-        sections: [
-          { id: 's8', num: '8', title: 'Project Folder Setup',
-            body: 'Once the project passes the Pre Mobilisation Gate, the Bid Coordinator shall create a new project folder in the Projects drive on the server. As a minimum, the following information shall be copied into the project folder:',
-            items: ['RFP','Client brief','Commercial proposal','Technical proposal','Clarifications and tender correspondence','PTCs','Fee breakdown','Scope matrix','Programme submitted with proposal','Client appointment, LOI, LOA, PO, or instruction to proceed','Any relevant presentation, concept, or design material issued during bidding','Sub consultant proposals','Client comments or negotiation records']
-          },
-          { id: 's9', num: '9', title: '.Studio Update',
-            body: 'The Bid Coordinator shall update .Studio as follows:',
-            items: ['Move opportunity status to Won','Convert the opportunity into a project','Confirm project code','Confirm project name','Confirm client details','Confirm fee value','Confirm Project Lead','Confirm Senior Manager','Attach key commercial and appointment information where applicable']
-          },
-          { id: 's10', num: '10', title: 'Microsoft Teams Setup',
-            body: 'The Project Lead or assigned administrator shall create a project channel in Microsoft Teams. The Teams channel shall include, as a minimum:',
-            items: ['Project Team Directory','Drawing Register, incoming and outgoing','RFI Register','Design Change Register','Risk Register','Action Register','Decision Register','Authority Register','Deliverables Register','Minutes of Meeting folder','Client Instructions folder','Sub Consultant folder','Commercial folder, access restricted where required','Programme folder','BIM folder','Submission folder']
-          },
-          { id: 's11', num: '11', title: 'Project Register Setup',
-            body: 'The following registers shall be created before the first external kick off meeting:',
-            roles: [
-              { role: 'Project Team Directory', desc: 'Confirms all project participants, organisations, roles, email addresses, and points of contact.' },
-              { role: 'Drawing Register', desc: 'Tracks incoming and outgoing drawings, revisions, dates, and status.' },
-              { role: 'RFI Register', desc: 'Tracks requests for information, responsibility, due dates, and closure status.' },
-              { role: 'Design Change Register', desc: 'Tracks design changes, originator, reason, status, commercial impact, and approval status.' },
-              { role: 'Risk Register', desc: 'Tracks project risks, owners, probability, impact, mitigation, and status.' },
-              { role: 'Action Register', desc: 'Tracks agreed actions from meetings and workshops.' },
-              { role: 'Decision Register', desc: 'Records key decisions and approvals.' },
-              { role: 'Authority Register', desc: 'Tracks authority requirements, submissions, NOCs, responsibilities, and approval status.' },
-              { role: 'Deliverables Register', desc: 'Tracks stage deliverables, responsibility, format, issue dates, and approval status.' },
-              { role: 'Invoice Schedule', desc: 'Tracks invoice dates, amounts, triggers, expected payment dates, and sub consultant payment exposure.' }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'ph3', title: 'Phase 3: Internal Project Alignment',
-        sections: [
-          { id: 's12', num: '12', title: 'Internal Kick Off Meeting',
-            body: 'Prior to any sub consultant or client kick off meeting, the Senior Manager shall arrange an internal kick off meeting. The meeting shall be attended by:',
-            items: ['Senior Manager','Project Lead','Bid Coordinator','Finance representative, where required','BIM Lead, where required','Key design team members','Document controller or assigned administrator','Any other relevant internal team members']
-          },
-          { id: 's13', num: '13', title: 'Internal Kick Off Agenda',
-            subsections: [
-              { title: '13.1 Project Overview', items: ['Project name and location','Client and stakeholder overview','Project type and sector','Brief summary','EDGE appointment role','Project value and strategic importance'] },
-              { title: '13.2 Scope and Deliverables', items: ['Confirm EDGE scope of services','Confirm sub consultant scope','Confirm deliverables by stage','Confirm exclusions','Confirm assumptions','Confirm RIBA stage or equivalent project stage alignment','Confirm whether EDGE deliverables are design, coordination, authority, tender, IFC, supervision, or advisory deliverables'] },
-              { title: '13.3 Commercial Alignment', items: ['Confirm total fee','Confirm stage fee breakdown','Confirm payment milestones','Confirm invoice triggers','Confirm payment terms','Confirm expected invoice dates','Confirm sub consultant fees and payment exposure','Confirm reimbursables and recoverables','Identify any commercial risk'] },
-              { title: '13.4 Programme Alignment', items: ['Review proposal programme','Review client required programme','Identify differences between proposal and client expectations','Confirm key milestones','Confirm submission dates','Confirm client review periods','Confirm authority review periods','Identify compressed or unrealistic durations'] },
-              { title: '13.5 Resource Alignment', items: ['Confirm Project Lead','Confirm discipline leads','Confirm production team','Confirm assigned hours','Confirm resource loading','Confirm immediate mobilisation needs','Confirm any external support required'] },
-              { title: '13.6 Authority Strategy', items: ['Identify required authorities','Confirm authority submission responsibility','Confirm AOR responsibility','Confirm expected NOCs','Confirm authority approval sequence','Confirm submission stage requirements','Identify early authority risks'] },
-              { title: '13.7 BIM and Digital Delivery', items: ['Confirm BIM requirement','Confirm BEP status','Confirm LOD requirement','Confirm model exchange dates','Confirm software platforms','Confirm naming protocols','Confirm model responsibility and limitations'] },
-              { title: '13.8 Risk Review', items: ['Identify top 10 project risks','Assign risk owners','Confirm mitigation actions','Confirm escalation triggers'] },
-              { title: '13.9 Change Control', items: ['Confirm change control procedure','Confirm who can instruct change','Confirm how design changes are logged','Confirm when commercial notice is required','Confirm process for variations and additional services'] }
-            ]
-          },
-          { id: 's14', num: '14', title: 'Internal Kick Off Outputs',
-            body: 'The Project Lead shall issue internal minutes within two working days. The following outputs shall be completed after the internal kick off:',
-            items: ['Internal MoM','Action Register updated','Risk Register updated','Deliverables Register updated','Project Team Directory updated','Invoice Schedule issued to Finance','Authority Register initiated','Change Control procedure activated','Project programme baseline prepared or requested']
-          }
-        ]
-      },
-      {
-        id: 'ph4', title: 'Phase 4: Sub Consultant Mobilisation',
-        sections: [
-          { id: 's15', num: '15', title: 'Sub Consultant Notification',
-            body: 'Following the internal kick off, all selected sub consultants shall be formally notified of the project award and introduced to the Project Lead. The notification shall include:',
-            items: ['Project name','Client name, where appropriate','EDGE Project Lead','Confirmation of intended appointment','Kick off meeting date','Immediate information required from the sub consultant','Request to confirm availability, team structure, and primary point of contact']
-          },
-          { id: 's16', num: '16', title: 'Sub Consultant Appointment Package',
-            body: 'The Project Lead shall prepare and distribute the sub consultant appointment package. As a minimum, this shall include:',
-            items: ['Letter of Award or sub consultant instruction','Sub consultant fee proposal','EDGE main agreement or relevant flow down terms, where applicable','Project programme','Scope of services','Deliverables Register','Responsibility Matrix','Payment terms','Communication protocol','Document naming protocol','Title sheet template','BEP, where applicable','Register access or Teams invitation']
-          },
-          { id: 's17', num: '17', title: 'Sub Consultant Kick Off Meeting',
-            body: 'The Project Lead shall chair the sub consultant kick off meeting. The agenda shall include:',
-            items: ['Introduction of project team','Confirmation of points of contact','Project summary','EDGE role and appointment structure','Sub consultant role and responsibilities','Programme and key milestones','Deliverables by stage','Authority responsibilities','BIM requirements','Information required from client or others','Drawing and document protocols','RFI and change control procedures','Risk items and early warnings','Next steps and immediate actions','Q&A']
-          },
-          { id: 's18', num: '18', title: 'Sub Consultant Controls',
-            body: 'Sub consultants shall not issue directly to the client unless authorised by EDGE. All sub consultant outputs shall be issued through the agreed document control process. Sub consultant deliverables shall be reviewed against:',
-            items: ['Scope','Deliverables Register','Programme','Quality requirements','Coordination requirements','Authority requirements','BIM requirements']
-          }
-        ]
-      },
-      {
-        id: 'ph5', title: 'Phase 5: Client and Project Kick Off',
-        sections: [
-          { id: 's19', num: '19', title: 'Client Kick Off Preparation',
-            body: 'Before the client kick off meeting, the Project Lead shall prepare:',
-            items: ['Project introduction slide or agenda','Team structure','Communication protocol','Programme overview','Deliverables overview','Key information required from client','Authority strategy summary','Meeting and reporting rhythm','Change control process','Immediate risks or decisions required']
-          },
-          { id: 's20', num: '20', title: 'Client Kick Off Meeting Agenda',
-            body: 'The client kick off meeting shall be chaired by the Project Lead unless otherwise agreed. The agenda shall include:',
-            items: ['Introduction of project team','Confirmation of client, consultant, and sub consultant points of contact','Project summary and objectives','Scope confirmation','Deliverables and submission expectations','Programme and key milestones','Client review periods and approval process','Authority strategy and responsibilities','Communication protocol','Document control and issue protocol','RFI process','Design change and variation process','Meeting structure and reporting frequency','Immediate information required from the client','Key risks and dependencies','Next steps','Q&A']
-          },
-          { id: 's21', num: '21', title: 'Client Kick Off Outputs',
-            body: 'The Project Lead shall ensure that the following are issued within two working days:',
-            items: ['Minutes of Meeting','Action Register','Updated Project Team Directory','Updated Programme, if amended','Information Request List','Updated Risk Register, if required','Updated Deliverables Register, if required','Confirmation of recurring meeting schedule']
-          }
-        ]
-      },
-      {
-        id: 'ph6', title: 'Phase 6: Project Control Activation',
-        sections: [
-          { id: 's22', num: '22', title: 'Meeting Rhythm',
-            body: 'The Project Lead shall agree the required meeting structure for the project. Meetings may include:',
-            items: ['Client Progress Meeting','Internal Project Review','Technical Coordination Meeting','Design Meeting','BIM Coordination Meeting','Authority Coordination Meeting','Commercial Review Meeting','Sub Consultant Coordination Meeting'],
-            note: 'Meeting frequency may be weekly, bi-weekly, or as required by the project programme. All recurring meetings shall be issued as calendar invitations with clear titles, attendees, and agendas.'
-          },
-          { id: 's23', num: '23', title: 'Daily or Regular Internal Check Ins',
-            body: 'Where appropriate, the Project Lead shall schedule short internal check ins (15-30 minutes) following this format:',
-            items: ['What was completed yesterday or since the last check in?','What remains outstanding?','What is planned today or this week?','What decisions are required?','What risks, concerns, or red flags exist?','What support is required?']
-          },
-          { id: 's24', num: '24', title: 'Minutes of Meeting Protocol',
-            body: 'All key meetings shall be recorded or minuted. Minutes shall be issued within two working days. Minutes shall include:',
-            items: ['Meeting title','Date and time','Attendees','Apologies','Summary by category','Decisions made','Actions agreed','Action owner','Due date','Status of previous actions'],
-            note: 'Meeting categories: Design · Technical · Commercial · Programme · Authority · Risk'
-          },
-          { id: 's25', num: '25', title: 'Document Control Protocol',
-            body: 'The Project Lead shall ensure that all project documents follow the agreed naming convention and filing structure. The following rules apply:',
-            items: ['No uncontrolled issue of drawings or documents','No reliance on WhatsApp instructions unless confirmed by email or MoM','All client instructions must be saved in the Client Instructions folder','All submissions must be recorded in the Drawing Register or Submission Register','All revisions must be clearly identified','Superseded information must be archived and not deleted','All formal submissions must include transmittal records']
-          },
-          { id: 's26', num: '26', title: 'Deliverables Register Control',
-            body: 'The Deliverables Register shall be treated as a live control document. It shall include:',
-            items: ['Stage','Discipline','Deliverable description','Responsible party','Format','Required issue date','Actual issue date','Status','Client approval status','Comments'],
-            note: 'The Deliverables Register shall be reviewed at each stage and before each formal submission.'
-          },
-          { id: 's27', num: '27', title: 'Programme Control',
-            body: 'The Project Lead shall establish a baseline programme. The programme shall identify:',
-            items: ['Internal production milestones','Sub consultant milestones','Client review periods','Authority submission dates','Authority review periods','Design freeze dates','Submission dates','Approval milestones','Invoice triggers'],
-            note: 'Any delay, compression, or deviation shall be recorded and escalated.'
-          },
-          { id: 's28', num: '28', title: 'Design Change Control',
-            body: 'The Design Change Register shall be active from project mobilisation. A design change may arise from:',
-            items: ['Client instruction','Operator instruction','Authority requirement','Site condition','Budget reduction','Value engineering','Change in brief','Change in area or GFA','Change in scope','Change in programme','Late stakeholder comment','Sub consultant technical requirement'],
-            note: 'Each design change shall be assessed for: Scope impact · Programme impact · Fee impact · Authority impact · Coordination impact · Deliverable impact. Where a change has commercial or programme impact, the Project Lead shall notify the Senior Manager before proceeding.'
-          },
-          { id: 's29', num: '29', title: 'Risk Register Control',
-            body: 'The Risk Register shall be established during mobilisation and reviewed regularly. Each risk shall include:',
-            items: ['Risk description','Cause','Impact','Probability','Severity','Owner','Mitigation','Target date','Status'],
-            note: 'High risks shall be escalated to the Senior Manager immediately.'
-          },
-          { id: 's30', num: '30', title: 'Authority Register Control',
-            body: 'The Authority Register shall identify:',
-            items: ['Required authorities','Submission requirements','Responsible party','Submission stage','Required documents','Target submission date','Actual submission date','Review status','Approval date','NOC requirements','Risks or dependencies'],
-            note: 'The authority pathway shall be reviewed early with the AOR or authority consultant.'
-          },
-          { id: 's31', num: '31', title: 'BIM Execution and Model Control',
-            body: 'Where BIM applies, the BIM Lead or Project Lead shall ensure the BEP is prepared and agreed. The BEP shall define:',
-            items: ['Software platform','Model origin and coordinates','LOD requirements','Model naming','File exchange format','Model exchange frequency','Discipline responsibility','Clash detection process','Model limitations','Sheet production requirements','COBie or asset data requirements, where applicable'],
-            note: 'EDGE shall clearly define whether the model is for design coordination, authority submission, tender, construction, or another use.'
-          }
-        ]
-      },
-      {
-        id: 'ph7', title: 'Phase 7: Commercial and Financial Control',
-        sections: [
-          { id: 's32', num: '32', title: 'Invoice Schedule',
-            body: 'The Project Lead shall populate an invoicing schedule for Finance. The schedule shall include:',
-            items: ['Project name','Client name','Total fee','Stage breakdown','Invoice trigger','Proposed invoice date','Invoice amount','Expected payment date','Payment terms','Sub consultant payment due','Retention, if applicable','Reimbursables','Notes on risk or dependency']
-          },
-          { id: 's33', num: '33', title: 'Invoice Trigger Control',
-            body: 'The Project Lead shall confirm the exact trigger for each invoice. Typical triggers include:',
-            items: ['Mobilisation','Stage commencement','Stage submission','Authority submission','Authority approval','Client approval','Monthly retainer','Milestone completion','Site attendance period'],
-            note: 'Where payment is linked to approval, the Project Lead shall actively track approval status and issue formal reminders where required.'
-          },
-          { id: 's34', num: '34', title: 'Sub Consultant Payment Control',
-            body: 'Sub consultant payment exposure shall be reviewed before appointment. The Project Lead and Finance shall confirm:',
-            items: ['Sub consultant fee','Payment terms','Whether payment is back to back with client payment','Whether advance payment is required','Whether invoices require deliverable acceptance','Whether there is a cashflow exposure to EDGE']
-          },
-          { id: 's35', num: '35', title: 'Commercial Escalation',
-            body: 'The Project Lead shall escalate to the Senior Manager where any of the following occur:',
-            items: ['Client instructs work outside scope','Programme is compressed without fee adjustment','Client delays approval or payment','Sub consultant requests additional fee','Authority requires additional deliverables','Project team hours exceed forecast','Client requests redesign due to budget or VE','Deliverables exceed proposal assumptions','Payment is overdue']
-          }
-        ]
-      },
-      {
-        id: 'ph8', title: 'Phase 8: Mobilisation Completion and Handover to Delivery',
-        sections: [
-          { id: 's36', num: '36', title: 'Mobilisation Completion Criteria',
-            body: 'The project shall only be considered fully mobilised when the following are complete:',
-            items: ['Project folder created','.Studio updated','Teams channel created','Core registers created','Internal kick off completed','Sub consultants notified','Sub consultant kick off completed, where applicable','Client kick off completed','Meeting rhythm agreed','Deliverables Register issued or internally approved','Authority Register initiated','Risk Register initiated','Invoice Schedule issued to Finance','Programme baseline prepared or requested','Document control protocol issued','Change control process activated']
-          },
-          { id: 's37', num: '37', title: 'Mobilisation Close Out Note',
-            body: 'The Project Lead shall issue a short Mobilisation Close Out Note to the Senior Manager confirming:',
-            items: ['Mobilisation is complete','Key risks','Immediate actions','Outstanding client information','Outstanding sub consultant information','First submission milestone','First invoice trigger','Required management support'],
-            note: 'Once the Mobilisation Close Out Note is issued, the project moves into active delivery.'
-          },
-          { id: 's39', num: '39', title: 'Minimum Compliance Checklist',
-            body: 'Before moving into active delivery, the Project Lead must confirm the following:',
-            items: ['Formal instruction received','Commercial terms reviewed','Scope, assumptions, and exclusions reviewed','Project folder created','.Studio updated','Teams channel created','Registers created','Internal kick off held','Sub consultants notified','Sub consultant appointment package issued','Client kick off held','Programme reviewed','Deliverables Register created','Risk Register created','Authority Register created','Change Control Register created','Invoice Schedule issued to Finance','Meeting rhythm agreed','Document control protocol confirmed','Mobilisation Close Out Note issued']
-          }
-        ]
-      }
-    ],
     roles: [
       { role: 'Managing Director / Senior Manager', desc: 'Confirms commercial alignment, approves mobilisation, reviews key risks, supports escalation.' },
       { role: 'Bid Coordinator', desc: 'Transfers opportunity information, creates project folder, updates .Studio, provides proposal and tender information to the Project Lead.' },
@@ -1883,6 +1675,201 @@ const SOP_LIBRARY = [
       'All meetings, decisions, instructions, and changes must be recorded.',
       'Invoice triggers and payment expectations must be agreed internally at mobilisation.',
       'Change control must be activated from day one.'
+    ],
+    phases: [
+      {
+        id: 'ph1', title: 'Phase 1: Pre-Mobilisation Gate',
+        sections: [
+          { id: 's1a', num: '1', title: 'Authorisation to Proceed',
+            items: [
+              'Confirm formal written instruction to proceed has been received (LOA, LOI, PO, signed consultancy agreement, or client email instruction accepted by EDGE management)',
+              'Confirm client name, contracting entity, project name and location',
+              'Confirm EDGE appointment role (Lead Design Consultant, Architect, Interior Designer, Executive Architect, AOR, or other)',
+              'Confirm whether any scope has changed since proposal submission and whether client programme differs from proposal programme'
+            ]
+          },
+          { id: 's1b', num: '2', title: 'Commercial and Contractual Checks',
+            items: [
+              'Confirm EDGE scope of services, exclusions and assumptions included in the proposal',
+              'Confirm fee value, stage/milestone breakdown, payment schedule and invoice triggers',
+              'Confirm whether advance payment, mobilisation payment, or first milestone payment is immediately due',
+              'Confirm payment terms, reimbursables, authority fees, recoverable costs and whether contractual terms are accepted, amended or pending',
+              'Identify any mismatch between fee, scope, programme and deliverables — flag to Senior Manager',
+              'Identify client payment risk, authority approval risk, resource availability risk, sub-consultant appointment risk and any professional indemnity requirements'
+            ]
+          },
+          { id: 's1c', num: '3', title: 'Authority and Gate Output',
+            items: [
+              'Confirm whether authority approvals are required, which party is responsible for submissions, and whether an AOR is required',
+              'Confirm whether any specialist NOCs are required and whether early authority engagement is needed before design development',
+              'Prepare Mobilisation Gate Note confirming: proceed status, key commercial terms understood, critical risks identified, internal approvals obtained, and any limitations or assumptions recorded',
+              'Obtain Senior Manager sign-off on Mobilisation Gate Note before project setup commences'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ph2', title: 'Phase 2: Project Setup',
+        sections: [
+          { id: 's2a', num: '4', title: 'Folder and System Setup',
+            items: [
+              'Create project folder on server with correct project code and naming protocol',
+              'Copy all proposal and tender documents into project folder: RFP, client brief, commercial and technical proposals, PTCs, fee breakdown, scope matrix, programme, appointment letter, sub-consultant proposals, client negotiation records',
+              'Update .Studio: convert opportunity to Won, confirm project code, name, client details, fee value, Project Lead and Senior Manager, and attach key commercial and appointment information',
+              'Create Microsoft Teams project channel for the project'
+            ]
+          },
+          { id: 's2b', num: '5', title: 'Core Register Creation',
+            items: [
+              'Create Project Team Directory — all participants, organisations, roles, emails and points of contact',
+              'Create Drawing Register (incoming and outgoing) — drawings, revisions, dates and status',
+              'Create RFI Register — requests for information, responsibility, due dates and closure status',
+              'Create Design Change Register — changes, originator, reason, status, commercial and programme impact',
+              'Create Risk Register — risks, owners, probability, impact, severity, mitigation, target date and status',
+              'Create Action Register and Decision Register — agreed actions and key decisions from all meetings',
+              'Create Authority Register — required authorities, submission requirements, NOCs, responsible party, target and actual dates',
+              'Create Deliverables Register — stage deliverables, discipline, responsible party, format, required and actual issue dates, status and client approval status',
+              'Create Invoice Schedule — triggers, amounts, proposed invoice dates, expected payment dates, sub-consultant payment exposure, reimbursables and risk notes',
+              'Issue register access and Teams invitations to all project team members'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ph3', title: 'Phase 3: Internal Alignment',
+        sections: [
+          { id: 's3a', num: '6', title: 'Internal Kick Off Meeting',
+            items: [
+              'Schedule and hold internal kick off meeting — attendees: Senior Manager, Project Lead, Bid Coordinator, Finance representative, BIM Lead, key design team members, Document Controller',
+              'Confirm EDGE scope of services, sub-consultant scope, deliverables by stage, exclusions, assumptions and RIBA or equivalent stage alignment',
+              'Confirm total fee, stage fee breakdown, payment milestones, invoice triggers, expected invoice dates, sub-consultant fees and payment exposure, reimbursables and any commercial risk',
+              'Review proposal programme and client required programme — confirm key milestones, submission dates, client review periods, authority review periods — identify compressed or unrealistic durations',
+              'Confirm Project Lead, discipline leads, production team, assigned hours, resource loading and any external support required',
+              'Confirm authority submission responsibility, AOR responsibility, expected NOCs, authority approval sequence and identify early authority risks',
+              'Confirm BIM requirement, BEP status, LOD, model exchange dates, software platform, naming protocols and model responsibility',
+              'Identify top 10 project risks, assign owners, confirm mitigation actions and escalation triggers',
+              'Confirm change control procedure — who can instruct change, how logged, when commercial notice is required, process for variations and additional services'
+            ]
+          },
+          { id: 's3b', num: '7', title: 'Internal Kick Off Outputs',
+            items: [
+              'Issue internal MoM within 2 working days of kick off meeting',
+              'Update Action Register, Risk Register, Deliverables Register and Project Team Directory',
+              'Issue Invoice Schedule to Finance',
+              'Initiate Authority Register and confirm authority pathway with AOR or authority consultant',
+              'Activate change control process',
+              'Prepare or request project programme baseline'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ph4', title: 'Phase 4: Sub-Consultant Mobilisation',
+        sections: [
+          { id: 's4a', num: '8', title: 'Sub-Consultant Notification and Appointment',
+            items: [
+              'Formally notify all selected sub-consultants of project award and introduce to Project Lead — include project name, client name, EDGE role, kick off date and immediate information required',
+              'Confirm sub-consultant availability, team structure and primary point of contact',
+              'Prepare and issue sub-consultant appointment package: LOA or instruction, fee proposal, EDGE main agreement or flow-down terms, project programme, scope of services, Deliverables Register, Responsibility Matrix',
+              'Include in appointment package: payment terms, communication protocol, document naming protocol, title sheet template, BEP where applicable, register access or Teams invitation',
+              'Confirm sub-consultant payment terms — confirm whether back-to-back with client payment, whether advance payment is required, whether invoices require deliverable acceptance and whether there is any cashflow exposure to EDGE'
+            ]
+          },
+          { id: 's4b', num: '9', title: 'Sub-Consultant Kick Off and Controls',
+            items: [
+              'Chair sub-consultant kick off meeting — confirm scope, programme, deliverables, BIM requirements, authority responsibilities, drawing and document protocols, RFI and change control procedures, risk items and next steps',
+              'Issue sub-consultant kick off MoM within 2 working days',
+              'Confirm all sub-consultants understand they must not issue directly to the client unless authorised by EDGE',
+              'Confirm all sub-consultant outputs will be reviewed against scope, Deliverables Register, programme, quality, coordination, authority and BIM requirements before issue',
+              'Update Action Register with all sub-consultant actions and next steps'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ph5', title: 'Phase 5: Client Kick Off',
+        sections: [
+          { id: 's5a', num: '10', title: 'Client Kick Off Preparation and Meeting',
+            items: [
+              'Prepare client kick off materials: introduction slide or agenda, team structure, communication protocol, programme overview, deliverables overview, authority strategy summary, change control process, immediate risks or decisions required',
+              'Confirm any immediate information required from client before the meeting',
+              'Chair client kick off meeting — cover: team introductions, scope confirmation, deliverables and submission expectations, programme and key milestones, client review periods and approval process, authority strategy, communication and document control protocol, RFI process, design change and variation process, meeting structure and reporting frequency, key risks and next steps'
+            ]
+          },
+          { id: 's5b', num: '11', title: 'Client Kick Off Outputs',
+            items: [
+              'Issue client kick off MoM within 2 working days',
+              'Update Project Team Directory, Action Register, Risk Register and Deliverables Register',
+              'Issue Information Request List to client for any immediate information required',
+              'Confirm recurring meeting schedule and issue calendar invitations with clear titles, attendees and agendas',
+              'Confirm key risks and dependencies have been acknowledged by client'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ph6', title: 'Phase 6: Project Control Activation',
+        sections: [
+          { id: 's6a', num: '12', title: 'Document and Programme Control',
+            items: [
+              'Confirm document control protocol is active — agreed naming convention and filing structure, no uncontrolled issue of drawings or documents',
+              'Confirm all client instructions are saved in the Client Instructions folder — no reliance on WhatsApp unless confirmed by email or MoM',
+              'Confirm all submissions are recorded in the Drawing Register or Submission Register with transmittal records, revisions clearly identified, and superseded information archived',
+              'Confirm Deliverables Register is live and will be reviewed at each stage and before each formal submission',
+              'Establish baseline programme — identify internal, sub-consultant, client review, authority submission, design freeze, approval and invoice trigger milestones',
+              'Confirm any delay, compression or deviation from programme will be recorded and escalated to Senior Manager'
+            ]
+          },
+          { id: 's6b', num: '13', title: 'Change, Risk and BIM Controls',
+            items: [
+              'Confirm Design Change Register is active from day one — all changes to be assessed for scope, programme, fee, authority, coordination and deliverable impact before proceeding',
+              'Confirm Risk Register is live and will be reviewed regularly — high risks escalated to Senior Manager immediately',
+              'Confirm BEP is agreed where BIM applies — software platform, LOD, model origin, naming, file exchange format, exchange frequency, discipline responsibility, clash detection process'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ph7', title: 'Phase 7: Commercial and Financial Control',
+        sections: [
+          { id: 's7a', num: '14', title: 'Invoice and Payment Controls',
+            items: [
+              'Confirm Invoice Schedule is complete and issued to Finance — all triggers, amounts, proposed dates, expected payment dates, sub-consultant exposure, retention and reimbursables',
+              'Confirm exact trigger for each invoice — actively track approval status for all approval-linked invoices and issue formal reminders where required',
+              'Confirm sub-consultant payment exposure is managed — back-to-back terms agreed, advance payment requirements identified, deliverable acceptance requirements confirmed',
+              'Issue first invoice if a mobilisation or advance payment trigger applies',
+              'Confirm commercial escalation triggers are understood — escalate to Senior Manager where: work is instructed outside scope, programme is compressed without fee adjustment, client delays approval or payment, sub-consultant requests additional fee, deliverables exceed proposal assumptions'
+            ]
+          }
+        ]
+      },
+      {
+        id: 'ph8', title: 'Phase 8: Mobilisation Completion',
+        sections: [
+          { id: 's8a', num: '15', title: 'Completion Criteria',
+            items: [
+              'Confirm project folder is created and all documents are correctly filed',
+              'Confirm .Studio is updated and project status is Active',
+              'Confirm Teams channel is set up with all required folders',
+              'Confirm all core registers are created, populated and issued to the team',
+              'Confirm internal kick off has been completed and MoM issued',
+              'Confirm sub-consultants are notified, appointment packages issued, and kick off completed where applicable',
+              'Confirm client kick off has been completed and MoM issued',
+              'Confirm meeting rhythm is agreed and recurring calendar invitations are issued',
+              'Confirm Deliverables Register, Risk Register, Authority Register and Change Control Register are live',
+              'Confirm Invoice Schedule is issued to Finance and first invoice trigger is identified',
+              'Confirm programme baseline is prepared or formally requested',
+              'Confirm document control protocol is active and change control is activated'
+            ]
+          },
+          { id: 's8b', num: '16', title: 'Close Out',
+            items: [
+              'Prepare and issue Mobilisation Close Out Note to Senior Manager — confirm: mobilisation complete, key risks, immediate actions, outstanding client information, outstanding sub-consultant information, first submission milestone, first invoice trigger, required management support',
+              'Senior Manager reviews and confirms Mobilisation Close Out Note — project moves to active delivery'
+            ]
+          }
+        ]
+      }
     ]
   }
 ];
@@ -2033,15 +2020,16 @@ function startChecklist() {
   const sop = SOP_LIBRARY.find(s=>s.id===sopId);
   if(!sop) return;
   const proj = db.projects.find(p=>p.id===projectId);
+  // Build checks map
   const checks = {};
   sop.phases.forEach(ph=>ph.sections.forEach(sec=>{
     if(sec.items) sec.items.forEach((item,i)=>{
       const key = `${sec.id}-${i}`;
-      checks[key] = { label: item, sectionId: sec.id, sectionTitle: sec.title, phaseId: ph.id, phaseTitle: ph.title, done: false, doneBy: '', doneAt: '' };
+      checks[key] = { label: item, sectionId: sec.id, sectionTitle: sec.title, phaseId: ph.id, phaseTitle: ph.title, done: false, doneBy: '', doneAt: '', comment: '' };
     });
     if(sec.subsections) sec.subsections.forEach((sub,si)=>sub.items.forEach((item,i)=>{
       const key = `${sec.id}-sub${si}-${i}`;
-      checks[key] = { label: item, sectionId: sec.id, sectionTitle: `${sec.title} — ${sub.title}`, phaseId: ph.id, phaseTitle: ph.title, done: false, doneBy: '', doneAt: '' };
+      checks[key] = { label: item, sectionId: sec.id, sectionTitle: `${sec.title} — ${sub.title}`, phaseId: ph.id, phaseTitle: ph.title, done: false, doneBy: '', doneAt: '', comment: '' };
     }));
   }));
   const run = {
@@ -2097,50 +2085,89 @@ function viewChecklistRun(runId) {
   if(!run) return;
   const el = document.getElementById('checklist-run-view');
   if(!el) return;
+
+  const sop = SOP_LIBRARY.find(s=>s.id===run.sopId);
+  if(!sop) return;
+
   const checks = run.checks || {};
   const total = Object.keys(checks).length;
   const done = Object.values(checks).filter(c=>c.done).length;
   const pct = total ? Math.round(done/total*100) : 0;
-  const phases = {};
-  Object.entries(checks).forEach(([key,chk])=>{
-    if(!phases[chk.phaseId]) phases[chk.phaseId] = { title: chk.phaseTitle, sections: {} };
-    if(!phases[chk.phaseId].sections[chk.sectionId]) phases[chk.phaseId].sections[chk.sectionId] = { title: chk.sectionTitle, items: [] };
-    phases[chk.phaseId].sections[chk.sectionId].items.push({key, ...chk});
+
+  // Build phase completion map for gating
+  const phaseComplete = {};
+  sop.phases.forEach(ph => {
+    const phKeys = Object.entries(checks).filter(([k,c])=>c.phaseId===ph.id);
+    phaseComplete[ph.id] = phKeys.length > 0 && phKeys.every(([k,c])=>c.done);
   });
-  const phasesHtml = Object.entries(phases).map(([phId,ph])=>`
-    <div class="run-phase-header"><div class="run-phase-title">${ph.title}</div></div>
-    ${Object.entries(ph.sections).map(([secId,sec])=>{
-      const secDone = sec.items.filter(i=>i.done).length;
+
+  const phasesHtml = sop.phases.map((ph, phIdx) => {
+    // Gate: phase is unlocked if it's the first phase, or the previous phase is 100% complete
+    const prevPhase = phIdx > 0 ? sop.phases[phIdx-1] : null;
+    const isLocked = prevPhase && !phaseComplete[prevPhase.id];
+    const phItems = Object.entries(checks).filter(([k,c])=>c.phaseId===ph.id);
+    const phDone = phItems.filter(([k,c])=>c.done).length;
+    const phTotal = phItems.length;
+
+    if(isLocked) {
+      const prevRemaining = Object.entries(checks).filter(([k,c])=>c.phaseId===prevPhase.id&&!c.done).length;
+      return `
+        <div class="run-phase-header run-phase-locked">
+          <div class="run-phase-title">🔒 ${ph.title}</div>
+          <div style="font-size:10px;color:#888;margin-top:3px">Complete ${prevRemaining} remaining item${prevRemaining!==1?'s':''} in ${prevPhase.title} to unlock</div>
+        </div>`;
+    }
+
+    const sectionsHtml = ph.sections.map(sec => {
+      const secKeys = Object.entries(checks).filter(([k,c])=>c.sectionId===sec.id);
+      const secDone = secKeys.filter(([k,c])=>c.done).length;
       return `<div class="run-section">
         <div class="run-section-head">
-          <span class="run-section-title">${sec.title}</span>
-          <span style="font-size:10px;color:var(--gm)">${secDone}/${sec.items.length}</span>
+          <span class="run-section-title">${sec.num}. ${sec.title}</span>
+          <span style="font-size:10px;color:var(--gm)">${secDone}/${secKeys.length}</span>
         </div>
         <div class="run-section-body">
-          ${sec.items.map(item=>`
-            <div class="run-check-row" onclick="toggleCheck('${run.id}','${item.key}')">
-              <div class="run-check-box ${item.done?'checked':''}"></div>
-              <div>
-                <div class="run-check-label ${item.done?'checked':''}">${item.label}</div>
-                ${item.done&&item.doneBy?`<div style="font-size:9.5px;color:var(--gm)">✓ ${item.doneBy} · ${item.doneAt}</div>`:''}
+          ${secKeys.map(([key,chk])=>`
+            <div class="run-check-row ${chk.done?'run-check-done':''}">
+              <div class="run-check-box ${chk.done?'checked':''}" onclick="toggleCheck('${run.id}','${key}')"></div>
+              <div style="flex:1;min-width:0">
+                <div class="run-check-label ${chk.done?'checked':''}" onclick="toggleCheck('${run.id}','${key}')">${chk.label}</div>
+                ${chk.done&&chk.doneBy?`<div style="font-size:9.5px;color:var(--gm);margin-top:2px">✓ ${chk.doneBy} · ${chk.doneAt}</div>`:''}
+                <div class="run-comment-wrap" id="cmtwrap-${key}">
+                  ${chk.comment?`<div class="run-comment-text" onclick="expandComment('${run.id}','${key}')">${chk.comment}</div>`:`<button class="run-comment-btn" onclick="expandComment('${run.id}','${key}')">+ Add note</button>`}
+                  <div class="run-comment-input-wrap" id="cmtinput-${key}" style="display:none">
+                    <textarea class="run-comment-input" id="cmttxt-${key}" placeholder="Optional note…" rows="2">${chk.comment||''}</textarea>
+                    <div style="display:flex;gap:6px;margin-top:4px">
+                      <button class="btn btn-y btn-xs" onclick="saveComment('${run.id}','${key}')">Save</button>
+                      <button class="btn btn-ghost btn-xs" onclick="cancelComment('${key}')">Cancel</button>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>`).join('')}
         </div>
       </div>`;
-    }).join('')}`
-  ).join('');
+    }).join('');
+
+    return `
+      <div class="run-phase-header"><div class="run-phase-title">${ph.title} <span style="font-size:10px;font-family:var(--font);font-weight:400;color:#aaa;margin-left:8px">${phDone}/${phTotal}</span></div></div>
+      ${sectionsHtml}`;
+  }).join('');
+
   el.innerHTML = `
     <div class="sop-back-btn">
       <button class="btn btn-ghost btn-sm" onclick="goProjects('checklists')">← Back to Checklists</button>
       ${run.status!=='Complete'&&pct===100?`<button class="btn btn-y btn-sm" style="margin-left:8px" onclick="completeRun('${run.id}')">Mark Complete ✓</button>`:''}
     </div>
     <div class="run-summary-bar">
-      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--gm)">Project</div><div style="font-weight:600">${run.projectName}</div></div>
-      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--gm)">SOP</div><div style="font-weight:600">${run.sopTitle}</div></div>
-      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--gm)">Progress</div><div style="font-weight:600">${done} / ${total} (${pct}%)</div></div>
-      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:var(--gm)">Status</div><div style="font-weight:600">${run.status}</div></div>
+      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:#888">Project</div><div style="font-weight:600">${run.projectName}</div></div>
+      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:#888">SOP</div><div style="font-weight:600">${run.sopTitle}</div></div>
+      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:#888">Progress</div><div style="font-weight:600">${done} / ${total} (${pct}%)</div></div>
+      <div><div style="font-size:9px;font-family:var(--font-display);letter-spacing:.04em;text-transform:uppercase;color:#888">Status</div><div style="font-weight:600">${run.status}</div></div>
     </div>
+    <div class="run-progress" style="margin-bottom:20px;height:5px"><div class="run-progress-fill ${pct===100?'complete':''}" style="width:${pct}%"></div></div>
     ${phasesHtml}`;
+
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-checklist-run').classList.add('active');
 }
@@ -2165,6 +2192,31 @@ function completeRun(runId) {
   if(!run) return;
   run.status = 'Complete';
   run.completedAt = new Date().toISOString().split('T')[0];
+  markDirty();
+  viewChecklistRun(runId);
+}
+
+function expandComment(runId, checkKey) {
+  const inputWrap = document.getElementById(`cmtinput-${checkKey}`);
+  if(inputWrap) {
+    inputWrap.style.display = inputWrap.style.display==='none' ? 'block' : 'none';
+    if(inputWrap.style.display==='block') {
+      const ta = document.getElementById(`cmttxt-${checkKey}`);
+      if(ta) ta.focus();
+    }
+  }
+}
+
+function cancelComment(checkKey) {
+  const inputWrap = document.getElementById(`cmtinput-${checkKey}`);
+  if(inputWrap) inputWrap.style.display = 'none';
+}
+
+function saveComment(runId, checkKey) {
+  const run = (db.checklistRuns||[]).find(r=>r.id===runId);
+  if(!run || !run.checks[checkKey]) return;
+  const val = (document.getElementById(`cmttxt-${checkKey}`)?.value||'').trim();
+  run.checks[checkKey].comment = val;
   markDirty();
   viewChecklistRun(runId);
 }
