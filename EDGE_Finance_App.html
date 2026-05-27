@@ -4131,7 +4131,6 @@ let crmPipelineFilter = 'active'; // 'active' | 'all' | 'won' | 'lost'
 let crmAccTypeFilter = 'all';
 let crmGradeFilter = 'all';
 let crmAccSearch = '';
-let crmAccTypeFilter = 'all';
 let crmConSearch = '';
 let crmTaskFilter = 'open'; // 'open' | 'all'
 let editingCrmId = { opp:null, account:null, contact:null, task:null };
@@ -5551,8 +5550,6 @@ function crmDrop(e, stageId) {
 }
 
 // ── ACCOUNTS ──
-const CRM_REL_TYPES = ['All','Client','Collaborator','Sub-Consultant','Supplier','PMC / CM','Supply Chain','Other'];
-
 function renderCrmAccounts() {
   const el = document.getElementById('crm-accounts-view');
   let accs = (db.crm.accounts||[]);
