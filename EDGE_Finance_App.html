@@ -1561,24 +1561,22 @@ async function initMSAL() {
 }
 
 async function signIn() {
-  document.getElementById('auth-loading').style.display='block';
-  document.getElementById('auth-error').style.display='none';
+  const btn = document.querySelector('.auth-btn');
+  const errEl = document.getElementById('auth-error');
+  if(btn) { btn.textContent = 'Connecting…'; btn.disabled = true; }
+  errEl.style.display = 'none';
   try {
     if(!msalInstance) { await waitForMSAL(); await initMSAL(); }
-    // Use redirect (more reliable than popup — no popup blocker issues)
+    // loginRedirect navigates the whole page to Microsoft — no popup needed
     await msalInstance.loginRedirect({
       scopes: CONFIG.scopes,
       prompt: 'select_account'
     });
-    // Page will redirect to Microsoft and back — execution stops here
+    // Browser navigates away from here — code below does not run
   } catch(e) {
-    document.getElementById('auth-loading').style.display='none';
-    const errEl = document.getElementById('auth-error');
-    errEl.style.whiteSpace = 'pre-wrap';
-    errEl.style.fontSize = '10px';
-    errEl.style.textAlign = 'left';
-    errEl.textContent = `Sign-in error: ${e.errorCode||''} ${e.message||''}`.trim();
-    errEl.style.display='block';
+    if(btn) { btn.textContent = 'Sign in with Microsoft'; btn.disabled = false; }
+    errEl.style.cssText = 'display:block;white-space:pre-wrap;font-size:11px;text-align:left;background:#fff3cd;border:1px solid #ffc107;padding:10px;border-radius:4px;margin-top:10px;color:#333';
+    errEl.textContent = 'Sign-in error — ' + (e.errorCode ? e.errorCode + ': ' : '') + (e.message || String(e));
     console.error('MSAL signIn error:', e);
   }
 }
