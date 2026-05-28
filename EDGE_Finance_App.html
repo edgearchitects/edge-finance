@@ -611,6 +611,34 @@ body.home-active .nav .brand{color:#fff}
 .pipeline-col-count{font-size:10px;color:var(--gm);background:var(--gl);padding:1px 6px;border-radius:2px;font-weight:600}
 .pipeline-col-cards{padding:8px;min-height:80px;display:flex;flex-direction:column;gap:6px}
 .pipeline-col.drag-over{background:#e8f0fe}
+.pipeline-arrow{position:absolute;top:50%;transform:translateY(-50%);z-index:10;background:#fff;border:1px solid var(--gl);border-radius:50%;width:32px;height:32px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--gd);box-shadow:0 2px 6px rgba(0,0,0,.12);transition:all .15s;line-height:1}
+.pipeline-arrow:hover{background:var(--yellow);border-color:var(--yellow);color:var(--black)}
+.pipeline-arrow-l{left:-16px}
+.pipeline-arrow-r{right:-16px}
+/* Filter panel */
+.crm-filter-wrap{position:relative;display:inline-block}
+.crm-filter-panel{position:absolute;top:calc(100% + 6px);left:0;background:#fff;border:1px solid var(--gl);border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.12);padding:16px;z-index:200;min-width:260px;display:none}
+.crm-filter-panel.open{display:block}
+.crm-filter-section{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gm);margin-bottom:8px;margin-top:12px}
+.crm-filter-section:first-child{margin-top:0}
+.crm-filter-chips{display:flex;flex-wrap:wrap;gap:4px}
+.crm-filter-chip{padding:3px 8px;border-radius:10px;border:1px solid var(--gl);font-size:10px;cursor:pointer;background:#fff;color:var(--gd);transition:all .12s;font-family:var(--font)}
+.crm-filter-chip.on{background:var(--black);border-color:var(--black);color:#fff}
+/* Org chart */
+.org-tier{padding:12px 16px;border-bottom:1px solid var(--gl)}
+.org-tier:last-child{border-bottom:none}
+.org-tier-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--gm);margin-bottom:10px}
+.org-cards{display:flex;flex-wrap:wrap;gap:10px;min-height:52px}
+.org-card{background:#fff;border:1.5px solid var(--gl);border-radius:var(--r);padding:10px 12px;min-width:140px;cursor:grab;transition:box-shadow .15s;user-select:none}
+.org-card:active{cursor:grabbing}
+.org-card.drag-over-card{border-color:var(--yellow);background:#fffbeb}
+.org-card-name{font-size:12px;font-weight:600;color:var(--black)}
+.org-card-title{font-size:10px;color:var(--gm);margin-top:2px}
+.org-tier.tier-drop-over{background:#fffbeb}
+.org-tier-dm{border-top:3px solid #484F7C}
+.org-tier-inf{border-top:3px solid #1a7a40}
+.org-tier-champ{border-top:3px solid #856404}
+.org-tier-neutral{border-top:3px solid var(--gl)}
 .opp-card{background:#fff;border:1px solid var(--gl);border-radius:var(--r);padding:10px 11px;cursor:pointer;transition:box-shadow .15s,border-color .15s;border-left:3px solid transparent}
 .opp-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08);border-color:#ccc}
 .opp-card[draggable=true]{user-select:none}
@@ -1051,7 +1079,11 @@ body.home-active .nav .brand{color:#fff}
     <button class="btn btn-y btn-sm" onclick="openNewOppModal()">+ New Opportunity</button>
   </div>
   <div class="pipeline-filters" id="pipeline-filters"></div>
-  <div class="pipeline-wrap"><div class="pipeline-board" id="pipeline-board"></div></div>
+  <div style="position:relative">
+    <button class="pipeline-arrow pipeline-arrow-l" onclick="scrollPipeline(-1)" id="pipe-arrow-l">&#8592;</button>
+    <div class="pipeline-wrap" id="pipeline-wrap"><div class="pipeline-board" id="pipeline-board"></div></div>
+    <button class="pipeline-arrow pipeline-arrow-r" onclick="scrollPipeline(1)" id="pipe-arrow-r">&#8594;</button>
+  </div>
 </div>
 
 <!-- CRM ACCOUNTS -->
@@ -1194,12 +1226,12 @@ body.home-active .nav .brand{color:#fff}
     <div class="mbody"><div class="fg">
       <div class="fgrp full"><label>Opportunity Name *</label><input id="opp-f-name" type="text" placeholder="e.g. Four Seasons Hotel — Interior Design"></div>
       <div class="fgrp"><label>Account *</label><select id="opp-f-account"></select></div>
-      <div class="fgrp"><label>Stage</label><select id="opp-f-stage"></select></div>
+      <div class="fgrp"><label>Stage</label><select id="opp-f-stage" onchange="autoSetProb(this.value)"></select></div>
       <div class="fgrp"><label>Estimated Value (AED)</label><input id="opp-f-value" type="number" placeholder="0"></div>
-      <div class="fgrp"><label>Probability %</label><input id="opp-f-prob" type="number" min="0" max="100" placeholder="50"></div>
+      <div class="fgrp"><label>Probability %</label><input id="opp-f-prob" type="number" min="0" max="100" placeholder="50"><div style="font-size:9px;color:var(--gm);margin-top:2px">Auto-set by stage — override if needed</div></div>
       <div class="fgrp"><label>Expected Close Date</label><input id="opp-f-close" type="date"></div>
       <div class="fgrp"><label>Sector</label><select id="opp-f-sector"><option value="">— select —</option><option>Hospitality</option><option>Residential</option><option>Mixed-Use</option><option>Retail</option><option>Commercial</option><option>Government</option><option>Healthcare</option><option>Education</option></select></div>
-      <div class="fgrp"><label>Scope Type</label><select id="opp-f-scope"><option value="">— select —</option><option>Interior Design</option><option>Architecture</option><option>FF&E</option><option>Masterplan</option><option>Concept Only</option><option>Full RIBA</option></select></div>
+      <div class="fgrp"><label>Scope Type</label><select id="opp-f-scope"><option value="">— select —</option><option>Interior Design</option><option>Architecture</option><option>Architecture &amp; ID</option><option>Master Planning</option><option>Lead Design Consultant</option></select></div>
       <div class="fgrp full"><label>Notes</label><textarea id="opp-f-notes" rows="2" placeholder="Key context, source of lead…"></textarea></div>
     </div></div>
     <div class="mfoot">
@@ -1275,6 +1307,7 @@ body.home-active .nav .brand{color:#fff}
       <div class="fgrp"><label>Due Date</label><input id="ctask-f-due" type="date"></div>
       <div class="fgrp"><label>Linked Account</label><select id="ctask-f-account"><option value="">— none —</option></select></div>
       <div class="fgrp"><label>Linked Opportunity</label><select id="ctask-f-opp"><option value="">— none —</option></select></div>
+      <div class="fgrp"><label>Assigned To</label><select id="ctask-f-assigned"><option value="">— unassigned —</option></select></div>
       <div class="fgrp full"><label>Notes</label><textarea id="ctask-f-notes" rows="2"></textarea></div>
     </div></div>
     <div class="mfoot">
@@ -4111,6 +4144,15 @@ function getVOPipeline() {
 // CRM / PROCUREMENT MODULE
 // ═══════════════════════════════════════════════════
 
+const STAGE_PROB = {
+  prospect:5, initiated:10, engaged:20, qualified:30,
+  proposal:40, submitted:55, negotiation:70, verbal:85,
+  signed:100, hold:null, lost:0
+};
+function autoSetProb(stageId) {
+  const p = STAGE_PROB[stageId];
+  if(p !== null && p !== undefined) document.getElementById('opp-f-prob').value = p;
+}
 const CRM_STAGES = [
   { id:'prospect',    label:'Prospect Identified', color:'#888' },
   { id:'initiated',   label:'Contact Initiated',   color:'#6B7FD4' },
@@ -5474,6 +5516,21 @@ function renderCrmDashboard() {
 }
 
 // ── PIPELINE ──
+function toggleAccFilterPanel(e) {
+  e.stopPropagation();
+  const panel = document.getElementById('acc-filter-panel');
+  if(panel) panel.classList.toggle('open');
+}
+document.addEventListener('click', function(e) {
+  const panel = document.getElementById('acc-filter-panel');
+  if(panel && panel.classList.contains('open')) {
+    if(!panel.contains(e.target)) panel.classList.remove('open');
+  }
+});
+function scrollPipeline(dir) {
+  const w = document.getElementById('pipeline-wrap');
+  if(w) w.scrollBy({ left: dir * 250, behavior: 'smooth' });
+}
 function renderCrmPipeline() {
   const board = document.getElementById('pipeline-board');
   const filters = document.getElementById('pipeline-filters');
@@ -5541,6 +5598,8 @@ function crmDrop(e, stageId) {
   const opp = (db.crm.opportunities||[]).find(o=>o.id===dragOppId);
   if(opp && opp.stage !== stageId) {
     opp.stage = stageId;
+    const autoP = STAGE_PROB[stageId];
+    if(autoP !== null && autoP !== undefined) opp.prob = autoP;
     opp.updatedAt = new Date().toISOString().slice(0,10);
     markDirty();
     saveDB();
@@ -5552,22 +5611,30 @@ function crmDrop(e, stageId) {
 // ── ACCOUNTS ──
 function renderCrmAccounts() {
   const el = document.getElementById('crm-accounts-view');
-  let accs = (db.crm.accounts||[]);
+  let accs = [...(db.crm.accounts||[])].sort((a,b)=>a.name.localeCompare(b.name));
   if(crmAccTypeFilter !== 'all') accs = accs.filter(a => (a.relType||'').toLowerCase() === crmAccTypeFilter.toLowerCase());
   if(crmGradeFilter !== 'all') accs = accs.filter(a => (a.grade||'Ungraded') === crmGradeFilter);
   if(crmAccSearch) accs = accs.filter(a => a.name.toLowerCase().includes(crmAccSearch.toLowerCase()) || (a.sector||'').toLowerCase().includes(crmAccSearch.toLowerCase()) || (a.country||'').toLowerCase().includes(crmAccSearch.toLowerCase()));
   const total = (db.crm.accounts||[]).length;
   el.innerHTML = `
-  <div class="crm-toolbar" style="flex-wrap:wrap;gap:6px">
-    <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
-      <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-right:2px">Type</span>
-      ${CRM_REL_TYPES.map(t=>`<button class="pipeline-filter-btn${(crmAccTypeFilter==='all'&&t==='All')||(crmAccTypeFilter===t)?' active':''}" onclick="crmAccTypeFilter='${t==='All'?'all':t}';renderCrmAccounts()">${t}</button>`).join('')}
+  <div class="crm-toolbar" style="flex-wrap:wrap;gap:6px;align-items:center">
+    <div class="crm-filter-wrap">
+      <button class="btn btn-ghost btn-sm" onclick="toggleAccFilterPanel(event)" id="acc-filter-btn">
+        ⚙ Filter${(crmAccTypeFilter!=='all'||crmGradeFilter!=='all')?` <span style="background:var(--yellow);color:var(--black);border-radius:8px;padding:0 5px;font-size:9px;font-weight:700">${[crmAccTypeFilter!=='all'?1:0,crmGradeFilter!=='all'?1:0].reduce((a,b)=>a+b,0)}</span>`:''}
+      </button>
+      <div class="crm-filter-panel" id="acc-filter-panel">
+        <div class="crm-filter-section">Relationship Type</div>
+        <div class="crm-filter-chips">
+          ${CRM_REL_TYPES.map(t=>`<button class="crm-filter-chip${(crmAccTypeFilter==='all'&&t==='All')||(crmAccTypeFilter===t)?' on':''}" onclick="crmAccTypeFilter='${t==='All'?'all':t}';renderCrmAccounts()">${t}</button>`).join('')}
+        </div>
+        <div class="crm-filter-section">Grade</div>
+        <div class="crm-filter-chips">
+          ${CRM_GRADES.map(g=>`<button class="crm-filter-chip${(crmGradeFilter==='all'&&g==='All')||(crmGradeFilter===g)?' on':''}" onclick="crmGradeFilter='${g==='All'?'all':g}';renderCrmAccounts()">${g}</button>`).join('')}
+        </div>
+        ${(crmAccTypeFilter!=='all'||crmGradeFilter!=='all')?`<div style="margin-top:12px;text-align:right"><button class="btn btn-ghost btn-xs" onclick="crmAccTypeFilter='all';crmGradeFilter='all';renderCrmAccounts()">Clear filters</button></div>`:''}
+      </div>
     </div>
-    <div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">
-      <span style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-right:2px">Grade</span>
-      ${CRM_GRADES.map(g=>`<button class="pipeline-filter-btn${(crmGradeFilter==='all'&&g==='All')||(crmGradeFilter===g)?' active':''}" onclick="crmGradeFilter='${g==='All'?'all':g}';renderCrmAccounts()">${g}</button>`).join('')}
-    </div>
-    <input class="crm-search" placeholder="Search ${crmAccTypeFilter==='all'&&crmGradeFilter==='all'?'all '+total:accs.length} accounts…" value="${crmAccSearch}" oninput="crmAccSearch=this.value;renderCrmAccounts()" style="min-width:180px;flex:1">
+    <input class="crm-search" id="acc-search-input" placeholder="Search ${crmAccTypeFilter==='all'&&crmGradeFilter==='all'?'all '+total:accs.length} accounts…" value="${crmAccSearch}" oninput="crmAccSearch=this.value;renderCrmAccounts();" style="min-width:180px;flex:1">
     <button class="btn btn-ghost btn-sm" onclick="openNewAccountModal()">+ Account</button>
   </div>
   ${accs.length ? `<table class="crm-table"><thead><tr>
@@ -5587,7 +5654,55 @@ function renderCrmAccounts() {
         <button class="btn btn-ghost btn-xs" onclick="deleteCrmItem('accounts','${a.id}')" style="color:var(--red)">Del</button>
       </td>
     </tr>`;
-  }).join('')}</tbody></table>` : '<div class="empty"><p>No accounts match this filter.</p></div>'}`;
+  }).join('')}</tbody></table>` : '<div class="empty"><p>No accounts match this filter.</p></div>'}`;  const _aSi = document.getElementById('acc-search-input'); if(_aSi&&document.activeElement!==_aSi&&crmAccSearch){_aSi.focus();_aSi.setSelectionRange(_aSi.value.length,_aSi.value.length);}
+}
+
+function renderOrgChart(accountId) {
+  const contacts = (db.crm.contacts||[]).filter(c=>c.accountId===accountId);
+  const tiers = [
+    { id:'dm',      label:'Decision Makers',       cls:'org-tier-dm',      keys:['dm'] },
+    { id:'inf',     label:'Influencers',            cls:'org-tier-inf',     keys:['inf'] },
+    { id:'champ',   label:'Champions',              cls:'org-tier-champ',   keys:['champ'] },
+    { id:'neutral', label:'Neutral / Unclassified', cls:'org-tier-neutral', keys:['neutral',''] }
+  ];
+  const tiersHTML = tiers.map(tier => {
+    const cards = contacts.filter(c => tier.keys.includes(c.influence||''));
+    return `<div class="org-tier ${tier.cls}" id="org-tier-${tier.id}"
+      ondragover="orgDragOver(event,'${accountId}','${tier.id}')"
+      ondragleave="orgDragLeave(event)"
+      ondrop="orgDrop(event,'${accountId}','${tier.id}')">
+      <div class="org-tier-label">${tier.label} <span style="font-weight:400;font-size:9px;color:var(--gm)">(${cards.length})</span></div>
+      <div class="org-cards" id="org-cards-${tier.id}">
+        ${cards.length ? cards.map(c=>`
+          <div class="org-card" draggable="true" id="org-card-${c.id}"
+            ondragstart="orgDragStart(event,'${c.id}')"
+            ondragend="orgDragEnd(event)">
+            <div class="org-card-name">${c.first||''} ${c.last||''}</div>
+            <div class="org-card-title">${c.title||'—'}</div>
+            ${c.email?`<div style="font-size:9px;color:var(--blue);margin-top:4px">${c.email}</div>`:''}
+            ${c.mobile?`<div style="font-size:9px;color:var(--gm)">${c.mobile}</div>`:''}
+          </div>`).join('') : '<div style="font-size:10px;color:var(--gm);padding:4px">Drop contact here</div>'}
+      </div>
+    </div>`;
+  }).join('');
+  const el = document.getElementById('acc-detail-body');
+  if(el) el.innerHTML = `<div style="padding:12px 0"><div style="font-size:10px;color:var(--gm);padding:0 20px 12px">Drag contacts between tiers to update their influence level. Changes save automatically.</div>${tiersHTML}</div>`;
+}
+let _orgDragConId = null;
+function orgDragStart(e, conId) { _orgDragConId = conId; e.dataTransfer.effectAllowed='move'; e.currentTarget.style.opacity='.4'; }
+function orgDragEnd(e) { e.currentTarget.style.opacity=''; _orgDragConId = null; }
+function orgDragOver(e, accId, tierId) { e.preventDefault(); document.getElementById('org-tier-'+tierId).classList.add('tier-drop-over'); }
+function orgDragLeave(e) { e.currentTarget.classList.remove('tier-drop-over'); }
+function orgDrop(e, accId, tierId) {
+  e.preventDefault();
+  document.getElementById('org-tier-'+tierId).classList.remove('tier-drop-over');
+  if(!_orgDragConId) return;
+  const con = (db.crm.contacts||[]).find(c=>c.id===_orgDragConId);
+  if(!con) return;
+  const infMap = { dm:'dm', inf:'inf', champ:'champ', neutral:'neutral' };
+  con.influence = infMap[tierId] || '';
+  markDirty(); saveDB();
+  renderOrgChart(accId);
 }
 
 function openAccountDetail(id) {
@@ -5606,7 +5721,10 @@ function openAccountDetail(id) {
           ${a.country?`<span style="font-size:10px;color:var(--gm)">${a.country}</span>`:''}
         </div>
       </div>
-      <button class="btn btn-ghost btn-sm" onclick="closeMo('mo-acc-detail');openEditAccountModal('${id}')">Edit</button>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-sm" onclick="renderOrgChart('${id}')">Network</button>
+        <button class="btn btn-ghost btn-sm" onclick="closeMo('mo-acc-detail');openEditAccountModal('${id}')">Edit</button>
+      </div>
     </div>
     <div class="acc-detail-grid">
       ${a.type?`<div class="acc-detail-item"><div class="acc-detail-label">Account Type</div><div>${a.type}</div></div>`:''}
@@ -5638,10 +5756,10 @@ function openAccountDetail(id) {
 // ── CONTACTS ──
 function renderCrmContacts() {
   const el = document.getElementById('crm-contacts-view');
-  const cons = (db.crm.contacts||[]).filter(c => !crmConSearch || (c.first+' '+c.last).toLowerCase().includes(crmConSearch.toLowerCase()) || (c.title||'').toLowerCase().includes(crmConSearch.toLowerCase()) || crmAccName(c.accountId).toLowerCase().includes(crmConSearch.toLowerCase()));
+  const cons = [...(db.crm.contacts||[])].sort((a,b)=>(a.last||a.first||'').localeCompare(b.last||b.first||'')).filter(c => !crmConSearch || (c.first+' '+c.last).toLowerCase().includes(crmConSearch.toLowerCase()) || (c.title||'').toLowerCase().includes(crmConSearch.toLowerCase()) || crmAccName(c.accountId).toLowerCase().includes(crmConSearch.toLowerCase()));
   el.innerHTML = `
   <div class="crm-toolbar">
-    <input class="crm-search" placeholder="Search contacts…" value="${crmConSearch}" oninput="crmConSearch=this.value;renderCrmContacts()">
+    <input class="crm-search" id="con-search-input" placeholder="Search contacts…" value="${crmConSearch}" oninput="crmConSearch=this.value;renderCrmContacts();">
     <button class="btn btn-ghost btn-sm" onclick="openSpImportModal('contacts')" title="Import from SharePoint list">⬇ Import from SharePoint</button>
   </div>
   ${cons.length ? `<table class="crm-table"><thead><tr>
@@ -5753,10 +5871,11 @@ function openNewOppModal(linkedOppId) {
   document.getElementById('opp-f-scope').value = '';
   document.getElementById('opp-f-notes').value = '';
   const accSel = document.getElementById('opp-f-account');
-  accSel.innerHTML = '<option value="">— select account —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  accSel.innerHTML = '<option value="">— select account —</option>' + [...(db.crm.accounts||[])].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value=\"${a.id}\">${a.name}</option>`).join('');
   const stageSel = document.getElementById('opp-f-stage');
   stageSel.innerHTML = CRM_STAGES.map(s=>`<option value="${s.id}">${s.label}</option>`).join('');
   stageSel.value = 'prospect';
+  autoSetProb('prospect');
   openMo('mo-opp');
 }
 function openEditOppModal(id) {
@@ -5772,7 +5891,7 @@ function openEditOppModal(id) {
   document.getElementById('opp-f-scope').value = o.scope||'';
   document.getElementById('opp-f-notes').value = o.notes||'';
   const accSel = document.getElementById('opp-f-account');
-  accSel.innerHTML = '<option value="">— select account —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  accSel.innerHTML = '<option value="">— select account —</option>' + [...(db.crm.accounts||[])].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value=\"${a.id}\">${a.name}</option>`).join('');
   accSel.value = o.accountId||'';
   const stageSel = document.getElementById('opp-f-stage');
   stageSel.innerHTML = CRM_STAGES.map(s=>`<option value="${s.id}">${s.label}</option>`).join('');
@@ -5867,7 +5986,7 @@ function openNewContactModal() {
   ['con-f-first','con-f-last','con-f-title','con-f-email','con-f-mobile','con-f-notes'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('con-f-influence').value = '';
   const sel = document.getElementById('con-f-account');
-  sel.innerHTML = '<option value="">— none —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  sel.innerHTML = '<option value="">— none —</option>' + [...(db.crm.accounts||[])].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value=\"${a.id}\">${a.name}</option>`).join('');
   openMo('mo-contact');
 }
 function openEditContactModal(id) {
@@ -5883,7 +6002,7 @@ function openEditContactModal(id) {
   document.getElementById('con-f-influence').value = c.influence||'';
   document.getElementById('con-f-notes').value = c.notes||'';
   const sel = document.getElementById('con-f-account');
-  sel.innerHTML = '<option value="">— none —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  sel.innerHTML = '<option value="">— none —</option>' + [...(db.crm.accounts||[])].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value=\"${a.id}\">${a.name}</option>`).join('');
   sel.value = c.accountId||'';
   openMo('mo-contact');
 }
@@ -5921,10 +6040,12 @@ function openNewTaskModal(linkedOppId) {
   document.getElementById('ctask-f-due').value = new Date(Date.now()+86400000).toISOString().slice(0,10);
   document.getElementById('ctask-f-notes').value = '';
   const accSel = document.getElementById('ctask-f-account');
-  accSel.innerHTML = '<option value="">— none —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  accSel.innerHTML = '<option value="">— none —</option>' + [...(db.crm.accounts||[])].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value=\"${a.id}\">${a.name}</option>`).join('');
   const oppSel = document.getElementById('ctask-f-opp');
-  oppSel.innerHTML = '<option value="">— none —</option>' + (db.crm.opportunities||[]).map(o=>`<option value="${o.id}">${o.name}</option>`).join('');
+  oppSel.innerHTML = '<option value="">— none —</option>' + [...(db.crm.opportunities||[])].sort((a,b)=>a.name.localeCompare(b.name)).map(o=>`<option value=\"${o.id}\">${o.name}</option>`).join('');
   if(linkedOppId) { oppSel.value = linkedOppId; const opp = (db.crm.opportunities||[]).find(x=>x.id===linkedOppId); if(opp) accSel.value = opp.accountId||''; }
+  const asgSel = document.getElementById('ctask-f-assigned');
+  asgSel.innerHTML = '<option value="">— unassigned —</option>' + (db.users||[]).map(u=>`<option value="${u.id}">${u.name}</option>`).join('');
   openMo('mo-crm-task');
 }
 function openEditTaskModal(id) {
@@ -5938,11 +6059,14 @@ function openEditTaskModal(id) {
   document.getElementById('ctask-f-due').value = t.due||'';
   document.getElementById('ctask-f-notes').value = t.notes||'';
   const accSel = document.getElementById('ctask-f-account');
-  accSel.innerHTML = '<option value="">— none —</option>' + (db.crm.accounts||[]).map(a=>`<option value="${a.id}">${a.name}</option>`).join('');
+  accSel.innerHTML = '<option value="">— none —</option>' + [...(db.crm.accounts||[])].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value=\"${a.id}\">${a.name}</option>`).join('');
   accSel.value = t.accountId||'';
   const oppSel = document.getElementById('ctask-f-opp');
-  oppSel.innerHTML = '<option value="">— none —</option>' + (db.crm.opportunities||[]).map(o=>`<option value="${o.id}">${o.name}</option>`).join('');
+  oppSel.innerHTML = '<option value="">— none —</option>' + [...(db.crm.opportunities||[])].sort((a,b)=>a.name.localeCompare(b.name)).map(o=>`<option value=\"${o.id}\">${o.name}</option>`).join('');
   oppSel.value = t.oppId||'';
+  const asgSel2 = document.getElementById('ctask-f-assigned');
+  asgSel2.innerHTML = '<option value="">— unassigned —</option>' + (db.users||[]).map(u=>`<option value="${u.id}">${u.name}</option>`).join('');
+  asgSel2.value = t.assigned||'';
   openMo('mo-crm-task');
 }
 function saveCrmTask() {
@@ -5955,6 +6079,7 @@ function saveCrmTask() {
     due: document.getElementById('ctask-f-due').value,
     accountId: document.getElementById('ctask-f-account').value,
     oppId: document.getElementById('ctask-f-opp').value,
+    assigned: document.getElementById('ctask-f-assigned').value,
     notes: document.getElementById('ctask-f-notes').value.trim()
   };
   ensureCrm();
