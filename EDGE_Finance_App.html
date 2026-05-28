@@ -1247,7 +1247,7 @@ body.home-active .nav .brand{color:#fff}
     <div class="mhead"><span class="mtitle" id="mo-account-title">New Account</span><button class="mclose" onclick="closeMo('mo-account')">×</button></div>
     <div class="mbody"><div class="fg">
       <div class="fgrp full"><label>Company Name *</label><input id="acc-f-name" type="text" placeholder="e.g. Emaar Properties"></div>
-      <div class="fgrp"><label>Relationship Type</label><select id="acc-f-reltype"><option value="">— select —</option><option>Client</option><option>Collaborator</option><option>Sub-Consultant</option><option>Supplier</option><option>PMC / CM</option><option>Supply Chain</option><option>Other</option></select></div>
+      <div class="fgrp"><label>Relationship Type</label><select id="acc-f-reltype"><option value="">— select —</option><option>Client</option><option>Collaborator</option><option>Sub-Consultant</option><option>Supplier</option><option>Project Management</option><option>Cost Management</option><option>Supply Chain</option><option>Other</option></select></div>
       <div class="fgrp"><label>Account Type</label><select id="acc-f-type"><option value="">— select —</option><option>Developer</option><option>Hotel Operator</option><option>Government</option><option>Private Client</option><option>Contractor</option><option>Architecture / ID Firm</option><option>Fund / Investor</option></select></div>
       <div class="fgrp"><label>Sector</label><select id="acc-f-sector"><option value="">— select —</option><option>Hospitality</option><option>Residential</option><option>Mixed-Use</option><option>Retail</option><option>Commercial</option><option>Government</option></select></div>
       <div class="fgrp"><label>HQ City</label><input id="acc-f-city" type="text" placeholder="e.g. Dubai"></div>
@@ -1313,6 +1313,32 @@ body.home-active .nav .brand{color:#fff}
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeMo('mo-crm-task')">Cancel</button>
       <button class="btn btn-y" onclick="saveCrmTask()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Fee Submission Modal -->
+<div class="mo" id="mo-fee-entry">
+  <div class="modal" style="max-width:400px">
+    <div class="mhead"><span class="mtitle">Record Fee Submission</span><button class="mclose" onclick="closeMo('mo-fee-entry')">×</button></div>
+    <div class="mbody"><div class="fg">
+      <div class="fgrp full"><label>Label *</label>
+        <select id="fee-f-label">
+          <option value="Initial Submission">Initial Submission</option>
+          <option value="Revised Submission">Revised Submission</option>
+          <option value="BAFO">BAFO — Best and Final Offer</option>
+          <option value="LAFO">LAFO — Last and Final Offer</option>
+          <option value="Negotiated Fee">Negotiated Fee</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+      <div class="fgrp"><label>Fee Amount (AED) *</label><input id="fee-f-amount" type="number" placeholder="0"></div>
+      <div class="fgrp"><label>Date</label><input id="fee-f-date" type="date"></div>
+      <div class="fgrp full"><label>Notes</label><textarea id="fee-f-notes" rows="2" placeholder="e.g. Reduced scope, client requested discount…"></textarea></div>
+    </div></div>
+    <div class="mfoot">
+      <button class="btn btn-ghost" onclick="closeMo('mo-fee-entry')">Cancel</button>
+      <button class="btn btn-y" onclick="saveFeeEntry()">Save</button>
     </div>
   </div>
 </div>
@@ -4167,7 +4193,7 @@ const CRM_STAGES = [
   { id:'lost',        label:'Lost',                 color:'#C65D3B' }
 ];
 
-const CRM_REL_TYPES = ['All','Client','Collaborator','Competitor','Sub-Consultant','Supplier','PMC / CM','Supply Chain','Other'];
+const CRM_REL_TYPES = ['All','Client','Collaborator','Competitor','Sub-Consultant','Supplier','Project Management','Cost Management','Supply Chain','Other'];
 const CRM_GRADES = ['All','A','B','C','D','Ungraded'];
 let crmPipelineFilter = 'active'; // 'active' | 'all' | 'won' | 'lost'
 let crmAccTypeFilter = 'all';
@@ -4187,7 +4213,7 @@ function ensureCrm() {
 
 function initCRM() {
   ensureCrm();
-  if(!db.crm.accounts.length || db.crm.seedVersion !== 2) seedCRM();
+  if(!db.crm.accounts.length || db.crm.seedVersion !== 3) seedCRM();
 }
 function forceSeedCRM() {
   seedCRM(); saveDB(); if(typeof currentModule!=='undefined'&&currentModule==='procurement') goProcurement('accounts');
@@ -4447,27 +4473,27 @@ function seedCRM() {
     {id:"acc250",name:"Koho Group",relType:"Other",type:"Other",rel:1,grade:"Ungraded",notes:"Hospitality Agency, LinkenIn Contact",createdAt:"2025-01-01"},
     {id:"acc251",name:"Mapei Events",relType:"Other",type:"Other",rel:1,grade:"Ungraded",notes:"Events",createdAt:"2025-01-01"},
     {id:"acc252",name:"The Hospitality Network",relType:"Other",type:"Other",rel:1,grade:"Ungraded",notes:"Events",createdAt:"2025-01-01"},
-    {id:"acc253",name:"3Sphere",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc254",name:"Alexander Mac",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",notes:"Oman Embassy, Deyaar Production City, Zaad Developments",createdAt:"2025-01-01"},
-    {id:"acc255",name:"Atkinsrealis",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",notes:"Worked on NYU",createdAt:"2025-01-01"},
-    {id:"acc256",name:"CSQ",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc257",name:"Carter Hones Associates",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc258",name:"Cmpm",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc259",name:"Colain",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc260",name:"Compass",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",notes:"Working on Tattu Restaurant Marina",createdAt:"2025-01-01"},
-    {id:"acc261",name:"DTA",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc262",name:"Focal",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc263",name:"Gleeds",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc264",name:"JLL",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",notes:"Previously worked together",createdAt:"2025-01-01"},
-    {id:"acc265",name:"Lde Project Management",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",notes:"JR to contact",createdAt:"2025-01-01"},
-    {id:"acc266",name:"M+A",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc267",name:"PMK",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc268",name:"Rider Lovett Bucknall",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc269",name:"Savills",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc270",name:"Symbio Project Management",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
-    {id:"acc271",name:"Turner & Townsend",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",notes:"Previously worked together",createdAt:"2025-01-01"},
-    {id:"acc272",name:"Un!Que",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",notes:"Previously worked togther",createdAt:"2025-01-01"},
-    {id:"acc273",name:"Vedra Group",relType:"PMC / CM",type:"PMC / CM",rel:1,grade:"Ungraded",notes:"Events",createdAt:"2025-01-01"},
+    {id:"acc253",name:"3Sphere",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc254",name:"Alexander Mac",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",notes:"Oman Embassy, Deyaar Production City, Zaad Developments",createdAt:"2025-01-01"},
+    {id:"acc255",name:"Atkinsrealis",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",notes:"Worked on NYU",createdAt:"2025-01-01"},
+    {id:"acc256",name:"CSQ",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc257",name:"Carter Hones Associates",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc258",name:"Cmpm",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc259",name:"Colain",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc260",name:"Compass",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",notes:"Working on Tattu Restaurant Marina",createdAt:"2025-01-01"},
+    {id:"acc261",name:"DTA",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc262",name:"Focal",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc263",name:"Gleeds",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc264",name:"JLL",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",notes:"Previously worked together",createdAt:"2025-01-01"},
+    {id:"acc265",name:"Lde Project Management",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",notes:"JR to contact",createdAt:"2025-01-01"},
+    {id:"acc266",name:"M+A",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc267",name:"PMK",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc268",name:"Rider Lovett Bucknall",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc269",name:"Savills",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc270",name:"Symbio Project Management",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
+    {id:"acc271",name:"Turner & Townsend",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",notes:"Previously worked together",createdAt:"2025-01-01"},
+    {id:"acc272",name:"Un!Que",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",notes:"Previously worked togther",createdAt:"2025-01-01"},
+    {id:"acc273",name:"Vedra Group",relType:"Project Management",type:"Project Management",rel:1,grade:"Ungraded",notes:"Events",createdAt:"2025-01-01"},
     {id:"acc274",name:"9E Global",relType:"Sub-Consultant",type:"Sub-Consultant",rel:1,grade:"Ungraded",notes:"Do almost all disciplines - Bid for Radisson Red, Currently establishing a relationship for all engineering services",createdAt:"2025-01-01"},
     {id:"acc275",name:"ASG",relType:"Sub-Consultant",type:"Sub-Consultant",rel:1,grade:"Ungraded",notes:"AOR & possibility structure - Collaborating on Tattu Restaurant, knows everyone",createdAt:"2025-01-01"},
     {id:"acc276",name:"Aecom",relType:"Sub-Consultant",type:"Sub-Consultant",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
@@ -5394,7 +5420,7 @@ function seedCRM() {
   ];
   db.crm.opportunities = [];
   db.crm.tasks = [];
-  db.crm.seedVersion = 2;
+  db.crm.seedVersion = 3;
 }
 
 // ── Navigation ──
@@ -5471,7 +5497,10 @@ function renderCrmDashboard() {
   const active = opps.filter(o => activeStages.includes(o.stage));
   const totalPipeline = active.reduce((a,o)=>a+(+o.value||0),0);
   const weightedPipeline = active.reduce((a,o)=>a+(+o.value||0)*(+o.prob||0)/100,0);
-  const wonThisQ = opps.filter(o=>o.stage==='signed').reduce((a,o)=>a+(+o.value||0),0);
+  const wonOpps = opps.filter(o=>o.stage==='signed');
+  const wonThisQ = wonOpps.reduce((a,o)=>a+(+o.value||0),0);
+  const closedOpps = opps.filter(o=>o.stage==='signed'||o.stage==='lost');
+  const winRate = closedOpps.length ? Math.round(wonOpps.length/closedOpps.length*100) : null;
   const overdueCount = tasks.filter(t=>!t.done && crmIsOverdue(t.due)).length;
   const todayTasks = tasks.filter(t=>!t.done && t.due===new Date().toISOString().slice(0,10)).length;
   const recentOpps = [...active].sort((a,b)=>new Date(b.updatedAt||b.createdAt||0)-new Date(a.updatedAt||a.createdAt||0)).slice(0,5);
@@ -5486,6 +5515,7 @@ function renderCrmDashboard() {
     <div class="crm-metric"><div class="crm-metric-val">${crmFmtVal(totalPipeline)}</div><div class="crm-metric-lbl">Total Pipeline</div></div>
     <div class="crm-metric"><div class="crm-metric-val">${crmFmtVal(weightedPipeline)}</div><div class="crm-metric-lbl">Weighted Pipeline</div><div class="crm-metric-sub">Probability-adjusted</div></div>
     <div class="crm-metric"><div class="crm-metric-val">${crmFmtVal(wonThisQ)}</div><div class="crm-metric-lbl">Signed</div></div>
+    <div class="crm-metric"><div class="crm-metric-val" style="${winRate!==null&&winRate>=50?'color:var(--green)':winRate!==null&&winRate<30?'color:var(--red)':''}"> ${winRate !== null ? winRate+'%' : '—'}</div><div class="crm-metric-lbl">Win Rate</div><div class="crm-metric-sub">${closedOpps.length} closed</div></div>
     <div class="crm-metric" style="${overdueCount?'border-color:var(--red);background:var(--red-bg)':''}"><div class="crm-metric-val" style="${overdueCount?'color:var(--red)':''}">${overdueCount}</div><div class="crm-metric-lbl">Overdue Tasks</div></div>
     <div class="crm-metric"><div class="crm-metric-val">${todayTasks}</div><div class="crm-metric-lbl">Due Today</div></div>
   </div>
@@ -5710,6 +5740,9 @@ function openAccountDetail(id) {
   if(!a) return;
   const contacts = (db.crm.contacts||[]).filter(c=>c.accountId===id);
   const opps = (db.crm.opportunities||[]).filter(o=>o.accountId===id);
+  const wonAccOpps = opps.filter(o=>o.stage==='signed');
+  const closedAccOpps = opps.filter(o=>o.stage==='signed'||o.stage==='lost');
+  const accWinRate = closedAccOpps.length ? Math.round(wonAccOpps.length/closedAccOpps.length*100) : null;
   const infMap = {dm:'Decision Maker',inf:'Influencer',champ:'Champion',neutral:'Neutral'};
   document.getElementById('acc-detail-body').innerHTML = `
     <div class="acc-detail-header">
@@ -5732,6 +5765,7 @@ function openAccountDetail(id) {
       ${a.country?`<div class="acc-detail-item"><div class="acc-detail-label">Country</div><div>${a.country}</div></div>`:''}
       ${a.city?`<div class="acc-detail-item"><div class="acc-detail-label">City</div><div>${a.city}</div></div>`:''}
       ${a.owner?`<div class="acc-detail-item"><div class="acc-detail-label">BD Owner</div><div>${a.owner}</div></div>`:''}
+      ${closedAccOpps.length?`<div class="acc-detail-item"><div class="acc-detail-label">Win Rate</div><div style="font-weight:600;color:${accWinRate>=50?'var(--green)':accWinRate<30?'var(--red)':'var(--black)'} ">${accWinRate}% <span style="font-weight:400;font-size:10px;color:var(--gm)">(${wonAccOpps.length}/${closedAccOpps.length} closed)</span></div></div>`:''}
     </div>
     ${a.notes?`<div class="acc-detail-notes">${a.notes}</div>`:''}
     <div class="acc-detail-section">Contacts <span class="acc-detail-count">${contacts.length}</span></div>
@@ -5748,7 +5782,7 @@ function openAccountDetail(id) {
         </div>
       </div>`).join('') : '<div style="color:var(--gm);font-size:11px;padding:8px 0">No contacts linked to this account.</div>'}
     ${opps.length ? `<div class="acc-detail-section">Opportunities <span class="acc-detail-count">${opps.length}</span></div>
-    ${opps.map(o=>`<div class="acc-detail-contact"><div><div class="acc-detail-con-name">${o.name}</div><div class="acc-detail-con-meta">${crmStagePill(o.stage)}</div></div><div style="text-align:right;font-size:11px;font-weight:600;color:var(--black)">${crmFmtVal(o.value)}</div></div>`).join('')}` : ''}
+    ${opps.map(o=>`<div class="acc-detail-contact" style="cursor:pointer" onclick="closeMo('mo-acc-detail');openOppDetail('${o.id}')"><div><div class="acc-detail-con-name" style="color:var(--blue)">${o.name}</div><div class="acc-detail-con-meta">${crmStagePill(o.stage)}</div></div><div style="text-align:right;font-size:11px;font-weight:600;color:var(--black)">${crmFmtVal(o.value)}</div></div>`).join('')}` : ''}
   `;
   openMo('mo-acc-detail');
 }
@@ -5830,31 +5864,96 @@ function crmToggleTask(id) {
 }
 
 // ── OPPORTUNITY DETAIL ──
+let _feeOppId = null;
+function openFeeEntry(oppId) {
+  _feeOppId = oppId;
+  document.getElementById('fee-f-label').value = 'Initial Submission';
+  document.getElementById('fee-f-amount').value = '';
+  document.getElementById('fee-f-date').value = new Date().toISOString().slice(0,10);
+  document.getElementById('fee-f-notes').value = '';
+  openMo('mo-fee-entry');
+}
+function saveFeeEntry() {
+  const amount = +document.getElementById('fee-f-amount').value;
+  if(!amount) { alert('Fee amount is required.'); return; }
+  const o = (db.crm.opportunities||[]).find(x=>x.id===_feeOppId);
+  if(!o) return;
+  if(!o.feeHistory) o.feeHistory = [];
+  o.feeHistory.push({
+    id: 'fh'+Date.now(),
+    date: document.getElementById('fee-f-date').value,
+    label: document.getElementById('fee-f-label').value,
+    amount,
+    notes: document.getElementById('fee-f-notes').value.trim()
+  });
+  o.value = amount;
+  o.updatedAt = new Date().toISOString().slice(0,10);
+  markDirty(); saveDB();
+  closeMo('mo-fee-entry');
+  openOppDetail(_feeOppId);
+}
+function deleteFeeEntry(oppId, entryId) {
+  const o = (db.crm.opportunities||[]).find(x=>x.id===oppId);
+  if(!o||!o.feeHistory) return;
+  o.feeHistory = o.feeHistory.filter(f=>f.id!==entryId);
+  if(o.feeHistory.length) o.value = o.feeHistory[o.feeHistory.length-1].amount;
+  markDirty(); saveDB();
+  openOppDetail(oppId);
+}
 function openOppDetail(oppId) {
   const o = (db.crm.opportunities||[]).find(x=>x.id===oppId);
   if(!o) return;
   const stage = CRM_STAGES.find(s=>s.id===o.stage);
   const tasks = (db.crm.tasks||[]).filter(t=>t.oppId===oppId);
+  const feeHistory = (o.feeHistory||[]);
+  const lbl = s => `<div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">${s}</div>`;
   document.getElementById('mo-opp-detail-title').textContent = o.name;
   document.getElementById('mo-opp-detail-body').innerHTML = `
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px">
-    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Account</div><div style="font-size:13px;font-weight:500">${crmAccName(o.accountId)}</div></div>
-    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Stage</div>${crmStagePill(o.stage)}</div>
-    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Value</div><div style="font-size:16px;font-weight:700">${crmFmtVal(o.value)}</div></div>
-    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Probability</div><div style="font-size:13px">${o.prob||0}%</div></div>
-    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Expected Close</div><div style="font-size:12px">${crmFmtDate(o.closeDate)}</div></div>
-    <div><div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:4px">Sector / Scope</div><div style="font-size:12px">${[o.sector,o.scope].filter(Boolean).join(' · ')||'—'}</div></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;padding:16px 16px 0">
+    <div>${lbl('Account')}<div style="font-size:13px;font-weight:500">${crmAccName(o.accountId)}</div></div>
+    <div>${lbl('Stage')}${crmStagePill(o.stage)}</div>
+    <div>${lbl('Current Fee')}<div style="font-size:16px;font-weight:700">${crmFmtVal(o.value)}</div></div>
+    <div>${lbl('Probability')}<div style="font-size:13px">${o.prob||0}%</div></div>
+    <div>${lbl('Expected Close')}<div style="font-size:12px">${crmFmtDate(o.closeDate)}</div></div>
+    <div>${lbl('Sector / Scope')}<div style="font-size:12px">${[o.sector,o.scope].filter(Boolean).join(' · ')||'—'}</div></div>
   </div>
-  ${o.notes?`<div style="background:var(--offwhite);border:1px solid var(--gl);border-radius:var(--r);padding:12px;font-size:11.5px;line-height:1.6;margin-bottom:16px">${o.notes}</div>`:''}
-  <div style="font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:8px">Tasks (${tasks.length})</div>
-  ${tasks.length ? tasks.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--gl);font-size:11px">
+  ${o.notes?`<div style="background:var(--offwhite);border:1px solid var(--gl);border-radius:var(--r);padding:12px;font-size:11.5px;line-height:1.6;margin:12px 16px">${o.notes}</div>`:''}
+  <div style="border-top:1px solid var(--gl);padding:12px 16px 4px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm)">Fee Submission History <span style="background:var(--gl);color:var(--gd);padding:1px 6px;border-radius:8px;font-size:9px">${feeHistory.length}</span></div>
+    <button class="btn btn-ghost btn-xs" onclick="openFeeEntry('${oppId}')">+ Add Submission</button>
+  </div>
+  ${feeHistory.length ? `<table style="width:100%;border-collapse:collapse;font-size:11px">
+    <thead><tr style="background:var(--offwhite)">
+      <th style="padding:6px 16px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);font-family:var(--font-display)">Date</th>
+      <th style="padding:6px 8px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);font-family:var(--font-display)">Label</th>
+      <th style="padding:6px 8px;text-align:right;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);font-family:var(--font-display)">Amount</th>
+      <th style="padding:6px 16px;text-align:right;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);font-family:var(--font-display)">Δ</th>
+    </tr></thead>
+    <tbody>${feeHistory.map((f,i)=>{
+      const prev = feeHistory[i-1];
+      const delta = prev ? f.amount - prev.amount : null;
+      const dStr = delta===null?'':(delta>0?`<span style="color:var(--red)">▲ ${crmFmtVal(Math.abs(delta))}</span>`:`<span style="color:var(--green)">▼ ${crmFmtVal(Math.abs(delta))}</span>`);
+      const isLatest = i===feeHistory.length-1;
+      return `<tr style="border-bottom:1px solid var(--gl)${isLatest?';background:#fffbeb':''}">
+        <td style="padding:8px 16px;color:var(--gm)">${crmFmtDate(f.date)}</td>
+        <td style="padding:8px 8px;font-weight:${isLatest?'600':'400'}">${f.label}${isLatest?' <span style="font-size:8px;background:var(--yellow);color:var(--black);padding:1px 5px;border-radius:2px;font-weight:700">CURRENT</span>':''}${f.notes?`<div style="font-size:10px;color:var(--gm);margin-top:2px">${f.notes}</div>`:''}</td>
+        <td style="padding:8px 8px;text-align:right;font-weight:600">${crmFmtVal(f.amount)}</td>
+        <td style="padding:8px 16px;text-align:right">${dStr} <button class="btn btn-ghost btn-xs" style="color:var(--red);margin-left:6px" onclick="deleteFeeEntry('${oppId}','${f.id}')">×</button></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>` : '<div style="font-size:11px;color:var(--gm);padding:8px 16px">No fee submissions recorded yet.</div>'}
+  <div style="border-top:1px solid var(--gl);padding:12px 16px 4px;display:flex;align-items:center;justify-content:space-between">
+    <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm)">Tasks <span style="background:var(--gl);color:var(--gd);padding:1px 6px;border-radius:8px;font-size:9px">${tasks.length}</span></div>
+  </div>
+  ${tasks.length ? tasks.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-bottom:1px solid var(--gl);font-size:11px">
     <div class="crm-task-check ${t.done?'done':''}" style="width:14px;height:14px;flex-shrink:0" onclick="crmToggleTask('${t.id}')">${t.done?'✓':''}</div>
-    <div style="${t.done?'text-decoration:line-through;color:var(--gm)':crmIsOverdue(t.due)?'color:var(--red)':''}">${t.title}</div>
-    <div style="margin-left:auto;font-size:10px;color:var(--gm);white-space:nowrap">${crmFmtDate(t.due)}</div>
-  </div>`).join('') : '<div style="font-size:11px;color:var(--gm)">No tasks linked.</div>'}`;
+    <div style="${t.done?'text-decoration:line-through;color:var(--gm)':crmIsOverdue(t.due)?'color:var(--red)':''}; flex:1">${t.title}</div>
+    <div style="font-size:10px;color:var(--gm);white-space:nowrap">${crmFmtDate(t.due)}</div>
+  </div>`).join('') : '<div style="font-size:11px;color:var(--gm);padding:4px 16px 12px">No tasks linked.</div>'}`;
   document.getElementById('mo-opp-detail-foot').innerHTML = `
     <button class="btn btn-ghost" onclick="closeMo('mo-opp-detail')">Close</button>
     <button class="btn btn-ghost" onclick="closeMo('mo-opp-detail');openEditOppModal('${oppId}')">Edit</button>
+    <button class="btn btn-ghost btn-sm" onclick="openFeeEntry('${oppId}')">+ Fee</button>
     <button class="btn btn-y btn-sm" onclick="closeMo('mo-opp-detail');openNewTaskModal('${oppId}')">+ Task</button>`;
   openMo('mo-opp-detail');
 }
