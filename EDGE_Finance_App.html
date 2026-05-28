@@ -4213,7 +4213,7 @@ function ensureCrm() {
 
 function initCRM() {
   ensureCrm();
-  if(!db.crm.accounts.length || db.crm.seedVersion !== 3) seedCRM();
+  if(!db.crm.accounts.length || db.crm.seedVersion !== 4) seedCRM();
 }
 function forceSeedCRM() {
   seedCRM(); saveDB(); if(typeof currentModule!=='undefined'&&currentModule==='procurement') goProcurement('accounts');
@@ -5418,9 +5418,9 @@ function seedCRM() {
     {id:"con837",accountId:"acc137",first:"James",last:"Forsyth",title:"Delivery Director",email:"james.forsyth@zaaddevelop.ae",createdAt:"2025-01-01"},
     {id:"con838",accountId:"acc138",first:"Amjad",last:"Alhudaithy",title:"Development Director",email:"am.alhudaithy@zood.sa",createdAt:"2025-01-01"}
   ];
-  db.crm.opportunities = [];
-  db.crm.tasks = [];
-  db.crm.seedVersion = 3;
+  if(!db.crm.opportunities) db.crm.opportunities = [];
+  if(!db.crm.tasks) db.crm.tasks = [];
+  db.crm.seedVersion = 4;
 }
 
 // ── Navigation ──
