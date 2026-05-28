@@ -4213,14 +4213,14 @@ function ensureCrm() {
 
 function initCRM() {
   ensureCrm();
-  if(!db.crm.accounts.length || db.crm.seedVersion !== 4) seedCRM();
+  if(!db.crm.accounts.length || db.crm.seedVersion !== 5) seedCRM();
 }
 function forceSeedCRM() {
   seedCRM(); saveDB(); if(typeof currentModule!=='undefined'&&currentModule==='procurement') goProcurement('accounts');
 }
 
 function seedCRM() {
-  db.crm.accounts = [
+  const _sA = [
     {id:"acc1",name:"Abdul Latif Jameel Real Estate Investment Co.",relType:"Client",type:"Client",sector:"Real Estate",country:"KSA",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
     {id:"acc2",name:"Abyatona Real Estates",relType:"Client",type:"Client",sector:"Real Estate",country:"KSA",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
     {id:"acc3",name:"Accor",relType:"Client",type:"Hotel Operator",sector:"Hospitality",country:"UAE",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
@@ -4578,7 +4578,7 @@ function seedCRM() {
     {id:"acc355",name:"Xworks Interior",relType:"Supply Chain",type:"Fit Out Contractor",rel:1,grade:"Ungraded",createdAt:"2025-01-01"},
     {id:"acc356",name:"Xworks Interiors",relType:"Supply Chain",type:"Fit Out Contractor",rel:1,grade:"Ungraded",createdAt:"2025-01-01"}
   ];
-  db.crm.contacts = [
+  const _sC = [
     {id:"con1",accountId:"",first:"Ilyas",last:"",email:"ilyas@kingstonholding.ae",createdAt:"2025-01-01"},
     {id:"con2",accountId:"",first:"Josh",last:"",email:"joshua@kingstonholding.ae",createdAt:"2025-01-01"},
     {id:"con3",accountId:"",first:"Omar",last:"",title:"Projects Director",mobile:"+971 50 550 6306",createdAt:"2025-01-01"},
@@ -5418,9 +5418,25 @@ function seedCRM() {
     {id:"con837",accountId:"acc137",first:"James",last:"Forsyth",title:"Delivery Director",email:"james.forsyth@zaaddevelop.ae",createdAt:"2025-01-01"},
     {id:"con838",accountId:"acc138",first:"Amjad",last:"Alhudaithy",title:"Development Director",email:"am.alhudaithy@zood.sa",createdAt:"2025-01-01"}
   ];
+  // Merge accounts: preserve user edits (grade etc), add new seed entries
+  const _exA = {};
+  (db.crm.accounts||[]).forEach(a => _exA[a.id] = a);
+  db.crm.accounts = _sA.map(sa => {
+    const ex = _exA[sa.id];
+    return ex ? Object.assign({}, sa, {grade: ex.grade !== undefined ? ex.grade : sa.grade}) : sa;
+  }).concat((db.crm.accounts||[]).filter(a => !_sA.find(s => s.id === a.id)));
+
+  // Merge contacts: preserve user edits (influence etc), add new seed entries
+  const _exC = {};
+  (db.crm.contacts||[]).forEach(c => _exC[c.id] = c);
+  db.crm.contacts = _sC.map(sc => {
+    const ex = _exC[sc.id];
+    return ex ? Object.assign({}, sc, {influence: ex.influence}) : sc;
+  }).concat((db.crm.contacts||[]).filter(c => !_sC.find(s => s.id === c.id)));
+
   if(!db.crm.opportunities) db.crm.opportunities = [];
   if(!db.crm.tasks) db.crm.tasks = [];
-  db.crm.seedVersion = 4;
+  db.crm.seedVersion = 5;
 }
 
 // ── Navigation ──
