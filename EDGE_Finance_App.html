@@ -1616,7 +1616,7 @@ const CONFIG = {
 // DATA
 // ═══════════════════════════════════════════════════
 const SK = 'edge_v3';
-let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{}, users:[], checklistRuns:[], projectStages:{}, crm:{ accounts:[], contacts:[], opportunities:[], tasks:[] } };
+let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{}, users:[], checklistRuns:[], projectStages:{}, crm:{ accounts:[], contacts:[], opportunities:[], tasks:[] }, bids:[] };
 let dbSnapshot = null;   // snapshot of last saved state for dirty detection
 let editState = {};
 let msalInstance = null;
@@ -5983,13 +5983,15 @@ function crmDrop(e, stageId) {
   if(!dragOppId) return;
   const opp = (db.crm.opportunities||[]).find(o=>o.id===dragOppId);
   if(opp && opp.stage !== stageId) {
+    const hasBid = (db.bids||[]).some(b=>b.oppId===dragOppId);
+    if(hasBid) { dragOppId=null; alert('Stage is controlled by the Bidding team. Open the bid to change it.'); return; }
     opp.stage = stageId;
     const autoP = STAGE_PROB[stageId];
     if(autoP !== null && autoP !== undefined) opp.prob = autoP;
     opp.updatedAt = new Date().toISOString().slice(0,10);
-    markDirty();
-    saveDB();
-    renderCrmPipeline();
+    if(['signed','lost'].includes(stageId) && !opp.closedAt) opp.closedAt = new Date().toISOString().slice(0,10);
+    if(stageId==='proposal') ensureBidForOpp(opp.id);
+    markDirty(); saveDB(); renderCrmPipeline();
   }
   dragOppId = null;
 }
@@ -6363,8 +6365,19 @@ function openEditOppModal(id) {
   accSel.innerHTML = '<option value="">— select account —</option>' + [...(db.crm.accounts||[])].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value=\"${a.id}\">${a.name}</option>`).join('');
   accSel.value = o.accountId||'';
   const stageSel = document.getElementById('opp-f-stage');
-  stageSel.innerHTML = CRM_STAGES.map(s=>`<option value="${s.id}">${s.label}</option>`).join('');
-  stageSel.value = o.stage||'prospect';
+  const hasBid = (db.bids||[]).some(b=>b.oppId===id);
+  if(hasBid) {
+    // Stage controlled by Bidding team — show read-only in CRM
+    stageSel.innerHTML = CRM_STAGES.map(s=>`<option value="${s.id}">${s.label}</option>`).join('');
+    stageSel.value = o.stage||'prospect';
+    stageSel.disabled = true;
+    stageSel.title = 'Stage is controlled by the Bidding team';
+  } else {
+    stageSel.innerHTML = CRM_STAGES.map(s=>`<option value="${s.id}">${s.label}</option>`).join('');
+    stageSel.value = o.stage||'prospect';
+    stageSel.disabled = false;
+    stageSel.title = '';
+  }
   const ownerSelE = document.getElementById('opp-f-owner');
   ownerSelE.innerHTML = '<option value="">— select —</option>' + (db.users||[]).filter(u=>u.name||u.email).map(u=>`<option value="${u.id||u.name}">${u.name||u.email}</option>`).join('');
   ownerSelE.value = o.owner||'';
@@ -6394,15 +6407,36 @@ function saveOpp() {
   if(['signed','lost'].includes(_oppStage)) {
     obj.closedAt = _prevOpp.closedAt || new Date().toISOString().slice(0,10);
   }
+  const BID_STAGES = ['proposal','submitted','negotiation','verbal','signed','lost'];
   ensureCrm();
+  let savedOppId;
   if(editingCrmId.opp) {
-    const idx = db.crm.opportunities.findIndex(x=>x.id===editingCrmId.opp);
+    savedOppId = editingCrmId.opp;
+    const idx = db.crm.opportunities.findIndex(x=>x.id===savedOppId);
     if(idx>=0) db.crm.opportunities[idx] = { ...db.crm.opportunities[idx], ...obj };
   } else {
-    db.crm.opportunities.push({ id:uid(), createdAt:new Date().toISOString().slice(0,10), ...obj });
+    savedOppId = uid();
+    db.crm.opportunities.push({ id:savedOppId, createdAt:new Date().toISOString().slice(0,10), ...obj });
   }
+  // Auto-create bid record when opportunity first reaches Proposal Stage
+  if(BID_STAGES.includes(_oppStage)) ensureBidForOpp(savedOppId);
   markDirty(); saveDB(); closeMo('mo-opp');
   if(currentModule==='procurement') goProcurement('pipeline');
+  else if(currentModule==='bidding') goBidding('queue');
+}
+function ensureBidForOpp(oppId) {
+  if(!db.bids) db.bids = [];
+  if(db.bids.some(b=>b.oppId===oppId)) return;
+  const opp = (db.crm.opportunities||[]).find(o=>o.id===oppId);
+  db.bids.push({
+    id: 'bid_'+uid(), oppId, createdAt: new Date().toISOString().slice(0,10),
+    updatedAt: new Date().toISOString().slice(0,10),
+    bidRef:'', clientRef:'', rfpReceivedDate:'', submissionDeadline:'', submissionDate:'',
+    clarificationDeadline:'', eoiRequired:false, eoiSubmitted:'', ndaRequired:false, ndaSigned:'',
+    technicalLead:'', commercialLead:'', technicalStatus:'draft', commercialStatus:'draft',
+    subConsultants:[], submittedFee: opp ? opp.value : 0, targetMargin:0, revisedFee:null,
+    clarifications:[], result:null, awardedFee:null, lossReason:'', competitor:'', feedbackNotes:''
+  });
 }
 
 // ── MODALS — Account ──
