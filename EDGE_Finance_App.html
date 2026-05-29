@@ -859,6 +859,7 @@ window._msalLoaded = true;
     <div class="ntab" onclick="goProcurement('accounts')">Accounts</div>
     <div class="ntab" onclick="goProcurement('contacts')">Contacts</div>
     <div class="ntab" onclick="goProcurement('tasks')">Tasks</div>
+    <div class="ntab" onclick="goProcurement('reports')">Reports</div>
   </div>
   <div class="nav-right" style="display:flex;align-items:center;gap:8px">
     <div class="sync-status" id="sync-status"><div class="sync-dot ok" id="sync-dot"></div><span id="sync-label">Synced</span></div>
@@ -1163,6 +1164,10 @@ window._msalLoaded = true;
   <div id="crm-tasks-view"></div>
 </div>
 
+<div class="sec" id="sec-crm-reports">
+  <div id="crm-reports-view"></div>
+</div>
+
 <!-- ═══════════════ PROJECTS MODULE — SOPs ═══════════════ -->
 <div class="sec" id="sec-sops">
   <div class="ph">
@@ -1276,13 +1281,15 @@ window._msalLoaded = true;
     <div class="mbody"><div class="fg">
       <div class="fgrp full"><label>Opportunity Name *</label><input id="opp-f-name" type="text" placeholder="e.g. Four Seasons Hotel — Interior Design"></div>
       <div class="fgrp"><label>Account *</label><select id="opp-f-account"></select></div>
-      <div class="fgrp"><label>Stage</label><select id="opp-f-stage" onchange="autoSetProb(this.value)"></select></div>
+      <div class="fgrp"><label>Stage</label><select id="opp-f-stage" onchange="autoSetProb(this.value);toggleLossReason(this.value)"></select></div>
       <div class="fgrp"><label>Estimated Value (AED)</label><input id="opp-f-value" type="number" placeholder="0"></div>
       <div class="fgrp"><label>Probability %</label><input id="opp-f-prob" type="number" min="0" max="100" placeholder="50"><div style="font-size:9px;color:var(--gm);margin-top:2px">Auto-set by stage — override if needed</div></div>
       <div class="fgrp"><label>Expected Close Date</label><input id="opp-f-close" type="date"></div>
       <div class="fgrp"><label>Sector</label><select id="opp-f-sector"><option value="">— select —</option><option>Hospitality</option><option>Residential</option><option>Mixed-Use</option><option>Retail</option><option>Commercial</option><option>Government</option><option>Healthcare</option><option>Education</option></select></div>
       <div class="fgrp"><label>Scope Type</label><select id="opp-f-scope"><option value="">— select —</option><option>Interior Design</option><option>Architecture</option><option>Architecture &amp; ID</option><option>Master Planning</option><option>Lead Design Consultant</option></select></div>
       <div class="fgrp full"><label>Notes</label><textarea id="opp-f-notes" rows="2" placeholder="Key context, source of lead…"></textarea></div>
+      <div class="fgrp"><label>BD Owner</label><select id="opp-f-owner"><option value="">— select —</option></select></div>
+      <div class="fgrp" id="opp-lossreason-row" style="display:none"><label>Loss Reason</label><select id="opp-f-lossreason"><option value="">— select —</option><option>Price / Fee</option><option>Competitor appointed</option><option>Scope mismatch</option><option>Timing / Budget</option><option>Client cancelled</option><option>Relationship / Preference</option><option>Other</option></select></div>
     </div></div>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeMo('mo-opp')">Cancel</button>
@@ -4296,6 +4303,251 @@ function applyAccountMigration() {
     markDirty(); saveDB();
   } catch(e) { console.error('applyAccountMigration failed:', e); }
 }
+function toggleLossReason(stage) {
+  const row = document.getElementById('opp-lossreason-row');
+  if(row) row.style.display = stage === 'lost' ? '' : 'none';
+}
+function crmUserName(id) {
+  if(!id) return '—';
+  const u = (db.users||[]).find(u=>u.id===id||u.name===id);
+  return u ? (u.name||u.email||id) : id;
+}
+function renderCrmReports() {
+  ensureCrm();
+  const el = document.getElementById('crm-reports-view');
+  if(!el) return;
+  const opps = db.crm.opportunities||[];
+  const accounts = db.crm.accounts||[];
+  const contacts = db.crm.contacts||[];
+  const tasks = db.crm.tasks||[];
+  const today = new Date().toISOString().slice(0,10);
+  const CLOSED_STAGES = ['signed','lost'];
+  const ACTIVE_STAGES = ['prospect','initiated','engaged','qualified','proposal','submitted','negotiation','verbal'];
+  const activeOpps = opps.filter(o=>ACTIVE_STAGES.includes(o.stage));
+  const wonOpps = opps.filter(o=>o.stage==='signed');
+  const lostOpps = opps.filter(o=>o.stage==='lost');
+  const closedOpps = opps.filter(o=>CLOSED_STAGES.includes(o.stage));
+  const fmt = v => crmFmtVal(v);
+  const pct = (n,d) => d ? Math.round(n/d*100)+'%' : '—';
+  const totalActive = activeOpps.reduce((s,o)=>s+o.value,0);
+  const weightedActive = activeOpps.reduce((s,o)=>s+(o.value*(o.prob||0)/100),0);
+  const totalWon = wonOpps.reduce((s,o)=>s+o.value,0);
+  const totalLost = lostOpps.reduce((s,o)=>s+o.value,0);
+  const winRate = closedOpps.length ? Math.round(wonOpps.length/closedOpps.length*100) : null;
+  const winRateVal = closedOpps.length ? Math.round(totalWon/(totalWon+totalLost)*100) : null;
+
+  // ── 1. Pipeline Forecast ──
+  const stageRows = ['prospect','initiated','engaged','qualified','proposal','submitted','negotiation','verbal'].map(sid=>{
+    const stage = (typeof CRM_STAGES!=='undefined'?CRM_STAGES:[]).find(s=>s.id===sid)||{label:sid};
+    const so = activeOpps.filter(o=>o.stage===sid);
+    const sv = so.reduce((s,o)=>s+o.value,0);
+    const sw = so.reduce((s,o)=>s+(o.value*(o.prob||0)/100),0);
+    return so.length?`<tr><td style="padding:7px 12px">${stage.label}</td><td style="padding:7px 8px;text-align:center">${so.length}</td><td style="padding:7px 8px;text-align:right">${fmt(sv)}</td><td style="padding:7px 12px;text-align:right;font-weight:600;color:var(--blue)">${fmt(sw)}</td></tr>`:'';
+  }).filter(Boolean).join('');
+
+  // monthly forecast
+  const monthMap = {};
+  activeOpps.forEach(o=>{
+    if(!o.closeDate) return;
+    const m = o.closeDate.slice(0,7);
+    if(!monthMap[m]) monthMap[m]={val:0,wt:0,cnt:0};
+    monthMap[m].val+=o.value; monthMap[m].wt+=o.value*(o.prob||0)/100; monthMap[m].cnt++;
+  });
+  const monthRows = Object.keys(monthMap).sort().map(m=>{
+    const d=monthMap[m];
+    const [yr,mo]=m.split('-');
+    const label=new Date(+yr,+mo-1,1).toLocaleString('default',{month:'short',year:'numeric'});
+    return `<tr><td style="padding:7px 12px">${label}</td><td style="padding:7px 8px;text-align:center">${d.cnt}</td><td style="padding:7px 8px;text-align:right">${fmt(d.val)}</td><td style="padding:7px 12px;text-align:right;font-weight:600;color:var(--blue)">${fmt(d.wt)}</td></tr>`;
+  }).join('');
+
+  // ── 2. Conversion Rate ──
+  const convRows = [
+    ['Total Created',opps.length,''],
+    ['Active Pipeline',activeOpps.length,''],
+    ['Won (Signed)',wonOpps.length,`<span style="color:var(--green);font-weight:600">${fmt(totalWon)}</span>`],
+    ['Lost',lostOpps.length,`<span style="color:var(--red)">${fmt(totalLost)}</span>`],
+    ['Win Rate (count)',winRate!==null?winRate+'%':'—',''],
+    ['Win Rate (value)',winRateVal!==null?winRateVal+'%':'—',''],
+  ].map(([l,v,extra])=>`<tr><td style="padding:7px 12px;color:var(--gm)">${l}</td><td style="padding:7px 12px;font-weight:600;text-align:right">${v}${extra?' '+extra:''}</td></tr>`).join('');
+
+  // ── 3. Lost Opportunity Analysis ──
+  const lossReasonMap = {};
+  lostOpps.forEach(o=>{
+    const r = o.lossReason||'Not recorded';
+    if(!lossReasonMap[r]) lossReasonMap[r]={cnt:0,val:0};
+    lossReasonMap[r].cnt++; lossReasonMap[r].val+=o.value;
+  });
+  const lossReasonRows = Object.keys(lossReasonMap).sort().map(r=>{
+    const d=lossReasonMap[r];
+    return `<tr><td style="padding:7px 12px">${r}</td><td style="padding:7px 8px;text-align:center">${d.cnt}</td><td style="padding:7px 12px;text-align:right;color:var(--red)">${fmt(d.val)}</td></tr>`;
+  }).join('');
+  const lostDetailRows = [...lostOpps].sort((a,b)=>b.value-a.value).slice(0,10).map(o=>`<tr>
+    <td style="padding:7px 12px;font-weight:500">${o.name}</td>
+    <td style="padding:7px 8px;font-size:11px;color:var(--gm)">${crmAccName(o.accountId)}</td>
+    <td style="padding:7px 8px;font-size:11px;color:var(--gm)">${o.sector||'—'}</td>
+    <td style="padding:7px 8px;font-size:11px;color:var(--red)">${o.lossReason||'—'}</td>
+    <td style="padding:7px 12px;text-align:right;font-weight:600">${fmt(o.value)}</td>
+  </tr>`).join('');
+
+  // ── 4. Client Activity ──
+  const msPerDay = 86400000;
+  const coldAccounts = accounts.filter(a=>{
+    if(!a.lastContactDate) return true;
+    const days = (Date.now()-new Date(a.lastContactDate).getTime())/msPerDay;
+    return days > 60;
+  }).sort((a,b)=>{
+    const da = a.lastContactDate ? new Date(a.lastContactDate).getTime() : 0;
+    const db2 = b.lastContactDate ? new Date(b.lastContactDate).getTime() : 0;
+    return da - db2;
+  });
+  const overdueActions = accounts.filter(a=>a.dueDate && a.dueDate < today && a.nextAction);
+  const overdueContacts = contacts.filter(c=>c.nextFollowUpDate && c.nextFollowUpDate < today);
+  const coldRows = coldAccounts.slice(0,8).map(a=>{
+    const days = a.lastContactDate ? Math.round((Date.now()-new Date(a.lastContactDate).getTime())/msPerDay) : null;
+    return `<tr><td style="padding:7px 12px;font-weight:500">${a.name}</td><td style="padding:7px 8px;font-size:11px;color:var(--gm)">${a.sector||'—'}</td><td style="padding:7px 12px;text-align:right;color:var(--red)">${days!==null?days+' days ago':'Never contacted'}</td></tr>`;
+  }).join('');
+  const overdueActionRows = overdueActions.slice(0,6).map(a=>`<tr><td style="padding:7px 12px;font-weight:500">${a.name}</td><td style="padding:7px 8px;font-size:11px">${a.nextAction}</td><td style="padding:7px 12px;text-align:right;font-size:11px;color:var(--red)">${crmFmtDate(a.dueDate)}</td></tr>`).join('');
+
+  // ── 5. BD Performance ──
+  const staffMap = {};
+  opps.forEach(o=>{
+    const k = o.owner||'__unassigned__';
+    if(!staffMap[k]) staffMap[k]={name:crmUserName(k),active:0,activeVal:0,won:0,wonVal:0,lost:0,lostVal:0};
+    if(ACTIVE_STAGES.includes(o.stage)){staffMap[k].active++;staffMap[k].activeVal+=o.value;}
+    if(o.stage==='signed'){staffMap[k].won++;staffMap[k].wonVal+=o.value;}
+    if(o.stage==='lost'){staffMap[k].lost++;staffMap[k].lostVal+=o.value;}
+  });
+  const taskStaffMap = {};
+  tasks.forEach(t=>{
+    const k = t.assigned||'__unassigned__';
+    if(!taskStaffMap[k]) taskStaffMap[k]={total:0,done:0};
+    taskStaffMap[k].total++; if(t.done) taskStaffMap[k].done++;
+  });
+  const staffRows = Object.keys(staffMap).map(k=>{
+    const d=staffMap[k];
+    const closed=d.won+d.lost;
+    const wr=closed?Math.round(d.won/closed*100)+'%':'—';
+    const ts=taskStaffMap[k]||{total:0,done:0};
+    return `<tr>
+      <td style="padding:7px 12px;font-weight:500">${k==='__unassigned__'?'<span style="color:var(--gm)">Unassigned</span>':d.name}</td>
+      <td style="padding:7px 8px;text-align:center">${d.active}</td>
+      <td style="padding:7px 8px;text-align:right">${fmt(d.activeVal)}</td>
+      <td style="padding:7px 8px;text-align:center;font-weight:600;color:${d.won>0?'var(--green)':'var(--gm)'}">${d.won}</td>
+      <td style="padding:7px 8px;text-align:center;color:var(--gm)">${wr}</td>
+      <td style="padding:7px 12px;text-align:center;font-size:11px;color:var(--gm)">${ts.done}/${ts.total}</td>
+    </tr>`;
+  }).join('');
+
+  // ── 6. Sector Analysis ──
+  const sectorMap = {};
+  opps.forEach(o=>{
+    const s = o.sector||'Unclassified';
+    if(!sectorMap[s]) sectorMap[s]={active:0,activeVal:0,weighted:0,won:0,wonVal:0,lost:0};
+    if(ACTIVE_STAGES.includes(o.stage)){sectorMap[s].active++;sectorMap[s].activeVal+=o.value;sectorMap[s].weighted+=o.value*(o.prob||0)/100;}
+    if(o.stage==='signed'){sectorMap[s].won++;sectorMap[s].wonVal+=o.value;}
+    if(o.stage==='lost') sectorMap[s].lost++;
+  });
+  const sectorRows = Object.keys(sectorMap).sort((a,b)=>sectorMap[b].activeVal-sectorMap[a].activeVal).map(s=>{
+    const d=sectorMap[s];
+    const closed=d.won+d.lost;
+    const wr=closed?Math.round(d.won/closed*100)+'%':'—';
+    return `<tr>
+      <td style="padding:7px 12px;font-weight:500">${s}</td>
+      <td style="padding:7px 8px;text-align:center">${d.active}</td>
+      <td style="padding:7px 8px;text-align:right">${fmt(d.activeVal)}</td>
+      <td style="padding:7px 8px;text-align:right;color:var(--blue)">${fmt(d.weighted)}</td>
+      <td style="padding:7px 12px;text-align:center">${wr}</td>
+    </tr>`;
+  }).join('');
+
+  const card = (title,note,content) => `
+    <div style="background:var(--white);border:1px solid var(--gl);border-radius:var(--r);margin-bottom:20px;overflow:hidden">
+      <div style="padding:14px 16px;border-bottom:1px solid var(--gl);display:flex;align-items:baseline;gap:10px">
+        <div style="font-size:13px;font-weight:700;font-family:var(--font-display)">${title}</div>
+        ${note?`<div style="font-size:10px;color:var(--gm)">${note}</div>`:''}
+      </div>
+      ${content}
+    </div>`;
+  const tbl = (head,body,empty) => body ? `<table style="width:100%;border-collapse:collapse;font-size:12px"><thead><tr style="background:var(--offwhite)">${head}</tr></thead><tbody>${body}</tbody></table>` : `<div style="padding:16px;font-size:11px;color:var(--gm)">${empty||'No data.'}</div>`;
+  const th = s => `<th style="padding:7px 12px;text-align:left;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);font-family:var(--font-display)">${s}</th>`;
+  const thr = s => `<th style="padding:7px 12px;text-align:right;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);font-family:var(--font-display)">${s}</th>`;
+  const thc = s => `<th style="padding:7px 8px;text-align:center;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);font-family:var(--font-display)">${s}</th>`;
+
+  el.innerHTML = `
+  <div class="ph"><div><div class="ph-title">CRM Reports</div><div class="ph-sub">Live data from your pipeline · ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div></div></div>
+  <div style="padding:0 20px 32px">
+
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
+    <div style="background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:6px">Active Pipeline</div>
+      <div style="font-size:18px;font-weight:700">${fmt(totalActive)}</div>
+      <div style="font-size:10px;color:var(--gm);margin-top:3px">${activeOpps.length} opportunities</div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:6px">Weighted Forecast</div>
+      <div style="font-size:18px;font-weight:700;color:var(--blue)">${fmt(weightedActive)}</div>
+      <div style="font-size:10px;color:var(--gm);margin-top:3px">probability-adjusted</div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:6px">Won This Period</div>
+      <div style="font-size:18px;font-weight:700;color:var(--green)">${fmt(totalWon)}</div>
+      <div style="font-size:10px;color:var(--gm);margin-top:3px">${wonOpps.length} deals signed</div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:6px">Win Rate</div>
+      <div style="font-size:18px;font-weight:700;color:${winRate!==null&&winRate>=50?'var(--green)':winRate!==null&&winRate<30?'var(--red)':'var(--black)'}">${winRate!==null?winRate+'%':'—'}</div>
+      <div style="font-size:10px;color:var(--gm);margin-top:3px">${closedOpps.length} closed deals</div>
+    </div>
+  </div>
+
+  ${card('1. Pipeline Forecast','Active opportunities by stage and expected close month',`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0">
+      <div style="border-right:1px solid var(--gl)">
+        <div style="padding:10px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm)">By Stage</div>
+        ${tbl(th('Stage')+thc('Deals')+thr('Value')+thr('Weighted'),stageRows,'No active pipeline.')}
+      </div>
+      <div>
+        <div style="padding:10px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm)">By Expected Close Month</div>
+        ${tbl(th('Month')+thc('Deals')+thr('Value')+thr('Weighted'),monthRows,'No close dates set on active opportunities.')}
+      </div>
+    </div>
+  `)}
+
+  ${card('2. Conversion Rate','Overall funnel performance',tbl(th('Metric')+'<th></th>',convRows,''))}
+
+  ${card('3. Lost Opportunity Analysis',lostOpps.length+' deals lost · '+fmt(totalLost)+' total value',`
+    <div style="border-bottom:1px solid var(--gl)">
+      <div style="padding:10px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm)">By Loss Reason</div>
+      ${tbl(th('Reason')+thc('Count')+thr('Value'),lossReasonRows,lostOpps.length?'Loss reasons not recorded — edit lost opportunities to add reasons.':'No lost opportunities recorded.')}
+    </div>
+    <div>
+      <div style="padding:10px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm)">Top Lost Deals</div>
+      ${tbl(th('Opportunity')+th('Account')+th('Sector')+th('Reason')+thr('Value'),lostDetailRows,'No lost opportunities recorded.')}
+    </div>
+  `)}
+
+  ${card('4. Client Activity','Accounts needing attention',`
+    <div style="border-bottom:1px solid var(--gl)">
+      <div style="padding:10px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm)">Going Cold — No contact in 60+ days (${coldAccounts.length} accounts)</div>
+      ${tbl(th('Account')+th('Sector')+thr('Last Contact'),coldRows,'All accounts contacted within 60 days.')}
+    </div>
+    <div>
+      <div style="padding:10px 12px 4px;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm)">Overdue Next Actions (${overdueActions.length})</div>
+      ${tbl(th('Account')+th('Action')+thr('Due'),overdueActionRows,overdueActions.length===0?'No overdue actions.':'')}
+    </div>
+  `)}
+
+  ${card('5. BD Performance by Staff Member',opps.some(o=>o.owner)?'':'Add BD Owner to opportunities to see individual performance',`
+    ${tbl(th('Person')+thc('Active')+thr('Pipeline Value')+thc('Won')+thc('Win Rate')+thc('Tasks Done'),staffRows,'No opportunities recorded.')}
+    ${!opps.some(o=>o.owner)?'<div style="padding:8px 16px 12px;font-size:10px;color:var(--red)">⚠ No BD Owner set on any opportunity. Edit opportunities and assign an owner to see performance by person.</div>':''}
+  `)}
+
+  ${card('6. Sector Analysis','Pipeline and win rate by industry sector',
+    tbl(th('Sector')+thc('Active')+thr('Pipeline')+thr('Weighted')+thc('Win Rate'),sectorRows,'No opportunities with sector data.')
+  )}
+
+  </div>`;
+}
 function forceSeedCRM() {
   seedCRM(); saveDB(); if(typeof currentModule!=='undefined'&&currentModule==='procurement') goProcurement('accounts');
 }
@@ -5523,7 +5775,7 @@ function seedCRM() {
 function goProcurement(sub) {
   ensureCrm();
   const tabs = document.querySelectorAll('#navTabs-procurement .ntab');
-  const subOrder = ['dashboard','pipeline','accounts','contacts','tasks'];
+  const subOrder = ['dashboard','pipeline','accounts','contacts','tasks','reports'];
   tabs.forEach((t,i) => t.classList.toggle('active', i === subOrder.indexOf(sub)));
   document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
   if(sub === 'dashboard') { renderCrmDashboard(); document.getElementById('sec-crm-dashboard').classList.add('active'); }
@@ -5531,6 +5783,7 @@ function goProcurement(sub) {
   else if(sub === 'accounts') { renderCrmAccounts(); document.getElementById('sec-crm-accounts').classList.add('active'); }
   else if(sub === 'contacts') { renderCrmContacts(); document.getElementById('sec-crm-contacts').classList.add('active'); }
   else if(sub === 'tasks') { renderCrmTasks(); document.getElementById('sec-crm-tasks').classList.add('active'); }
+  else if(sub === 'reports') { renderCrmReports(); document.getElementById('sec-crm-reports').classList.add('active'); }
 }
 
 // ── Helpers ──
@@ -6018,6 +6271,9 @@ function openOppDetail(oppId) {
     <div>${lbl('Probability')}<div style="font-size:13px">${o.prob||0}%</div></div>
     <div>${lbl('Expected Close')}<div style="font-size:12px">${crmFmtDate(o.closeDate)}</div></div>
     <div>${lbl('Sector / Scope')}<div style="font-size:12px">${[o.sector,o.scope].filter(Boolean).join(' · ')||'—'}</div></div>
+    ${o.owner?`<div>${lbl('BD Owner')}<div style="font-size:13px;font-weight:500">${crmUserName(o.owner)}</div></div>`:''}
+    ${o.lossReason?`<div>${lbl('Loss Reason')}<div style="font-size:12px;color:var(--red);font-weight:600">${o.lossReason}</div></div>`:''}
+    ${o.closedAt?`<div>${lbl('Closed Date')}<div style="font-size:12px">${crmFmtDate(o.closedAt)}</div></div>`:''}
   </div>
   ${o.notes?`<div style="background:var(--offwhite);border:1px solid var(--gl);border-radius:var(--r);padding:12px;font-size:11.5px;line-height:1.6;margin:12px 16px">${o.notes}</div>`:''}
   <div style="border-top:1px solid var(--gl);padding:12px 16px 4px;display:flex;align-items:center;justify-content:space-between">
@@ -6077,6 +6333,11 @@ function openNewOppModal(linkedOppId) {
   stageSel.innerHTML = CRM_STAGES.map(s=>`<option value="${s.id}">${s.label}</option>`).join('');
   stageSel.value = 'prospect';
   autoSetProb('prospect');
+  const ownerSelN = document.getElementById('opp-f-owner');
+  ownerSelN.innerHTML = '<option value="">— select —</option>' + (db.users||[]).filter(u=>u.name||u.email).map(u=>`<option value="${u.id||u.name}">${u.name||u.email}</option>`).join('');
+  ownerSelN.value = '';
+  document.getElementById('opp-f-lossreason').value = '';
+  toggleLossReason('prospect');
   openMo('mo-opp');
 }
 function openEditOppModal(id) {
@@ -6097,23 +6358,35 @@ function openEditOppModal(id) {
   const stageSel = document.getElementById('opp-f-stage');
   stageSel.innerHTML = CRM_STAGES.map(s=>`<option value="${s.id}">${s.label}</option>`).join('');
   stageSel.value = o.stage||'prospect';
+  const ownerSelE = document.getElementById('opp-f-owner');
+  ownerSelE.innerHTML = '<option value="">— select —</option>' + (db.users||[]).filter(u=>u.name||u.email).map(u=>`<option value="${u.id||u.name}">${u.name||u.email}</option>`).join('');
+  ownerSelE.value = o.owner||'';
+  document.getElementById('opp-f-lossreason').value = o.lossReason||'';
+  toggleLossReason(o.stage||'prospect');
   openMo('mo-opp');
 }
 function saveOpp() {
   const name = document.getElementById('opp-f-name').value.trim();
   if(!name) { alert('Opportunity name is required.'); return; }
+  const _oppStage = document.getElementById('opp-f-stage').value;
+  const _prevOpp = editingCrmId.opp ? (db.crm.opportunities||[]).find(x=>x.id===editingCrmId.opp)||{} : {};
   const obj = {
     name,
     accountId: document.getElementById('opp-f-account').value,
-    stage: document.getElementById('opp-f-stage').value,
+    stage: _oppStage,
     value: +document.getElementById('opp-f-value').value || 0,
     prob: +document.getElementById('opp-f-prob').value || 0,
     closeDate: document.getElementById('opp-f-close').value,
     sector: document.getElementById('opp-f-sector').value,
     scope: document.getElementById('opp-f-scope').value,
     notes: document.getElementById('opp-f-notes').value.trim(),
+    owner: document.getElementById('opp-f-owner').value,
+    lossReason: document.getElementById('opp-f-lossreason').value,
     updatedAt: new Date().toISOString().slice(0,10)
   };
+  if(['signed','lost'].includes(_oppStage)) {
+    obj.closedAt = _prevOpp.closedAt || new Date().toISOString().slice(0,10);
+  }
   ensureCrm();
   if(editingCrmId.opp) {
     const idx = db.crm.opportunities.findIndex(x=>x.id===editingCrmId.opp);
