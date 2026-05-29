@@ -1,3 +1,4 @@
 EDGE_CRM_Clean.xlsx
 *.pyc
 __pycache__/
+.claude/
