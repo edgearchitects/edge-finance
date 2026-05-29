@@ -853,6 +853,10 @@ window._msalLoaded = true;
   <div class="ntabs" id="navTabs-admin" style="display:none">
     <div class="ntab active" onclick="goAdmin('users')">Users</div>
   </div>
+  <div class="ntabs" id="navTabs-bidding" style="display:none">
+    <div class="ntab active" onclick="goBidding('queue')">Open Bids</div>
+    <div class="ntab" onclick="goBidding('closed')">Closed</div>
+  </div>
   <div class="ntabs" id="navTabs-procurement" style="display:none">
     <div class="ntab active" onclick="goProcurement('dashboard')">Dashboard</div>
     <div class="ntab" onclick="goProcurement('pipeline')">Pipeline</div>
@@ -1022,8 +1026,8 @@ window._msalLoaded = true;
       <div class="module-card-arrow">→</div>
     </div>
 
-    <!-- 02 Bidding & Proposals (soon) -->
-    <div class="module-card module-card-soon">
+    <!-- 02 Bidding & Proposals -->
+    <div class="module-card" onclick="enterModule('bidding')">
       <div class="module-card-num">02</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -1033,9 +1037,9 @@ window._msalLoaded = true;
           <path d="M8 9h1" stroke-linecap="round"/>
         </svg>
       </div>
-      <div class="module-card-name">Bidding &amp; Proposals <span class="module-soon-tag">Soon</span></div>
+      <div class="module-card-name">Bidding &amp; Proposals</div>
       <div class="module-card-desc">EOI · NDA · RFQ · Proposal Builder · Sub-Consultant Portal</div>
-      <div class="module-card-arrow">—</div>
+      <div class="module-card-arrow">→</div>
     </div>
 
     <!-- 03 Projects -->
@@ -1166,6 +1170,55 @@ window._msalLoaded = true;
 
 <div class="sec" id="sec-crm-reports">
   <div id="crm-reports-view"></div>
+</div>
+
+<!-- ═══════════════ BIDDING & PROPOSALS MODULE ═══════════════ -->
+<div class="sec" id="sec-bid-queue"><div id="bid-queue-view"></div></div>
+<div class="sec" id="sec-bid-closed"><div id="bid-closed-view"></div></div>
+
+<!-- Bid detail modal -->
+<div class="mo-backdrop" id="mo-bid-backdrop" onclick="closeMo('mo-bid')" style="display:none"></div>
+<div class="mo" id="mo-bid" style="display:none;max-width:680px">
+  <div class="mhead"><span class="mtitle" id="mo-bid-title">Bid Detail</span><button class="mclose" onclick="closeMo('mo-bid')">×</button></div>
+  <div class="mbody" id="mo-bid-body" style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="fgrp full"><label>Bid Reference</label><input id="bid-f-ref" type="text" placeholder="EDGE-2025-001"></div>
+    <div class="fgrp full"><label>Client RFP Reference</label><input id="bid-f-clientref" type="text" placeholder="Client's reference number"></div>
+    <div class="fgrp"><label>RFP Received Date</label><input id="bid-f-rfpdate" type="date"></div>
+    <div class="fgrp"><label>Submission Deadline</label><input id="bid-f-deadline" type="date"></div>
+    <div class="fgrp"><label>Clarification Deadline</label><input id="bid-f-clardeadline" type="date"></div>
+    <div class="fgrp"><label>Actual Submission Date</label><input id="bid-f-submitted" type="date"></div>
+    <div class="fgrp" style="display:flex;align-items:center;gap:8px"><label style="margin:0"><input id="bid-f-eoi" type="checkbox" style="margin-right:6px">EOI Required</label></div>
+    <div class="fgrp"><label>EOI Submitted Date</label><input id="bid-f-eoisubmitted" type="date"></div>
+    <div class="fgrp" style="display:flex;align-items:center;gap:8px"><label style="margin:0"><input id="bid-f-nda" type="checkbox" style="margin-right:6px">NDA Required</label></div>
+    <div class="fgrp"><label>NDA Signed Date</label><input id="bid-f-ndasigned" type="date"></div>
+    <div class="fgrp"><label>Technical Lead</label><select id="bid-f-techlead"><option value="">— select —</option></select></div>
+    <div class="fgrp"><label>Commercial Lead</label><select id="bid-f-complead"><option value="">— select —</option></select></div>
+    <div class="fgrp"><label>Technical Status</label><select id="bid-f-techstatus"><option value="draft">Draft</option><option value="review">In Review</option><option value="complete">Complete</option></select></div>
+    <div class="fgrp"><label>Commercial Status</label><select id="bid-f-comstatus"><option value="draft">Draft</option><option value="review">In Review</option><option value="complete">Complete</option></select></div>
+    <div class="fgrp"><label>Submitted Fee (AED)</label><input id="bid-f-fee" type="number" placeholder="0"></div>
+    <div class="fgrp"><label>Target Margin %</label><input id="bid-f-margin" type="number" placeholder="0" min="0" max="100"></div>
+    <div class="fgrp full"><label>Competitor (if known)</label><input id="bid-f-competitor" type="text" placeholder="Which firm are we competing against?"></div>
+    <div class="fgrp full"><label>Feedback / Notes</label><textarea id="bid-f-notes" rows="3" placeholder="Client feedback, debrief notes, lessons learned…"></textarea></div>
+  </div>
+  <div class="mfoot" id="mo-bid-foot">
+    <button class="btn btn-ghost" onclick="closeMo('mo-bid')">Cancel</button>
+    <button class="btn btn-y" onclick="saveBid()">Save</button>
+  </div>
+</div>
+
+<!-- Bid stage advancement modal -->
+<div class="mo-backdrop" id="mo-bidstage-backdrop" onclick="closeMo('mo-bidstage')" style="display:none"></div>
+<div class="mo" id="mo-bidstage" style="display:none;max-width:400px">
+  <div class="mhead"><span class="mtitle">Advance Stage</span><button class="mclose" onclick="closeMo('mo-bidstage')">×</button></div>
+  <div class="mbody" style="padding:16px">
+    <div style="font-size:12px;color:var(--gm);margin-bottom:12px">Move this bid to the next stage. This will also update the CRM pipeline.</div>
+    <div class="fgrp"><label>New Stage</label><select id="bidstage-f-stage"></select></div>
+    <div class="fgrp" id="bidstage-lossreason-row" style="display:none"><label>Loss Reason</label><select id="bidstage-f-lossreason"><option value="">— select —</option><option>Price / Fee</option><option>Competitor appointed</option><option>Scope mismatch</option><option>Timing / Budget</option><option>Client cancelled</option><option>Relationship / Preference</option><option>Other</option></select></div>
+  </div>
+  <div class="mfoot">
+    <button class="btn btn-ghost" onclick="closeMo('mo-bidstage')">Cancel</button>
+    <button class="btn btn-y" onclick="saveBidStage()">Update Stage</button>
+  </div>
 </div>
 
 <!-- ═══════════════ PROJECTS MODULE — SOPs ═══════════════ -->
@@ -2212,6 +2265,7 @@ function goHome() {
   document.getElementById('navTabs-projects').style.display = 'none';
   document.getElementById('navTabs-admin').style.display = 'none';
   document.getElementById('navTabs-procurement').style.display = 'none';
+  document.getElementById('navTabs-bidding').style.display = 'none';
   document.getElementById('nav-back').style.display = 'none';
   document.getElementById('nav-module-label').style.display = 'none';
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
@@ -2228,6 +2282,7 @@ function enterModule(module) {
   document.getElementById('navTabs-projects').style.display = 'none';
   document.getElementById('navTabs-admin').style.display = 'none';
   document.getElementById('navTabs-procurement').style.display = 'none';
+  document.getElementById('navTabs-bidding').style.display = 'none';
   if(module === 'finance') {
     document.getElementById('nav-module-label').textContent = 'Finance';
     document.getElementById('navTabs-finance').style.display = 'flex';
@@ -2244,6 +2299,10 @@ function enterModule(module) {
     document.getElementById('nav-module-label').textContent = 'Procurement';
     document.getElementById('navTabs-procurement').style.display = 'flex';
     goProcurement('dashboard');
+  } else if(module === 'bidding') {
+    document.getElementById('nav-module-label').textContent = 'Bidding & Proposals';
+    document.getElementById('navTabs-bidding').style.display = 'flex';
+    goBidding('queue');
   }
 }
 
@@ -4566,6 +4625,261 @@ function renderCrmReports() {
 
   </div>`;
 }
+// ═══════════════════════════════════════════════════
+// BIDDING & PROPOSALS MODULE
+// ═══════════════════════════════════════════════════
+const BID_STAGES = ['proposal','submitted','negotiation','verbal','signed','lost'];
+let editingBidId = null;
+let advancingBidId = null;
+
+function goBidding(sub) {
+  if(!db.bids) db.bids = [];
+  const tabs = document.querySelectorAll('#navTabs-bidding .ntab');
+  tabs.forEach((t,i) => t.classList.toggle('active', i === (sub==='queue'?0:1)));
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
+  if(sub === 'queue') { renderBidQueue(); document.getElementById('sec-bid-queue').classList.add('active'); }
+  else if(sub === 'closed') { renderBidClosed(); document.getElementById('sec-bid-closed').classList.add('active'); }
+}
+
+function bidOppStageLabel(stage) {
+  const s = CRM_STAGES.find(x=>x.id===stage);
+  return s ? `<span class="stg-pill" style="background:${s.color}18;color:${s.color}">${s.label}</span>` : stage;
+}
+
+function bidDeadlineStyle(dateStr) {
+  if(!dateStr) return '';
+  const today = new Date().toISOString().slice(0,10);
+  if(dateStr < today) return 'color:var(--red);font-weight:600';
+  const days = Math.round((new Date(dateStr)-new Date(today))/86400000);
+  if(days <= 7) return 'color:#E8913A;font-weight:600';
+  return '';
+}
+
+function renderBidQueue() {
+  const el = document.getElementById('bid-queue-view');
+  if(!el) return;
+  const openStages = ['proposal','submitted','negotiation','verbal'];
+  const bids = (db.bids||[]).filter(b => {
+    const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId);
+    return opp && openStages.includes(opp.stage);
+  });
+  const today = new Date().toISOString().slice(0,10);
+
+  if(!bids.length) {
+    el.innerHTML = `<div class="ph"><div><div class="ph-title">Open Bids</div><div class="ph-sub">Active bids from Proposal Stage through to Verbal Award</div></div></div>
+    <div style="padding:40px;text-align:center;color:var(--gm);font-size:13px">No open bids. When a CRM opportunity reaches Proposal Stage, a bid is created here automatically.</div>`;
+    return;
+  }
+
+  // Sort by submission deadline (earliest first, undated last)
+  bids.sort((a,b) => {
+    if(!a.submissionDeadline && !b.submissionDeadline) return 0;
+    if(!a.submissionDeadline) return 1;
+    if(!b.submissionDeadline) return -1;
+    return a.submissionDeadline.localeCompare(b.submissionDeadline);
+  });
+
+  const totalFees = bids.reduce((s,b)=>s+(+b.submittedFee||0),0);
+
+  el.innerHTML = `
+  <div class="ph">
+    <div><div class="ph-title">Open Bids</div><div class="ph-sub">${bids.length} active bid${bids.length!==1?'s':''} · ${crmFmtVal(totalFees)} total fees in play</div></div>
+    <button class="btn btn-y btn-sm" onclick="goBidding('queue')">↻ Refresh</button>
+  </div>
+  <div style="padding:0 20px 32px">
+  <table class="crm-table">
+    <thead><tr>
+      <th>Opportunity</th><th>Account</th><th>Stage</th><th>Deadline</th><th>Tech</th><th>Comm</th><th>Fee (AED)</th><th></th>
+    </tr></thead>
+    <tbody>${bids.map(b => {
+      const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId)||{};
+      const dlStyle = bidDeadlineStyle(b.submissionDeadline);
+      const techBadge = b.technicalStatus==='complete'?'<span style="color:var(--green);font-weight:700">✓</span>':b.technicalStatus==='review'?'<span style="color:#E8913A">↻</span>':'<span style="color:var(--gm)">—</span>';
+      const commBadge = b.commercialStatus==='complete'?'<span style="color:var(--green);font-weight:700">✓</span>':b.commercialStatus==='review'?'<span style="color:#E8913A">↻</span>':'<span style="color:var(--gm)">—</span>';
+      const daysLeft = b.submissionDeadline ? Math.round((new Date(b.submissionDeadline)-new Date(today))/86400000) : null;
+      const daysLabel = daysLeft===null?'—':daysLeft<0?`${Math.abs(daysLeft)}d overdue`:daysLeft===0?'Today!':daysLeft+'d left';
+      return `<tr>
+        <td><div class="name-cell" style="cursor:pointer" onclick="openBidDetail('${b.id}')">${opp.name||'—'}</div>${b.bidRef?`<div style="font-size:10px;color:var(--gm)">${b.bidRef}</div>`:''}</td>
+        <td class="meta-cell">${crmAccName(opp.accountId)}</td>
+        <td>${bidOppStageLabel(opp.stage)}</td>
+        <td class="meta-cell" style="${dlStyle}">${daysLabel}${b.submissionDeadline?`<div style="font-size:10px;font-weight:400;color:var(--gm)">${crmFmtDate(b.submissionDeadline)}</div>`:''}</td>
+        <td style="text-align:center;font-size:13px">${techBadge}</td>
+        <td style="text-align:center;font-size:13px">${commBadge}</td>
+        <td class="meta-cell" style="font-weight:600">${b.submittedFee?crmFmtVal(b.submittedFee):'—'}</td>
+        <td class="action-cell">
+          <button class="btn btn-ghost btn-xs" onclick="openBidDetail('${b.id}')">Edit</button>
+          <button class="btn btn-y btn-xs" onclick="openAdvanceStage('${b.id}')">Stage →</button>
+        </td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table>
+  </div>`;
+}
+
+function renderBidClosed() {
+  const el = document.getElementById('bid-closed-view');
+  if(!el) return;
+  const closedStages = ['signed','lost'];
+  const bids = (db.bids||[]).filter(b => {
+    const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId);
+    return opp && closedStages.includes(opp.stage);
+  });
+
+  const won = bids.filter(b => { const o=(db.crm.opportunities||[]).find(x=>x.id===b.oppId); return o&&o.stage==='signed'; });
+  const lost = bids.filter(b => { const o=(db.crm.opportunities||[]).find(x=>x.id===b.oppId); return o&&o.stage==='lost'; });
+  const totalWon = won.reduce((s,b)=>s+(+b.awardedFee||+b.submittedFee||0),0);
+  const totalLost = lost.reduce((s,b)=>s+(+b.submittedFee||0),0);
+  const winRate = bids.length ? Math.round(won.length/bids.length*100) : null;
+
+  const bidRow = (b, isWon) => {
+    const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId)||{};
+    return `<tr>
+      <td><div class="name-cell">${opp.name||'—'}</div>${b.bidRef?`<div style="font-size:10px;color:var(--gm)">${b.bidRef}</div>`:''}</td>
+      <td class="meta-cell">${crmAccName(opp.accountId)}</td>
+      <td class="meta-cell">${opp.sector||'—'}</td>
+      <td class="meta-cell" style="font-weight:600;color:${isWon?'var(--green)':'var(--red)'}">${isWon?crmFmtVal(b.awardedFee||b.submittedFee):crmFmtVal(b.submittedFee)}</td>
+      <td class="meta-cell">${isWon?'—':(b.lossReason||opp.lossReason||'Not recorded')}</td>
+      <td class="meta-cell">${b.competitor||'—'}</td>
+      <td class="action-cell"><button class="btn btn-ghost btn-xs" onclick="openBidDetail('${b.id}')">View</button></td>
+    </tr>`;
+  };
+
+  el.innerHTML = `
+  <div class="ph"><div><div class="ph-title">Closed Bids</div><div class="ph-sub">${won.length} won · ${lost.length} lost · ${winRate!==null?winRate+'% win rate':'no closed bids yet'}</div></div></div>
+  <div style="padding:0 20px 8px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:4px">
+    <div style="background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:6px">Won</div>
+      <div style="font-size:18px;font-weight:700;color:var(--green)">${crmFmtVal(totalWon)}</div>
+      <div style="font-size:10px;color:var(--gm);margin-top:3px">${won.length} contract${won.length!==1?'s':''} signed</div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:6px">Lost</div>
+      <div style="font-size:18px;font-weight:700;color:var(--red)">${crmFmtVal(totalLost)}</div>
+      <div style="font-size:10px;color:var(--gm);margin-top:3px">${lost.length} bid${lost.length!==1?'s':''} unsuccessful</div>
+    </div>
+    <div style="background:var(--white);border:1px solid var(--gl);border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:6px">Win Rate</div>
+      <div style="font-size:18px;font-weight:700;color:${winRate!==null&&winRate>=50?'var(--green)':winRate!==null&&winRate<30?'var(--red)':'var(--black)'}">${winRate!==null?winRate+'%':'—'}</div>
+      <div style="font-size:10px;color:var(--gm);margin-top:3px">${bids.length} closed bids total</div>
+    </div>
+  </div>
+  <div style="padding:0 20px 32px">
+  ${won.length?`<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--green);padding:12px 0 6px">Won</div>
+  <table class="crm-table"><thead><tr><th>Opportunity</th><th>Account</th><th>Sector</th><th>Awarded Fee</th><th>Competitor</th><th>Notes</th><th></th></tr></thead>
+  <tbody>${won.map(b=>bidRow(b,true)).join('')}</tbody></table>`:''}
+  ${lost.length?`<div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--red);padding:12px 0 6px">Lost</div>
+  <table class="crm-table"><thead><tr><th>Opportunity</th><th>Account</th><th>Sector</th><th>Bid Fee</th><th>Loss Reason</th><th>Competitor</th><th></th></tr></thead>
+  <tbody>${lost.map(b=>bidRow(b,false)).join('')}</tbody></table>`:''}
+  ${!bids.length?'<div style="padding:40px;text-align:center;color:var(--gm);font-size:13px">No closed bids yet.</div>':''}
+  </div>`;
+}
+
+function openBidDetail(bidId) {
+  const b = (db.bids||[]).find(x=>x.id===bidId);
+  if(!b) return;
+  editingBidId = bidId;
+  const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId)||{};
+  document.getElementById('mo-bid-title').textContent = opp.name||'Bid Detail';
+  const userOpts = '<option value="">— select —</option>' + (db.users||[]).filter(u=>u.name||u.email).map(u=>`<option value="${u.id||u.name}">${u.name||u.email}</option>`).join('');
+  document.getElementById('bid-f-techlead').innerHTML = userOpts;
+  document.getElementById('bid-f-complead').innerHTML = userOpts;
+  document.getElementById('bid-f-ref').value = b.bidRef||'';
+  document.getElementById('bid-f-clientref').value = b.clientRef||'';
+  document.getElementById('bid-f-rfpdate').value = b.rfpReceivedDate||'';
+  document.getElementById('bid-f-deadline').value = b.submissionDeadline||'';
+  document.getElementById('bid-f-clardeadline').value = b.clarificationDeadline||'';
+  document.getElementById('bid-f-submitted').value = b.submissionDate||'';
+  document.getElementById('bid-f-eoi').checked = !!b.eoiRequired;
+  document.getElementById('bid-f-eoisubmitted').value = b.eoiSubmitted||'';
+  document.getElementById('bid-f-nda').checked = !!b.ndaRequired;
+  document.getElementById('bid-f-ndasigned').value = b.ndaSigned||'';
+  document.getElementById('bid-f-techlead').value = b.technicalLead||'';
+  document.getElementById('bid-f-complead').value = b.commercialLead||'';
+  document.getElementById('bid-f-techstatus').value = b.technicalStatus||'draft';
+  document.getElementById('bid-f-comstatus').value = b.commercialStatus||'draft';
+  document.getElementById('bid-f-fee').value = b.submittedFee||'';
+  document.getElementById('bid-f-margin').value = b.targetMargin||'';
+  document.getElementById('bid-f-competitor').value = b.competitor||'';
+  document.getElementById('bid-f-notes').value = b.feedbackNotes||'';
+  openMo('mo-bid');
+}
+
+function saveBid() {
+  const b = (db.bids||[]).find(x=>x.id===editingBidId);
+  if(!b) return;
+  b.bidRef = document.getElementById('bid-f-ref').value.trim();
+  b.clientRef = document.getElementById('bid-f-clientref').value.trim();
+  b.rfpReceivedDate = document.getElementById('bid-f-rfpdate').value;
+  b.submissionDeadline = document.getElementById('bid-f-deadline').value;
+  b.clarificationDeadline = document.getElementById('bid-f-clardeadline').value;
+  b.submissionDate = document.getElementById('bid-f-submitted').value;
+  b.eoiRequired = document.getElementById('bid-f-eoi').checked;
+  b.eoiSubmitted = document.getElementById('bid-f-eoisubmitted').value;
+  b.ndaRequired = document.getElementById('bid-f-nda').checked;
+  b.ndaSigned = document.getElementById('bid-f-ndasigned').value;
+  b.technicalLead = document.getElementById('bid-f-techlead').value;
+  b.commercialLead = document.getElementById('bid-f-complead').value;
+  b.technicalStatus = document.getElementById('bid-f-techstatus').value;
+  b.commercialStatus = document.getElementById('bid-f-comstatus').value;
+  b.submittedFee = +document.getElementById('bid-f-fee').value||0;
+  b.targetMargin = +document.getElementById('bid-f-margin').value||0;
+  b.competitor = document.getElementById('bid-f-competitor').value.trim();
+  b.feedbackNotes = document.getElementById('bid-f-notes').value.trim();
+  b.updatedAt = new Date().toISOString().slice(0,10);
+  // Sync fee back to opportunity
+  const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId);
+  if(opp && b.submittedFee) opp.value = b.submittedFee;
+  markDirty(); saveDB(); closeMo('mo-bid');
+  if(currentModule==='bidding') {
+    const opp2 = (db.crm.opportunities||[]).find(o=>o.id===b.oppId);
+    const isOpen = opp2 && ['proposal','submitted','negotiation','verbal'].includes(opp2.stage);
+    goBidding(isOpen?'queue':'closed');
+  }
+}
+
+function openAdvanceStage(bidId) {
+  const b = (db.bids||[]).find(x=>x.id===bidId);
+  if(!b) return;
+  advancingBidId = bidId;
+  const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId);
+  if(!opp) return;
+  const bidStages = ['proposal','submitted','negotiation','verbal','signed','lost','hold'];
+  const stageSel = document.getElementById('bidstage-f-stage');
+  stageSel.innerHTML = bidStages.map(sid => {
+    const s = CRM_STAGES.find(x=>x.id===sid)||{label:sid};
+    return `<option value="${sid}"${sid===opp.stage?' selected':''}>${s.label}</option>`;
+  }).join('');
+  stageSel.onchange = function() {
+    document.getElementById('bidstage-lossreason-row').style.display = this.value==='lost'?'':'none';
+  };
+  document.getElementById('bidstage-lossreason-row').style.display = opp.stage==='lost'?'':'none';
+  document.getElementById('bidstage-f-lossreason').value = opp.lossReason||'';
+  openMo('mo-bidstage');
+}
+
+function saveBidStage() {
+  const b = (db.bids||[]).find(x=>x.id===advancingBidId);
+  if(!b) return;
+  const newStage = document.getElementById('bidstage-f-stage').value;
+  const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId);
+  if(!opp) { closeMo('mo-bidstage'); return; }
+  opp.stage = newStage;
+  const autoP = STAGE_PROB[newStage];
+  if(autoP !== null && autoP !== undefined) opp.prob = autoP;
+  opp.updatedAt = new Date().toISOString().slice(0,10);
+  if(['signed','lost'].includes(newStage) && !opp.closedAt) opp.closedAt = new Date().toISOString().slice(0,10);
+  if(newStage==='lost') {
+    const lr = document.getElementById('bidstage-f-lossreason').value;
+    if(lr) { opp.lossReason = lr; b.lossReason = lr; }
+  }
+  if(newStage==='signed') { b.result='won'; if(!b.awardedFee) b.awardedFee = b.submittedFee; }
+  if(newStage==='lost') b.result='lost';
+  b.updatedAt = new Date().toISOString().slice(0,10);
+  markDirty(); saveDB(); closeMo('mo-bidstage');
+  const isOpen = ['proposal','submitted','negotiation','verbal'].includes(newStage);
+  goBidding(isOpen?'queue':'closed');
+}
+
 function forceSeedCRM() {
   seedCRM(); saveDB(); if(typeof currentModule!=='undefined'&&currentModule==='procurement') goProcurement('accounts');
 }
