@@ -4274,25 +4274,27 @@ function initCRM() {
   // Only seed when accounts are genuinely empty — never on version mismatch
   // to prevent any risk of overwriting user-entered opportunities/tasks
   if(!db.crm.accounts.length) { seedCRM(); return; }
-  // Migration: fill blank website/linkedin on existing accounts from seed data
-  if(db.crm.migrationVersion !== 1) applyAccountMigration();
+  // Migration v2: fill blank website/linkedin on existing accounts from seed data
+  if((db.crm.migrationVersion||0) < 2) applyAccountMigration();
 }
 function applyAccountMigration() {
-  const saved = JSON.parse(JSON.stringify(db.crm));
-  db.crm.accounts = [];
-  db.crm.contacts = [];
-  seedCRM();
-  const seedAccounts = db.crm.accounts.slice();
-  db.crm = saved;
-  seedAccounts.forEach(sa => {
-    const idx = (db.crm.accounts||[]).findIndex(a => a.id === sa.id);
-    if(idx < 0) { db.crm.accounts.push(sa); return; }
-    const a = db.crm.accounts[idx];
-    if(!a.website  && sa.website)  a.website  = sa.website;
-    if(!a.linkedin && sa.linkedin) a.linkedin = sa.linkedin;
-  });
-  db.crm.migrationVersion = 1;
-  markDirty(); saveDB();
+  try {
+    const saved = JSON.parse(JSON.stringify(db.crm));
+    db.crm.accounts = [];
+    db.crm.contacts = [];
+    seedCRM();
+    const seedAccounts = db.crm.accounts.slice();
+    db.crm = saved;
+    seedAccounts.forEach(sa => {
+      const idx = (db.crm.accounts||[]).findIndex(a => a.id === sa.id);
+      if(idx < 0) { db.crm.accounts.push(sa); return; }
+      const a = db.crm.accounts[idx];
+      if(!a.website  && sa.website)  a.website  = sa.website;
+      if(!a.linkedin && sa.linkedin) a.linkedin = sa.linkedin;
+    });
+    db.crm.migrationVersion = 2;
+    markDirty(); saveDB();
+  } catch(e) { console.error('applyAccountMigration failed:', e); }
 }
 function forceSeedCRM() {
   seedCRM(); saveDB(); if(typeof currentModule!=='undefined'&&currentModule==='procurement') goProcurement('accounts');
