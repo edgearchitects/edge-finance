@@ -4283,6 +4283,24 @@ function initCRM() {
   if(!db.crm.accounts.length) { seedCRM(); return; }
   // Migration v2: fill blank website/linkedin on existing accounts from seed data
   if((db.crm.migrationVersion||0) < 2) applyAccountMigration();
+  // Migration v3: remove 14 orphan duplicate contacts, merge their data into linked entries
+  if((db.crm.migrationVersion||0) < 3) applyContactDedupe();
+}
+function applyContactDedupe() {
+  try {
+    const orphanIds = ['con3','con24','con31','con66','con69','con73','con84','con119','con138','con144','con183','con192','con199','con200'];
+    const contacts = db.crm.contacts || [];
+    // Merge Nesrin Melki orphan data into linked entry before removing
+    const nesrin = contacts.find(c => c.id === 'con429');
+    const nesrinOrphan = contacts.find(c => c.id === 'con144');
+    if(nesrin && nesrinOrphan) {
+      if(!nesrin.title && nesrinOrphan.title) nesrin.title = nesrinOrphan.title;
+      if(!nesrin.mobile && nesrinOrphan.mobile) nesrin.mobile = nesrinOrphan.mobile;
+    }
+    db.crm.contacts = contacts.filter(c => !orphanIds.includes(c.id));
+    db.crm.migrationVersion = 3;
+    markDirty(); saveDB();
+  } catch(e) { console.error('applyContactDedupe failed:', e); }
 }
 function applyAccountMigration() {
   try {
@@ -4914,7 +4932,6 @@ function seedCRM() {
   const _sC = [
     {id:"con1",accountId:"",first:"Ilyas",last:"",email:"ilyas@kingstonholding.ae",createdAt:"2025-01-01"},
     {id:"con2",accountId:"",first:"Josh",last:"",email:"joshua@kingstonholding.ae",createdAt:"2025-01-01"},
-    {id:"con3",accountId:"",first:"Omar",last:"",title:"Projects Director",mobile:"+971 50 550 6306",createdAt:"2025-01-01"},
     {id:"con4",accountId:"",first:"Moaiad",last:"Abdullateef",title:"Head of Procurement",email:"moaiad.abdullatif@erth.sa",mobile:"+966 58 234 2733",createdAt:"2025-01-01"},
     {id:"con5",accountId:"",first:"Aya",last:"Abdulmalek",title:"Architect",email:"aya.a@almashria.com",mobile:"+966 58 362 9200",createdAt:"2025-01-01"},
     {id:"con6",accountId:"",first:"Khalid",last:"Abulaila",title:"Senior Projects Director",email:"k.abulaila@aljreic.com",mobile:"+966 12 510 0000",createdAt:"2025-01-01"},
@@ -4935,14 +4952,12 @@ function seedCRM() {
     {id:"con21",accountId:"",first:"Amr",last:"Ali",title:"Sr. Manager",email:"amr.shawkiali@redseaglobal.com",mobile:"+966 50 428 9924",createdAt:"2025-01-01"},
     {id:"con22",accountId:"",first:"Mohammed",last:"Ali Abdullah",title:"Project Manager",email:"nsmubarak@dm.gov.ae",createdAt:"2025-01-01"},
     {id:"con23",accountId:"",first:"Abdulaziz",last:"Aljehn",title:"General Manager",mobile:"+966 56 111 5330",createdAt:"2025-01-01"},
-    {id:"con24",accountId:"",first:"Sally",last:"Alkatat",title:"Dircetor of Devlopment ME",mobile:"+971 50 211 5526",createdAt:"2025-01-01"},
     {id:"con25",accountId:"",first:"Omar",last:"Almarzooqi",title:"Aati Contracts",email:"oalmarzooqi@altayer.com",createdAt:"2025-01-01"},
     {id:"con26",accountId:"",first:"Mazen",last:"Almaziad",title:"Projects Monitoring and Reporting Director",email:"malmaziad@cluster2airports.sa",mobile:"+966 50 314 5488",createdAt:"2025-01-01"},
     {id:"con27",accountId:"",first:"Ahmed",last:"Almusharraf",title:"Procurement Manager",mobile:"+966 13 838 9974",createdAt:"2025-01-01"},
     {id:"con28",accountId:"",first:"Faisal",last:"Almushigih",title:"CEO",email:"falmushigih@qetafinvest.com",mobile:"+966 55 240 2222",createdAt:"2025-01-01"},
     {id:"con29",accountId:"",first:"Muhannad",last:"Alotaibi",title:"Muhannad Alotaibi",email:"muhannad.alotaibi@neom.com",createdAt:"2025-01-01"},
     {id:"con30",accountId:"",first:"Maan",last:"Alothimeen",title:"Supply Chain & Business Support General Manager",email:"m.alothimeen@nhc.sa",createdAt:"2025-01-01"},
-    {id:"con31",accountId:"",first:"Sultan",last:"Alramah",title:"Design Manager",mobile:"+971 2 406 8884",createdAt:"2025-01-01"},
     {id:"con32",accountId:"",first:"Abdulla",last:"Alremeithi",email:"aalremeithi@masdar.ae",createdAt:"2025-01-01"},
     {id:"con33",accountId:"",first:"Ali",last:"Alshahrani",title:"CEO",email:"ali@almaskn.sa",mobile:"+966 54 444 0719",createdAt:"2025-01-01"},
     {id:"con34",accountId:"",first:"Anas",last:"Alshamrani",title:"Sr. Director - Project Operations",email:"a.alshamrani@awjholding.com",mobile:"+966 50 314 8122",createdAt:"2025-01-01"},
@@ -4977,14 +4992,11 @@ function seedCRM() {
     {id:"con63",accountId:"",first:"Ivana",last:"Cemovic",email:"icemovic@emaar.ae",createdAt:"2025-01-01"},
     {id:"con64",accountId:"",first:"Suraj",last:"Chaphekar",email:"suraj.chaphekar@avighna.in",createdAt:"2025-01-01"},
     {id:"con65",accountId:"",first:"Salvatore",last:"Chisari",title:"Project Director",email:"salvatore.chisari@qiddiya.com",mobile:"+966 53 981 7815",createdAt:"2025-01-01"},
-    {id:"con66",accountId:"",first:"Quinton",last:"Clark",title:"Head of Architecture & Branded Resisdencies",mobile:"+971 56 225 8179",createdAt:"2025-01-01"},
     {id:"con67",accountId:"",first:"Laura",last:"Cleary",title:"Global FF&E Design Manager",email:"laura.cleary@sixsenses.com",createdAt:"2025-01-01"},
     {id:"con68",accountId:"",first:"Aisling",last:"Collins",title:"Associate Interior Architecture Director",email:"aisling.collinss@redseaglobal.com",mobile:"+966 53 218 3903",createdAt:"2025-01-01"},
-    {id:"con69",accountId:"",first:"Darren",last:"Cook",title:"Head Of Project Delivery",mobile:"+971 50 773 5161",createdAt:"2025-01-01"},
     {id:"con70",accountId:"",first:"Julio",last:"Corredor",title:"CEO",email:"j.corredor@shadenhospitality.sa",mobile:"+966 53 393 6431",createdAt:"2025-01-01"},
     {id:"con71",accountId:"",first:"Nigel",last:"Craddock",title:"Design Director",email:"nigel.craddock@dhre.ae",mobile:"+971 55 823 3811",createdAt:"2025-01-01"},
     {id:"con72",accountId:"",first:"Jef",last:"Cris Yaneza",email:"jyaneza@wynndevelopment.com",createdAt:"2025-01-01"},
-    {id:"con73",accountId:"",first:"Darron",last:"Croxton",title:"Project Director",mobile:"+971 56 749 5278",createdAt:"2025-01-01"},
     {id:"con74",accountId:"",first:"Tom",last:"Crute",title:"Executive Director",email:"tom.crute@dhre.ae",mobile:"+971 50 478 2891",createdAt:"2025-01-01"},
     {id:"con75",accountId:"",first:"Andrew",last:"Curtis",title:"Group Head of Procurement",email:"andrew.c@apexholding.ae",createdAt:"2025-01-01"},
     {id:"con76",accountId:"",first:"Mariana",last:"Da Silva",title:"FF&E Director",email:"mhoworth@wynndevelopment.com",createdAt:"2025-01-01"},
@@ -4995,7 +5007,6 @@ function seedCRM() {
     {id:"con81",accountId:"",first:"Susana",last:"Dias Gouveia",email:"susana.gouveia@modon.com",createdAt:"2025-01-01"},
     {id:"con82",accountId:"",first:"Silvan",last:"Dsouza",title:"Procurement Manager",email:"silvan.d@apexnational.ae",mobile:"+971 2 444 0019",createdAt:"2025-01-01"},
     {id:"con83",accountId:"",first:"Kevin",last:"Duffield",email:"kevin.duffield@cavendishmaxwell.com",createdAt:"2025-01-01"},
-    {id:"con84",accountId:"",first:"Barry",last:"Duffy",title:"Contracts Manager",mobile:"+971 58 529 3922",createdAt:"2025-01-01"},
     {id:"con85",accountId:"",first:"Bandar",last:"E. Ashrour",title:"Head of Design Department",email:"bandar.ashrour@neom.com",mobile:"+966 56 102 6747",createdAt:"2025-01-01"},
     {id:"con86",accountId:"",first:"Christopher",last:"Edward Cribb",title:"Senior Development Director",email:"ccribb@diriyah.sa",mobile:"+966 56 986 8244",createdAt:"2025-01-01"},
     {id:"con87",accountId:"",first:"Ihab",last:"El Haddad",title:"Director",email:"ielhaddad@dancompany.sa",mobile:"+966 50 063 9582",createdAt:"2025-01-01"},
@@ -5030,7 +5041,6 @@ function seedCRM() {
     {id:"con116",accountId:"",first:"Katayoon",last:"Heidari",email:"katayoon.heidari@modon.com",createdAt:"2025-01-01"},
     {id:"con117",accountId:"",first:"Hany",last:"Helmy",title:"Head of Projects",email:"hany.helmy@areuae.ae",createdAt:"2025-01-01"},
     {id:"con118",accountId:"",first:"Magdy",last:"Hemdan",title:"Procurement & Contracts",email:"procurement@dhbholding.com",mobile:"+966 11 463 0460",createdAt:"2025-01-01"},
-    {id:"con119",accountId:"",first:"Lyndon",last:"Hives",title:"Pre-Construction Director",email:"lyndon.hives@gmail.com",mobile:"+971 50 446 3734",createdAt:"2025-01-01"},
     {id:"con120",accountId:"",first:"Michal",last:"Hrabovsky",title:"Associate Director of Design",email:"michal.hrabovsky@modon.com",createdAt:"2025-01-01"},
     {id:"con121",accountId:"",first:"Marco",last:"Huckel",title:"CEO",email:"marco.hueckel@factsfiction.de",mobile:"+4922195153074",createdAt:"2025-01-01"},
     {id:"con122",accountId:"",first:"Samer",last:"Ibdah",title:"Area Director of Engineering - KSA West",email:"samer.ibdah@ihg.com",mobile:"+966 55 904 4473",createdAt:"2025-01-01"},
@@ -5049,13 +5059,11 @@ function seedCRM() {
     {id:"con135",accountId:"",first:"Asli",last:"Koca",title:"Manager Interior Design",email:"asli.koca@fourseasons.com",createdAt:"2025-01-01"},
     {id:"con136",accountId:"",first:"Anas",last:"Kokkode",title:"Technical Manager",email:"anas.fazaludeen@rikaz.com",mobile:"+966 55 713 2021",createdAt:"2025-01-01"},
     {id:"con137",accountId:"",first:"Moataz",last:"Kurdi",title:"Executive Manager",mobile:"+966 50 446 0075",createdAt:"2025-01-01"},
-    {id:"con138",accountId:"",first:"Andrew",last:"Lemon",title:"Director",mobile:"+971 50 617 8929",createdAt:"2025-01-01"},
     {id:"con139",accountId:"",first:"Gajanan",last:"Lohokare",email:"gajanan.lohokare@expocitydubai.ae",createdAt:"2025-01-01"},
     {id:"con140",accountId:"",first:"Juan",last:"Lopez",email:"juan.lopez@equitativa.com",createdAt:"2025-01-01"},
     {id:"con141",accountId:"",first:"Thomas",last:"Main",email:"thomas.main@select-group.ae",createdAt:"2025-01-01"},
     {id:"con142",accountId:"",first:"Laksh",last:"Manimozhi",title:"Associate Director",email:"laksh.mani@erth.sa",mobile:"+966 53 641 4538",createdAt:"2025-01-01"},
     {id:"con143",accountId:"",first:"Tarek",last:"Mazboudi",email:"tarek.mazboudi@maf.ae",createdAt:"2025-01-01"},
-    {id:"con144",accountId:"",first:"Nesrin",last:"Melki",title:"Senior Interior Designer",mobile:"+971 56 445 3735",createdAt:"2025-01-01"},
     {id:"con145",accountId:"",first:"Pierre",last:"Menges",title:"Procurement Manager",email:"pierre.menges@neom.com",createdAt:"2025-01-01"},
     {id:"con146",accountId:"",first:"Bradley",last:"Michael",email:"bradley@seagrassbhg.com",createdAt:"2025-01-01"},
     {id:"con147",accountId:"",first:"Ali",last:"Misfer Alghamdi",title:"Transformation & Development Consultant",email:"aalghamdi@osus.com.sa",mobile:"+966 50 425 8569",createdAt:"2025-01-01"},
@@ -5094,7 +5102,6 @@ function seedCRM() {
     {id:"con180",accountId:"",first:"Sultan",last:"Sobhi Batterjee",title:"Founder",email:"s.batterjee@lifestyledevelopers.com",mobile:"+966 56 561 1111",createdAt:"2025-01-01"},
     {id:"con181",accountId:"",first:"James",last:"Star",title:"Development Executive",createdAt:"2025-01-01"},
     {id:"con182",accountId:"",first:"Hassan",last:"Subbah",title:"Director - Technical Services",email:"hassan@sbr.ae",mobile:"+971 50 558 7740",createdAt:"2025-01-01"},
-    {id:"con183",accountId:"",first:"Matt",last:"Sullivan",title:"Executive Director",mobile:"+971 50 128 8045",createdAt:"2025-01-01"},
     {id:"con184",accountId:"",first:"Ra'Ed",last:"Tahat",title:"Projects Management Director",email:"raed@mobtakeron.com.sa",mobile:"+966 55 080 3929",createdAt:"2025-01-01"},
     {id:"con185",accountId:"",first:"Yasser",last:"Taher",title:"Project Director",email:"yasser@sst-sa.com",mobile:"+966 0138179169",createdAt:"2025-01-01"},
     {id:"con186",accountId:"",first:"Emmy",last:"Taimour",email:"emmy.taimour@kerzner.com",createdAt:"2025-01-01"},
@@ -5103,15 +5110,12 @@ function seedCRM() {
     {id:"con189",accountId:"",first:"Prem",last:"Thakur",title:"Vice President Technical Services",email:"prem.thakur@ihcltata.com",createdAt:"2025-01-01"},
     {id:"con190",accountId:"",first:"Simon",last:"Thompson",title:"Executive Director",email:"simon.thompson@redseaglobal.com",mobile:"+966 54 903 3937",createdAt:"2025-01-01"},
     {id:"con191",accountId:"",first:"David",last:"Thomson",title:"Senior Vice President Development",email:"david.thomson@thefirstgroup.com",createdAt:"2025-01-01"},
-    {id:"con192",accountId:"",first:"Shahbaz",last:"Tiavar",title:"Vice President - Procurement",mobile:"+971 4 364 0600",createdAt:"2025-01-01"},
     {id:"con193",accountId:"",first:"Simon",last:"Townsend",title:"Chief Executive Officer",email:"simon.townsend@avisonyoung.ae",mobile:"+971 52 640 9534",createdAt:"2025-01-01"},
     {id:"con194",accountId:"",first:"Nasser",last:"Turk",title:"Director, Urban Planning",email:"n.turk@ardara.sa",mobile:"+966 54 304 2101",createdAt:"2025-01-01"},
     {id:"con195",accountId:"",first:"Deirdre",last:"Vandendool",email:"deirdre.vandendool@sonder.com",createdAt:"2025-01-01"},
     {id:"con196",accountId:"",first:"Gilles",last:"Vandevoorde",title:"Design and Engineering Director",createdAt:"2025-01-01"},
     {id:"con197",accountId:"",first:"Hardik",last:"Vangani",email:"hardik.vangani@anaxholding.com",createdAt:"2025-01-01"},
     {id:"con198",accountId:"",first:"Pat",last:"Varongsurat",title:"Director Design",email:"pat.varongsurat@seven.sa",mobile:"+966 53 274 2391",createdAt:"2025-01-01"},
-    {id:"con199",accountId:"",first:"Tatiana",last:"Veller",title:"Managing Director",mobile:"+971 54 793 7302",createdAt:"2025-01-01"},
-    {id:"con200",accountId:"",first:"Peter",last:"Willmott",title:"Regional Director of PM",mobile:"+971 58 578 2234",createdAt:"2025-01-01"},
     {id:"con201",accountId:"",first:"Mostafa",last:"Y. Hidar",title:"Operations Manager",email:"m.hidar@zood.sa",mobile:"+966 51 015 9715",createdAt:"2025-01-01"},
     {id:"con202",accountId:"",first:"Alex",last:"Yoo",title:"Senior Director, Global Design",email:"alex.yoo@marriott.com",createdAt:"2025-01-01"},
     {id:"con203",accountId:"",first:"Mohamed",last:"Zaher Khishe",title:"Design Director",email:"mkichi@roshn.sa",mobile:"+966 50 665 2099",createdAt:"2025-01-01"},
@@ -5340,7 +5344,7 @@ function seedCRM() {
     {id:"con426",accountId:"acc48",first:"Khalil",last:"Carl El Melki",title:"Urban coding and planning consultant",email:"khalil.melki@elgouna.com",createdAt:"2025-01-01"},
     {id:"con427",accountId:"acc173",first:"Omar",last:"",title:"BDM",email:"omar@eleinterior.com",mobile:"+971 50 598 2414",createdAt:"2025-01-01"},
     {id:"con428",accountId:"acc174",first:"Elena",last:"Crosilla",title:"Interior Designer",email:"project@eliesaabmaison.com",mobile:"+39 024 341 2741",createdAt:"2025-01-01"},
-    {id:"con429",accountId:"acc49",first:"Nesrin",last:"Melki",email:"nesrin.melki@ellingtongroup.com",createdAt:"2025-01-01"},
+    {id:"con429",accountId:"acc49",first:"Nesrin",last:"Melki",title:"Senior Interior Designer",email:"nesrin.melki@ellingtongroup.com",mobile:"+971 56 445 3735",createdAt:"2025-01-01"},
     {id:"con430",accountId:"acc50",first:"Darron",last:"Croxton",title:"Project Director",mobile:"+971 56 749 5278",createdAt:"2025-01-01"},
     {id:"con431",accountId:"acc51",first:"Hayah",last:"Taimur",email:"htaimur.mld@emaar.ae",mobile:"+971 50 578 4083",createdAt:"2025-01-01"},
     {id:"con432",accountId:"acc52",first:"Kankanam",last:"Dharmadasa",email:"dharma@emiratespalace.ae",createdAt:"2025-01-01"},
@@ -5768,7 +5772,7 @@ function seedCRM() {
   }).concat((db.crm.contacts||[]).filter(c => !_sC.find(s => s.id === c.id)));
 
   // Never modify opportunities or tasks — user data only
-  db.crm.seedVersion = 6;
+  db.crm.seedVersion = 7;
 }
 
 // ── Navigation ──
