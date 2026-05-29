@@ -4263,7 +4263,9 @@ function ensureCrm() {
 
 function initCRM() {
   ensureCrm();
-  if(!db.crm.accounts.length || db.crm.seedVersion !== 6) seedCRM();
+  // Only seed when accounts are genuinely empty — never on version mismatch
+  // to prevent any risk of overwriting user-entered opportunities/tasks
+  if(!db.crm.accounts.length) seedCRM();
 }
 function forceSeedCRM() {
   seedCRM(); saveDB(); if(typeof currentModule!=='undefined'&&currentModule==='procurement') goProcurement('accounts');
@@ -5484,8 +5486,7 @@ function seedCRM() {
     return ex ? Object.assign({}, sc, {influence: ex.influence, linkedin: ex.linkedin, lastContactDate: ex.lastContactDate, nextFollowUpDate: ex.nextFollowUpDate}) : sc;
   }).concat((db.crm.contacts||[]).filter(c => !_sC.find(s => s.id === c.id)));
 
-  if(!db.crm.opportunities) db.crm.opportunities = [];
-  if(!db.crm.tasks) db.crm.tasks = [];
+  // Never modify opportunities or tasks — user data only
   db.crm.seedVersion = 6;
 }
 
