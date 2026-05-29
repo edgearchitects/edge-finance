@@ -4245,17 +4245,17 @@ function autoSetProb(stageId) {
   if(p !== null && p !== undefined) document.getElementById('opp-f-prob').value = p;
 }
 const CRM_STAGES = [
-  { id:'prospect',    label:'Prospect Identified', color:'#888' },
-  { id:'initiated',   label:'Contact Initiated',   color:'#6B7FD4' },
-  { id:'engaged',     label:'Engaged',              color:'#4A9FD4' },
-  { id:'qualified',   label:'Qualified',            color:'#45B7A0' },
-  { id:'proposal',    label:'Proposal Stage',       color:'#F7B731' },
-  { id:'submitted',   label:'Submitted',            color:'#E8913A' },
-  { id:'negotiation', label:'Negotiation',          color:'#E85D75' },
-  { id:'verbal',      label:'Verbal Award',         color:'#A855F7' },
-  { id:'signed',      label:'Contract Signed',      color:'#1a7a40' },
-  { id:'hold',        label:'On Hold',              color:'#999' },
-  { id:'lost',        label:'Lost',                 color:'#C65D3B' }
+  { id:'prospect',    label:'Prospect Identified', color:'#888',    desc:'Known target — no outreach yet' },
+  { id:'initiated',   label:'Contact Initiated',   color:'#6B7FD4', desc:'First outreach made — awaiting response' },
+  { id:'engaged',     label:'Engaged',              color:'#4A9FD4', desc:'Two-way dialogue, interest confirmed' },
+  { id:'qualified',   label:'Qualified',            color:'#45B7A0', desc:'Real project confirmed — budget & scope known' },
+  { id:'proposal',    label:'Proposal Stage',       color:'#F7B731', desc:'RFP received — bid being prepared' },
+  { id:'submitted',   label:'Submitted',            color:'#E8913A', desc:'Proposal delivered, awaiting evaluation' },
+  { id:'negotiation', label:'Negotiation',          color:'#E85D75', desc:'Client negotiating terms or fee' },
+  { id:'verbal',      label:'Verbal Award',         color:'#A855F7', desc:'Client verbally confirmed appointment' },
+  { id:'signed',      label:'Contract Signed',      color:'#1a7a40', desc:'Appointment executed — project live' },
+  { id:'hold',        label:'On Hold',              color:'#999',    desc:'Paused — monitor for revival' },
+  { id:'lost',        label:'Lost',                 color:'#C65D3B', desc:'Unsuccessful — another firm appointed' }
 ];
 
 const CRM_REL_TYPES = ['All','Client','Collaborator','Competitor','Sub-Consultant','Supplier','Project Management','Cost Management','Supply Chain','Other'];
@@ -5936,9 +5936,12 @@ function renderCrmPipeline() {
     const stageVal = cards.reduce((a,o)=>a+(+o.value||0),0);
     return `
     <div class="pipeline-col" id="col-${stage.id}" ondragover="crmDragOver(event,'${stage.id}')" ondragleave="crmDragLeave(event)" ondrop="crmDrop(event,'${stage.id}')">
-      <div class="pipeline-col-header">
-        <div class="pipeline-col-title" style="color:${stage.color}">${stage.label}</div>
-        <div class="pipeline-col-count">${cards.length}</div>
+      <div class="pipeline-col-header" style="flex-direction:column;align-items:flex-start;gap:2px">
+        <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+          <div class="pipeline-col-title" style="color:${stage.color}">${stage.label}</div>
+          <div class="pipeline-col-count">${cards.length}</div>
+        </div>
+        ${stage.desc ? `<div style="font-size:9px;color:var(--gm);line-height:1.3">${stage.desc}</div>` : ''}
       </div>
       <div class="pipeline-col-cards" id="cards-${stage.id}">
         ${cards.length ? cards.map(o => crmOppCardHTML(o, stage)).join('') : `<div style="color:var(--gm);font-size:10px;padding:8px 4px;text-align:center">—</div>`}
