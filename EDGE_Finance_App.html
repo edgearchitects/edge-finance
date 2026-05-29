@@ -1306,6 +1306,11 @@ window._msalLoaded = true;
       <div class="fgrp"><label>Relationship Score (1–5)</label><input id="acc-f-rel" type="number" min="1" max="5" placeholder="3"></div>
       <div class="fgrp"><label>Grade</label><select id="acc-f-grade"><option value="Ungraded">Ungraded</option><option value="A">A</option><option value="B">B</option><option value="C">C</option><option value="D">D</option></select></div>
       <div class="fgrp full"><label>Notes</label><textarea id="acc-f-notes" rows="2" placeholder="Strategic notes about this account…"></textarea></div>
+      <div class="fgrp full"><label>Website</label><input id="acc-f-website" type="url" placeholder="https://"></div>
+      <div class="fgrp full"><label>LinkedIn Page</label><input id="acc-f-linkedin" type="url" placeholder="https://linkedin.com/company/…"></div>
+      <div class="fgrp"><label>Last Contact Date</label><input id="acc-f-lastcontact" type="date"></div>
+      <div class="fgrp"><label>Next Action</label><select id="acc-f-nextaction"><option value="">— select —</option><option>Call client</option><option>Send proposal</option><option>Arrange meeting</option><option>Follow up after meeting</option></select></div>
+      <div class="fgrp"><label>Due Date</label><input id="acc-f-duedate" type="date"></div>
     </div></div>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeMo('mo-account')">Cancel</button>
@@ -1338,6 +1343,9 @@ window._msalLoaded = true;
       <div class="fgrp"><label>Mobile</label><input id="con-f-mobile" type="tel" placeholder="+971 50 …"></div>
       <div class="fgrp"><label>Influence Type</label><select id="con-f-influence"><option value="">— select —</option><option value="dm">Decision Maker</option><option value="inf">Influencer</option><option value="champ">Champion</option><option value="neutral">Neutral</option></select></div>
       <div class="fgrp full"><label>Notes</label><textarea id="con-f-notes" rows="2" placeholder="Background, preferences, key context…"></textarea></div>
+      <div class="fgrp full"><label>LinkedIn Profile</label><input id="con-f-linkedin" type="url" placeholder="https://linkedin.com/in/…"></div>
+      <div class="fgrp"><label>Last Contact Date</label><input id="con-f-lastcontact" type="date"></div>
+      <div class="fgrp"><label>Next Follow Up Date</label><input id="con-f-nextfollowup" type="date"></div>
     </div></div>
     <div class="mfoot">
       <button class="btn btn-ghost" onclick="closeMo('mo-contact')">Cancel</button>
@@ -5732,7 +5740,6 @@ function renderCrmAccounts() {
       </div>
     </div>
     <input class="crm-search" id="acc-search-input" placeholder="Search ${crmAccTypeFilter==='all'&&crmGradeFilter==='all'?'all '+total:accs.length} accounts…" value="${crmAccSearch}" oninput="crmAccSearch=this.value;renderCrmAccounts();" style="min-width:180px;flex:1">
-    <button class="btn btn-ghost btn-sm" onclick="openNewAccountModal()">+ Account</button>
   </div>
   ${accs.length ? `<table class="crm-table"><thead><tr>
     <th>Company</th><th>Relationship</th><th>Account Type</th><th>Sector</th><th>Grade</th><th></th>
@@ -5869,7 +5876,7 @@ function renderCrmContacts() {
   el.innerHTML = `
   <div class="crm-toolbar">
     <input class="crm-search" id="con-search-input" placeholder="Search contacts…" value="${crmConSearch}" oninput="crmConSearch=this.value;renderCrmContacts();">
-    <button class="btn btn-ghost btn-sm" onclick="openSpImportModal('contacts')" title="Import from SharePoint list">⬇ Import from SharePoint</button>
+    <label class="btn btn-ghost btn-sm" style="cursor:pointer" title="Import contacts from Excel or CSV">⬇ Import Excel/CSV<input type="file" accept=".xlsx,.xls,.csv" style="display:none" onchange="importContactsFile(event)"></label>
   </div>
   ${cons.length ? `<table class="crm-table"><thead><tr>
     <th>Name</th><th>Account</th><th>Role</th><th>Influence</th><th>Contact</th><th></th>
@@ -5918,7 +5925,6 @@ function renderCrmTasks() {
   let html = `<div class="crm-toolbar">
     <button class="pipeline-filter-btn${crmTaskFilter==='open'?' active':''}" onclick="crmTaskFilter='open';renderCrmTasks()">Open</button>
     <button class="pipeline-filter-btn${crmTaskFilter==='all'?' active':''}" onclick="crmTaskFilter='all';renderCrmTasks()">All</button>
-    <button class="btn btn-ghost btn-xs" style="margin-left:auto" onclick="openNewTaskModal()">+ New Task</button>
   </div>`;
   if(overdue.length) { html += `<div class="crm-task-section-hdr" style="color:var(--red)">Overdue (${overdue.length})</div>${overdue.map(taskHTML).join('')}`; }
   if(dueToday.length) { html += `<div class="crm-task-section-hdr">Due Today</div>${dueToday.map(taskHTML).join('')}`; }
@@ -6126,6 +6132,11 @@ function openEditAccountModal(id) {
   document.getElementById('acc-f-rel').value = a.rel||3;
   document.getElementById('acc-f-grade').value = a.grade||'Ungraded';
   document.getElementById('acc-f-notes').value = a.notes||'';
+  document.getElementById('acc-f-website').value = a.website||'';
+  document.getElementById('acc-f-linkedin').value = a.linkedin||'';
+  document.getElementById('acc-f-lastcontact').value = a.lastContactDate||'';
+  document.getElementById('acc-f-nextaction').value = a.nextAction||'';
+  document.getElementById('acc-f-duedate').value = a.dueDate||'';
   openMo('mo-account');
 }
 function saveAccount() {
@@ -6141,7 +6152,12 @@ function saveAccount() {
     owner: document.getElementById('acc-f-owner').value.trim(),
     rel: +document.getElementById('acc-f-rel').value || 3,
     grade: document.getElementById('acc-f-grade').value || 'Ungraded',
-    notes: document.getElementById('acc-f-notes').value.trim()
+    notes: document.getElementById('acc-f-notes').value.trim(),
+    website: document.getElementById('acc-f-website').value.trim(),
+    linkedin: document.getElementById('acc-f-linkedin').value.trim(),
+    lastContactDate: document.getElementById('acc-f-lastcontact').value,
+    nextAction: document.getElementById('acc-f-nextaction').value,
+    dueDate: document.getElementById('acc-f-duedate').value
   };
   ensureCrm();
   if(editingCrmId.account) {
@@ -6158,7 +6174,7 @@ function saveAccount() {
 function openNewContactModal() {
   editingCrmId.contact = null;
   document.getElementById('mo-contact-title').textContent = 'New Contact';
-  ['con-f-first','con-f-last','con-f-title','con-f-email','con-f-mobile','con-f-notes'].forEach(id=>document.getElementById(id).value='');
+  ['con-f-first','con-f-last','con-f-title','con-f-email','con-f-mobile','con-f-notes','con-f-linkedin','con-f-lastcontact','con-f-nextfollowup'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('con-f-influence').value = '';
   const sel = document.getElementById('con-f-account');
   sel.innerHTML = '<option value="">— none —</option>' + [...(db.crm.accounts||[])].sort((a,b)=>a.name.localeCompare(b.name)).map(a=>`<option value=\"${a.id}\">${a.name}</option>`).join('');
@@ -6195,7 +6211,10 @@ function saveContact() {
     email: document.getElementById('con-f-email').value.trim(),
     mobile: document.getElementById('con-f-mobile').value.trim(),
     influence: document.getElementById('con-f-influence').value,
-    notes: document.getElementById('con-f-notes').value.trim()
+    notes: document.getElementById('con-f-notes').value.trim(),
+    linkedin: document.getElementById('con-f-linkedin').value.trim(),
+    lastContactDate: document.getElementById('con-f-lastcontact').value,
+    nextFollowUpDate: document.getElementById('con-f-nextfollowup').value
   };
   ensureCrm();
   if(editingCrmId.contact) {
@@ -6206,6 +6225,47 @@ function saveContact() {
   }
   markDirty(); saveDB(); closeMo('mo-contact');
   if(currentModule==='procurement') goProcurement('contacts');
+}
+
+function importContactsFile(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const ext = file.name.split('.').pop().toLowerCase();
+  if(ext === 'csv') {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const lines = ev.target.result.split('\n').map(l=>l.split(',').map(c=>c.replace(/^"|"$/g,'').trim()));
+      const headers = lines[0].map(h=>h.toLowerCase());
+      const get = (row,col) => { const i=headers.indexOf(col); return i>=0?row[i]:''; };
+      const added = [];
+      lines.slice(1).forEach(row => {
+        if(!row.join('').trim()) return;
+        const first = get(row,'first name')||get(row,'firstname')||get(row,'first');
+        const last  = get(row,'last name')||get(row,'lastname')||get(row,'last');
+        if(!first && !last) return;
+        const accName = get(row,'company')||get(row,'account')||get(row,'account name');
+        const acc = accName ? (db.crm.accounts||[]).find(a=>a.name.toLowerCase()===accName.toLowerCase()) : null;
+        added.push({ id:'con'+Date.now()+Math.random().toString(36).slice(2,6),
+          first, last,
+          accountId: acc?acc.id:'',
+          title: get(row,'title')||get(row,'job title'),
+          email: get(row,'email'),
+          mobile: get(row,'mobile')||get(row,'phone'),
+          createdAt: new Date().toISOString().slice(0,10)
+        });
+      });
+      if(!added.length){ alert('No contacts found in file.'); return; }
+      ensureCrm();
+      db.crm.contacts.push(...added);
+      markDirty(); saveDB();
+      goProcurement('contacts');
+      alert(`Imported ${added.length} contact(s).`);
+    };
+    reader.readAsText(file);
+  } else {
+    alert('CSV import is supported. For Excel files, please save as CSV first.');
+  }
+  e.target.value = '';
 }
 
 // ── MODALS — Task ──
