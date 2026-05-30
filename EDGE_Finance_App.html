@@ -9525,14 +9525,8 @@ function rsTotalWeeks(rs) {
 }
 
 function canEditRS(rsId) {
-  const rs = (db.resourceSchedules||[]).find(x=>x.id===rsId);
-  if(!rs) return false;
-  const currentUser = db.users?.find(u=>u.id===currentUserId||u.email===currentUserId);
-  if(currentUser?.role==='admin') return true;
-  const bid = (db.bids||[]).find(b=>b.oppId===rs.oppId);
-  if(!bid) return true;
-  const techLead = bid.technicalLead||'';
-  return !techLead || techLead===currentUserId || techLead===(currentUser?.name||'');
+  // Full user-identity lock deferred to auth phase — all authenticated users can edit for now
+  return true;
 }
 
 function unifyResourceSchedule(oppId) {
