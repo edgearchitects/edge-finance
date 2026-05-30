@@ -4596,6 +4596,8 @@ function initCRM() {
   if((db.crm.migrationVersion||0) < 2) applyAccountMigration();
   // Migration v3: remove 14 orphan duplicate contacts, merge their data into linked entries
   if((db.crm.migrationVersion||0) < 3) applyContactDedupe();
+  // Migration v4: backfill signed opportunities + bids from Finance projects
+  if((db.crm.migrationVersion||0) < 4) applyFinanceProjectMigration();
 }
 function applyContactDedupe() {
   try {
@@ -4632,6 +4634,91 @@ function applyAccountMigration() {
     markDirty(); saveDB();
   } catch(e) { console.error('applyAccountMigration failed:', e); }
 }
+function applyFinanceProjectMigration() {
+  try {
+    if(!db.projects || !db.projects.length) { db.crm.migrationVersion = 4; saveDB(); return; }
+    ensureCrm();
+    if(!db.bids) db.bids = [];
+
+    const norm = s => s.toLowerCase().replace(/\[.*?\]/g,'').replace(/[^a-z0-9]/g,' ').trim().replace(/\s+/g,' ');
+
+    // Find account IDs for known clients (best-effort match by name)
+    const findAccountId = clientName => {
+      if(!clientName) return '';
+      const cn = clientName.toLowerCase();
+      return (db.crm.accounts||[]).find(a => a.name.toLowerCase().includes(cn) || cn.includes(a.name.toLowerCase()))?.id || '';
+    };
+
+    // Group Finance projects by normalised name so Pre/Post-Contract
+    // variants map to a single opportunity
+    const grouped = {};
+    db.projects.forEach(p => {
+      const key = norm(p.name);
+      if(!grouped[key]) grouped[key] = [];
+      grouped[key].push(p);
+    });
+
+    let added = 0;
+    Object.entries(grouped).forEach(([key, projs]) => {
+      // Skip if a CRM opportunity already exists for this project name
+      const alreadyExists = (db.crm.opportunities||[]).some(o => norm(o.name) === key);
+      if(alreadyExists) return;
+
+      // Use the highest fee variant as the contract value
+      const totalFee = projs.reduce((s,p) => s + (+p.fee||0), 0);
+      const primary = projs.find(p=>p.status==='Live') || projs[0];
+
+      // Determine closed date from project start or today
+      const closedAt = primary.start || new Date().toISOString().slice(0,10);
+
+      const oppId = 'opp_fi_' + uid();
+      const oppName = norm(primary.name).split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(' ');
+
+      db.crm.opportunities.push({
+        id: oppId,
+        name: oppName,
+        accountId: findAccountId(primary.client),
+        value: totalFee,
+        stage: 'signed',
+        prob: 100,
+        sector: 'Hospitality',
+        owner: primary.lead || '',
+        closeDate: closedAt,
+        closedAt: closedAt,
+        createdAt: closedAt,
+        updatedAt: closedAt,
+        source: 'finance_import',
+        notes: `Auto-created from Finance project: ${projs.map(p=>p.name).join(', ')}`
+      });
+
+      // Create a corresponding closed bid record
+      db.bids.push({
+        id: 'bid_fi_' + uid(),
+        oppId,
+        source: 'finance_import',
+        createdAt: closedAt,
+        updatedAt: closedAt,
+        bidRef: '', clientRef: '',
+        rfpReceivedDate: '', submissionDeadline: '', submissionDate: '',
+        clarificationDeadline: '', eoiRequired: false, eoiSubmitted: '', eoiDocRef: '',
+        ndaRequired: false, ndaSigned: '', ndaDocRef: '',
+        goNoGoScore: null, goNoGoResult: null, goNoGoAnswers: {}, goNoGoDate: '',
+        technicalLead: primary.lead || '', commercialLead: '',
+        technicalStatus: 'final', commercialStatus: 'final',
+        subConsultants: [], submittedFee: totalFee, targetMargin: 0, revisedFee: null,
+        clarifications: [], result: 'won', awardedFee: totalFee,
+        lossReason: '', competitor: '', feedbackNotes: ''
+      });
+
+      added++;
+    });
+
+    db.crm.migrationVersion = 4;
+    markDirty(); saveDB();
+    if(added) console.log(`Migration v4: created ${added} opportunity/bid record(s) from Finance projects.`);
+  } catch(e) { console.error('applyFinanceProjectMigration failed:', e); }
+}
+
 function toggleLossReason(stage) {
   const row = document.getElementById('opp-lossreason-row');
   if(row) row.style.display = stage === 'lost' ? '' : 'none';
