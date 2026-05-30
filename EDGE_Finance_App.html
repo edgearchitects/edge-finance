@@ -6634,7 +6634,7 @@ function openOppDetail(oppId) {
   document.getElementById('mo-opp-detail-foot').innerHTML = `
     <button class="btn btn-ghost" onclick="closeMo('mo-opp-detail')">Close</button>
     <button class="btn btn-ghost" onclick="closeMo('mo-opp-detail');openEditOppModal('${oppId}')">Edit</button>
-    <button class="btn btn-ghost btn-sm" onclick="openFeeEntry('${oppId}')">+ Fee</button>
+    <button class="btn btn-ghost btn-sm" onclick="closeMo('mo-opp-detail');openFeeEntry('${oppId}')">+ Fee</button>
     <button class="btn btn-y btn-sm" onclick="closeMo('mo-opp-detail');openNewTaskModal('${oppId}')">+ Task</button>
     <button class="btn btn-ghost btn-sm" style="color:var(--red);margin-left:auto" onclick="deleteOpp('${oppId}')">Delete</button>`;
   openMo('mo-opp-detail');
