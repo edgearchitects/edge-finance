@@ -4779,13 +4779,13 @@ function renderBidQueue() {
         <td><div class="name-cell" style="cursor:pointer" onclick="openBidDetail('${b.id}')">${opp.name||'—'}</div>${b.bidRef?`<div style="font-size:10px;color:var(--gm)">${b.bidRef}</div>`:''}</td>
         <td class="meta-cell">${crmAccName(opp.accountId)}</td>
         <td>${bidOppStageLabel(opp.stage)}</td>
-        <td style="text-align:center">${b.goNoGoResult==='go'?'<span style="color:var(--green);font-weight:700;font-size:11px">GO</span>':b.goNoGoResult==='no-go'?'<span style="color:var(--red);font-weight:700;font-size:11px">NO-GO</span>':'<span style="color:var(--gm);font-size:10px">—</span>'}</td>
+        <td style="text-align:center">${b.goNoGoResult==='go'?'<span style="color:var(--green);font-weight:700;font-size:11px">GO</span>':opp.stage!=='proposal'?'<span style="color:var(--gm);font-size:10px;opacity:.5">GO</span>':'<span style="color:var(--gm);font-size:10px">—</span>'}</td>
         <td class="meta-cell" style="${dlStyle}">${daysLabel}${b.submissionDeadline?`<div style="font-size:10px;font-weight:400;color:var(--gm)">${crmFmtDate(b.submissionDeadline)}</div>`:''}</td>
         <td style="text-align:center;font-size:13px">${techBadge}</td>
         <td style="text-align:center;font-size:13px">${commBadge}</td>
         <td class="meta-cell" style="font-weight:600">${b.submittedFee?crmFmtVal(b.submittedFee):'—'}</td>
         <td class="action-cell">
-          <button class="btn btn-ghost btn-xs" onclick="openGoNoGo('${b.id}')">Go/No-Go</button>
+          ${opp.stage==='proposal'?`<button class="btn btn-ghost btn-xs" onclick="openGoNoGo('${b.id}')">${b.goNoGoResult==='go'?'G/NG ✓':'Go/No-Go'}</button>`:''}
           <button class="btn btn-ghost btn-xs" onclick="openBidDetail('${b.id}')">Edit</button>
           <button class="btn btn-y btn-xs" onclick="openAdvanceStage('${b.id}')">Stage →</button>
         </td>
