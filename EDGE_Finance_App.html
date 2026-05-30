@@ -302,6 +302,42 @@ tbody td{padding:8px 11px;vertical-align:middle}
 /* VO pipeline badge */
 .pipeline-val{font-size:11px;color:var(--amber);font-weight:600}
 
+/* ── RESOURCE SCHEDULE ── */
+.res-toolbar{display:flex;align-items:center;gap:10px;padding:16px 20px 12px;border-bottom:1px solid var(--gl)}
+.res-week-nav{display:flex;align-items:center;gap:6px}
+.res-week-nav button{background:none;border:1px solid var(--gl);color:var(--gm);padding:3px 9px;border-radius:var(--r);cursor:pointer;font-size:11px}
+.res-week-nav button:hover{border-color:var(--yellow);color:var(--yellow)}
+.res-week-label{font-size:11px;font-weight:600;color:var(--white);min-width:160px;text-align:center}
+.res-grid-wrap{overflow-x:auto;padding:0 20px 20px}
+.res-grid{border-collapse:collapse;width:100%;min-width:900px;font-size:11px}
+.res-grid th{padding:6px 8px;text-align:center;border-bottom:2px solid var(--gl);white-space:nowrap;font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:.04em;color:var(--gm)}
+.res-grid th.col-name{text-align:left;min-width:160px;color:var(--white)}
+.res-grid td{padding:4px 6px;border:1px solid #1a1a1a;text-align:center;vertical-align:middle;cursor:pointer}
+.res-grid td.col-name{text-align:left;cursor:default;padding:6px 8px;white-space:nowrap}
+.res-grid td:hover:not(.col-name){background:#1c1c1c}
+.res-cell{display:flex;flex-direction:column;align-items:center;gap:1px}
+.res-cell-hrs{font-weight:700;font-size:12px;color:var(--white)}
+.res-cell-proj{font-size:9px;color:var(--gm);max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.res-util-bar{height:3px;border-radius:1px;margin-top:2px;width:100%}
+.util-low{background:#2d4a2d}
+.util-mid{background:#856404}
+.util-hi{background:#c0392b}
+.res-util-pill{display:inline-flex;align-items:center;gap:4px;font-size:10px;padding:2px 7px;border-radius:10px}
+.res-util-pill.u-ok{background:#1a2e1a;color:#4caf50}
+.res-util-pill.u-warn{background:#2e2200;color:#ffc107}
+.res-util-pill.u-over{background:#2e1111;color:#f44336}
+.res-stat-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;padding:16px 20px}
+.res-stat{background:var(--card);border:1px solid var(--gl);border-radius:var(--r);padding:14px 16px}
+.res-stat-val{font-size:22px;font-weight:700;font-family:var(--font-display);color:var(--yellow)}
+.res-stat-lbl{font-size:10px;color:var(--gm);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.res-staff-name{font-weight:600;color:var(--white)}
+.res-staff-grade{font-size:10px;color:var(--gm)}
+.res-proj-badge{display:inline-block;padding:1px 5px;border-radius:2px;font-size:10px;font-weight:600;margin-bottom:1px}
+.res-empty{padding:32px;text-align:center;color:var(--gm);font-size:12px}
+.res-section-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);padding:14px 20px 6px}
+.res-proj-select{background:var(--card);border:1px solid var(--gl);color:var(--white);padding:5px 10px;border-radius:var(--r);font-size:11px;min-width:220px}
+.res-alloc-tag{display:inline-block;font-size:9px;padding:1px 6px;border-radius:2px;background:#1e3a1e;color:#81c784;font-weight:600;margin:1px}
+
 /* PDF print styles */
 @media print {
   nav,.save-bar,.auth-overlay,.btn,.td-acts { display:none !important; }
@@ -860,6 +896,11 @@ window._msalLoaded = true;
     <div class="ntab" onclick="goBidding('closed')">Closed</div>
     <div class="ntab" onclick="goBidding('vendors')">Vendor DB</div>
   </div>
+  <div class="ntabs" id="navTabs-resources" style="display:none">
+    <div class="ntab active" onclick="goResources('overview')">Overview</div>
+    <div class="ntab" onclick="goResources('project')">By Project</div>
+    <div class="ntab" onclick="goResources('staff')">By Staff</div>
+  </div>
   <div class="ntabs" id="navTabs-procurement" style="display:none">
     <div class="ntab active" onclick="goProcurement('dashboard')">Dashboard</div>
     <div class="ntab" onclick="goProcurement('pipeline')">Pipeline</div>
@@ -1061,20 +1102,22 @@ window._msalLoaded = true;
       <div class="module-card-arrow">→</div>
     </div>
 
-    <!-- 04 EDMS (soon) -->
-    <div class="module-card module-card-soon">
+    <!-- 04 Resource Schedule -->
+    <div class="module-card" onclick="enterModule('resources')">
       <div class="module-card-num">04</div>
       <div class="module-card-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" xmlns="http://www.w3.org/2000/svg">
-          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" stroke-linejoin="round"/>
-          <polyline points="14 2 14 8 20 8" stroke-linejoin="round"/>
-          <line x1="8" y1="13" x2="16" y2="13"/><line x1="8" y1="17" x2="13" y2="17"/>
-          <path d="M8 9h1" stroke-linecap="round"/>
+          <rect x="3" y="4" width="18" height="16" rx=".5" stroke-linejoin="round"/>
+          <line x1="3" y1="9" x2="21" y2="9"/>
+          <line x1="9" y1="4" x2="9" y2="20"/>
+          <line x1="15" y1="4" x2="15" y2="20"/>
+          <line x1="9" y1="13" x2="21" y2="13"/>
+          <line x1="9" y1="17" x2="21" y2="17"/>
         </svg>
       </div>
-      <div class="module-card-name">EDMS <span class="module-soon-tag">Soon</span></div>
-      <div class="module-card-desc">Document Control · Drawing Register · Client, Sub-Consultant &amp; Contractor Access</div>
-      <div class="module-card-arrow">—</div>
+      <div class="module-card-name">Resource Schedule</div>
+      <div class="module-card-desc">Staff Allocation · Weekly Utilisation · Project Resourcing · Billable Hours</div>
+      <div class="module-card-arrow">→</div>
     </div>
 
     <!-- 05 Finance -->
@@ -1179,6 +1222,84 @@ window._msalLoaded = true;
 <div class="sec" id="sec-bid-queue"><div id="bid-queue-view"></div></div>
 <div class="sec" id="sec-bid-closed"><div id="bid-closed-view"></div></div>
 <div class="sec" id="sec-bid-vendors"><div id="bid-vendors-view"></div></div>
+
+<!-- RESOURCE SCHEDULE -->
+<div class="sec" id="sec-res-overview">
+  <div class="res-stat-cards" id="res-stat-cards"></div>
+  <div class="res-toolbar">
+    <div class="res-week-nav">
+      <button onclick="resWeekOffset(-4)">◀◀</button>
+      <button onclick="resWeekOffset(-1)">◀</button>
+      <span class="res-week-label" id="res-week-label"></span>
+      <button onclick="resWeekOffset(1)">▶</button>
+      <button onclick="resWeekOffset(4)">▶▶</button>
+    </div>
+    <button class="btn btn-y btn-sm" onclick="openAllocModal()">+ Allocate</button>
+    <button class="btn btn-ghost btn-sm" onclick="resWeekOffset(0,true)">Today</button>
+  </div>
+  <div class="res-grid-wrap"><table class="res-grid" id="res-overview-table"></table></div>
+</div>
+
+<div class="sec" id="sec-res-project">
+  <div class="res-toolbar">
+    <select class="res-proj-select" id="res-proj-select" onchange="renderResByProject()">
+      <option value="">— select project —</option>
+    </select>
+    <button class="btn btn-y btn-sm" onclick="openAllocModal('proj')">+ Allocate</button>
+  </div>
+  <div id="res-project-body"></div>
+</div>
+
+<div class="sec" id="sec-res-staff">
+  <div class="res-toolbar">
+    <select class="res-proj-select" id="res-staff-select" onchange="renderResByStaff()">
+      <option value="">— select staff member —</option>
+    </select>
+  </div>
+  <div id="res-staff-body"></div>
+</div>
+
+<!-- ALLOC MODAL -->
+<div class="modal" id="mo-alloc" style="display:none">
+  <div class="modal-box" style="max-width:420px">
+    <div class="modal-hdr"><span class="modal-title" id="mo-alloc-title">Add Allocation</span><button class="modal-close" onclick="closeMo('mo-alloc')">✕</button></div>
+    <div class="modal-body">
+      <div class="form-row"><label class="form-label">Staff Member</label>
+        <select class="form-input" id="alloc-f-staff"></select></div>
+      <div class="form-row"><label class="form-label">Project</label>
+        <select class="form-input" id="alloc-f-project"></select></div>
+      <div class="form-row"><label class="form-label">Week Start (Monday)</label>
+        <input type="date" class="form-input" id="alloc-f-week"></div>
+      <div class="form-row"><label class="form-label">Weeks Duration</label>
+        <input type="number" class="form-input" id="alloc-f-duration" value="1" min="1" max="52"></div>
+      <div class="form-row"><label class="form-label">Hours / Week</label>
+        <input type="number" class="form-input" id="alloc-f-hours" value="20" min="1" max="60"></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-ghost" onclick="closeMo('mo-alloc')">Cancel</button>
+      <button class="btn btn-y" onclick="saveAlloc()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT CELL MODAL -->
+<div class="modal" id="mo-alloc-edit" style="display:none">
+  <div class="modal-box" style="max-width:360px">
+    <div class="modal-hdr"><span class="modal-title">Edit Allocation</span><button class="modal-close" onclick="closeMo('mo-alloc-edit')">✕</button></div>
+    <div class="modal-body">
+      <div style="font-size:12px;color:var(--white);margin-bottom:12px" id="mo-alloc-edit-desc"></div>
+      <div id="mo-alloc-edit-list"></div>
+      <div class="form-row" style="margin-top:12px"><label class="form-label">Add Hours for this Week</label>
+        <input type="number" class="form-input" id="alloc-edit-hrs" placeholder="e.g. 20" min="0" max="60"></div>
+      <div class="form-row"><label class="form-label">Project</label>
+        <select class="form-input" id="alloc-edit-proj"></select></div>
+    </div>
+    <div class="modal-ftr">
+      <button class="btn btn-ghost" onclick="closeMo('mo-alloc-edit')">Cancel</button>
+      <button class="btn btn-y" onclick="addAllocFromCell()">Add</button>
+    </div>
+  </div>
+</div>
 
 <!-- Bid detail modal -->
 <div class="mo" id="mo-bid">
@@ -2381,6 +2502,7 @@ function goHome() {
   document.getElementById('navTabs-admin').style.display = 'none';
   document.getElementById('navTabs-procurement').style.display = 'none';
   document.getElementById('navTabs-bidding').style.display = 'none';
+  document.getElementById('navTabs-resources').style.display = 'none';
   document.getElementById('nav-back').style.display = 'none';
   document.getElementById('nav-module-label').style.display = 'none';
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
@@ -2398,6 +2520,7 @@ function enterModule(module) {
   document.getElementById('navTabs-admin').style.display = 'none';
   document.getElementById('navTabs-procurement').style.display = 'none';
   document.getElementById('navTabs-bidding').style.display = 'none';
+  document.getElementById('navTabs-resources').style.display = 'none';
   if(module === 'finance') {
     document.getElementById('nav-module-label').textContent = 'Finance';
     document.getElementById('navTabs-finance').style.display = 'flex';
@@ -2418,6 +2541,10 @@ function enterModule(module) {
     document.getElementById('nav-module-label').textContent = 'Bidding & Proposals';
     document.getElementById('navTabs-bidding').style.display = 'flex';
     goBidding('queue');
+  } else if(module === 'resources') {
+    document.getElementById('nav-module-label').textContent = 'Resource Schedule';
+    document.getElementById('navTabs-resources').style.display = 'flex';
+    goResources('overview');
   }
 }
 
@@ -4460,6 +4587,7 @@ function ensureCrm() {
 function initCRM() {
   ensureCrm();
   initStaffData();
+  initResourceData();
   initVendorData();
   // Only seed when accounts are genuinely empty — never on version mismatch
   // to prevent any risk of overwriting user-entered opportunities/tasks
@@ -8303,6 +8431,448 @@ async function spRunImport() {
     btn.textContent = 'Import →';
     btn.disabled = false;
   }
+}
+
+// ══════════════════════════════════════════════════════════
+// PHASE 4: RESOURCE SCHEDULE
+// ══════════════════════════════════════════════════════════
+
+// ── Week helpers ──
+function getMonday(d) {
+  const dt = new Date(d);
+  const day = dt.getDay();
+  const diff = (day === 0 ? -6 : 1 - day);
+  dt.setDate(dt.getDate() + diff);
+  dt.setHours(0,0,0,0);
+  return dt;
+}
+function addWeeks(d, n) {
+  const dt = new Date(d);
+  dt.setDate(dt.getDate() + n * 7);
+  return dt;
+}
+function isoDate(d) { return d.toISOString().slice(0,10); }
+function fmtWeekHdr(d) {
+  return d.toLocaleDateString('en-GB', { day:'2-digit', month:'short' });
+}
+function weekKey(d) { return isoDate(typeof d==='string'?new Date(d+'T00:00'):d); }
+
+const RES_WEEKS = 12;
+let resOffset = 0; // weeks offset from current Monday
+
+function resStartDate() {
+  return addWeeks(getMonday(new Date()), resOffset);
+}
+
+function resWeekOffset(delta, reset) {
+  if(reset) resOffset = 0;
+  else resOffset += delta;
+  renderResOverview();
+}
+
+function getWeekDates() {
+  const start = resStartDate();
+  return Array.from({length: RES_WEEKS}, (_,i) => addWeeks(start, i));
+}
+
+// Project colour palette (consistent per project)
+const PROJ_COLORS = ['#2196F3','#4CAF50','#FF9800','#9C27B0','#00BCD4','#F44336','#8BC34A','#FF5722','#3F51B5','#009688'];
+function projColor(projectId) {
+  const idx = (db.projects||[]).findIndex(p=>p.id===projectId);
+  return PROJ_COLORS[Math.abs(idx) % PROJ_COLORS.length] || '#555';
+}
+function projColorAlpha(projectId, alpha) {
+  const hex = projColor(projectId);
+  const r = parseInt(hex.slice(1,3),16), g = parseInt(hex.slice(3,5),16), b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+// ── Data helpers ──
+function getAllocations() { if(!db.allocations) db.allocations=[]; return db.allocations; }
+
+function allocsForStaffWeek(staffId, weekDate) {
+  const wk = weekKey(weekDate);
+  return getAllocations().filter(a => a.staffId===staffId && a.weekStart===wk);
+}
+
+function totalHoursForStaffWeek(staffId, weekDate) {
+  return allocsForStaffWeek(staffId, weekDate).reduce((s,a)=>s+(+a.hours||0),0);
+}
+
+function allocsForProjectWeek(projectId, weekDate) {
+  const wk = weekKey(weekDate);
+  return getAllocations().filter(a => a.projectId===projectId && a.weekStart===wk);
+}
+
+function deleteAlloc(id) {
+  db.allocations = (db.allocations||[]).filter(a=>a.id!==id);
+  markDirty(); saveDB();
+}
+
+// ── Navigation ──
+function goResources(sub) {
+  sub = sub || 'overview';
+  const tabs = document.querySelectorAll('#navTabs-resources .ntab');
+  const subs = ['overview','project','staff'];
+  tabs.forEach((t,i) => t.classList.toggle('active', i===subs.indexOf(sub)));
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  if(sub==='overview') { renderResOverview(); document.getElementById('sec-res-overview').classList.add('active'); }
+  else if(sub==='project') { renderResByProject(true); document.getElementById('sec-res-project').classList.add('active'); }
+  else if(sub==='staff') { renderResByStaff(true); document.getElementById('sec-res-staff').classList.add('active'); }
+}
+
+// ── OVERVIEW ──
+function renderResOverview() {
+  const weeks = getWeekDates();
+  const staff = (db.staff||[]).filter(s=>s.active!==false);
+
+  // Update week label
+  const lbl = document.getElementById('res-week-label');
+  if(lbl) lbl.textContent = `${fmtWeekHdr(weeks[0])} — ${fmtWeekHdr(weeks[RES_WEEKS-1])}`;
+
+  // Stat cards
+  renderResStats(weeks, staff);
+
+  // Build grid
+  const tbl = document.getElementById('res-overview-table');
+  if(!tbl) return;
+
+  const today = getMonday(new Date());
+
+  const thead = `<thead><tr>
+    <th class="col-name">Staff Member</th>
+    ${weeks.map(w=>{
+      const isNow = weekKey(w)===weekKey(today);
+      return `<th style="${isNow?'color:var(--yellow);border-bottom-color:var(--yellow)':''}">${fmtWeekHdr(w)}</th>`;
+    }).join('')}
+    <th>Total Hrs</th>
+  </tr></thead>`;
+
+  const tbody = staff.length ? `<tbody>${staff.map(s => {
+    const grade = (db.grades||[]).find(g=>g.id===s.gradeId)||{};
+    const weekCells = weeks.map(w => {
+      const hrs = totalHoursForStaffWeek(s.id, w);
+      const allocs = allocsForStaffWeek(s.id, w);
+      const pct = Math.min((hrs/40)*100, 100);
+      const barClass = pct >= 100 ? 'util-hi' : pct >= 75 ? 'util-mid' : 'util-low';
+      const bg = hrs > 0 ? projColorAlpha(allocs[0]?.projectId||'', 0.15) : '';
+      const projName = hrs > 0 && allocs.length === 1 ? (db.projects||[]).find(p=>p.id===allocs[0].projectId)?.name?.split(' ')[0]||'' : (allocs.length>1?`${allocs.length}proj`:'');
+      return `<td style="${bg?'background:'+bg:''}" onclick="openCellModal('${s.id}','${weekKey(w)}')">
+        ${hrs>0?`<div class="res-cell">
+          <span class="res-cell-hrs">${hrs}</span>
+          <span class="res-cell-proj">${projName}</span>
+          <div class="res-util-bar ${barClass}" style="width:${pct}%"></div>
+        </div>`:''}
+      </td>`;
+    }).join('');
+    const totalHrs = weeks.reduce((s2,w)=>s2+totalHoursForStaffWeek(s.id,w),0);
+    return `<tr>
+      <td class="col-name">
+        <div class="res-staff-name">${s.first} ${s.last}</div>
+        <div class="res-staff-grade">${grade.name||'—'} · ${grade.billableRate?'AED '+grade.billableRate+'/hr':'no rate'}</div>
+      </td>
+      ${weekCells}
+      <td style="font-weight:700;color:var(--white)">${totalHrs||'—'}</td>
+    </tr>`;
+  }).join('')}</tbody>` : `<tbody><tr><td colspan="${RES_WEEKS+2}" class="res-empty">No active staff found. Add staff in Admin → Staff.</td></tr></tbody>`;
+
+  tbl.innerHTML = thead + tbody;
+}
+
+function renderResStats(weeks, staff) {
+  const el = document.getElementById('res-stat-cards');
+  if(!el) return;
+  const allocs = getAllocations();
+  const currentWk = weekKey(getMonday(new Date()));
+  const thisWeekAllocs = allocs.filter(a=>a.weekStart===currentWk);
+  const thisWeekHrs = thisWeekAllocs.reduce((s,a)=>s+(+a.hours||0),0);
+  const availHrs = staff.length * 40;
+  const utilPct = availHrs > 0 ? Math.round((thisWeekHrs/availHrs)*100) : 0;
+
+  // Billable value this week
+  const billableValue = thisWeekAllocs.reduce((s,a)=>{
+    const st = (db.staff||[]).find(x=>x.id===a.staffId)||{};
+    const gr = (db.grades||[]).find(g=>g.id===st.gradeId)||{};
+    return s + (+a.hours||0) * (+gr.billableRate||0);
+  }, 0);
+
+  // Projects with allocations in next 12 weeks
+  const wkKeys = new Set(weeks.map(w=>weekKey(w)));
+  const activeProjs = new Set(allocs.filter(a=>wkKeys.has(a.weekStart)).map(a=>a.projectId));
+
+  el.innerHTML = `
+    <div class="res-stat"><div class="res-stat-val">${staff.length}</div><div class="res-stat-lbl">Active Staff</div></div>
+    <div class="res-stat"><div class="res-stat-val">${thisWeekHrs}h</div><div class="res-stat-lbl">Hours This Week</div></div>
+    <div class="res-stat"><div class="res-stat-val">${utilPct}%</div><div class="res-stat-lbl">Utilisation (this week)</div></div>
+    <div class="res-stat"><div class="res-stat-val">AED ${fmtN(billableValue)}</div><div class="res-stat-lbl">Billable Value This Week</div></div>
+    <div class="res-stat"><div class="res-stat-val">${activeProjs.size}</div><div class="res-stat-lbl">Projects Resourced (12wk)</div></div>
+  `;
+}
+
+// ── BY PROJECT ──
+function renderResByProject(init) {
+  const sel = document.getElementById('res-proj-select');
+  if(init || !sel) {
+    if(sel) {
+      sel.innerHTML = '<option value="">— select project —</option>' +
+        (db.projects||[]).filter(p=>p.status==='Live'||p.status==='Planned').map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+    }
+  }
+  const projectId = sel ? sel.value : '';
+  const body = document.getElementById('res-project-body');
+  if(!body) return;
+  if(!projectId) { body.innerHTML = '<div class="res-empty">Select a project to view allocations.</div>'; return; }
+
+  const proj = (db.projects||[]).find(p=>p.id===projectId);
+  const weeks = getWeekDates();
+  const staff = (db.staff||[]).filter(s=>s.active!==false);
+
+  // Find staff with any allocation on this project in next 12 weeks
+  const wkKeys = new Set(weeks.map(w=>weekKey(w)));
+  const allStaffWithAlloc = new Set(getAllocations().filter(a=>a.projectId===projectId&&wkKeys.has(a.weekStart)).map(a=>a.staffId));
+  const staffToShow = staff.filter(s=>allStaffWithAlloc.has(s.id));
+
+  const thead = `<thead><tr>
+    <th class="col-name">Staff Member</th>
+    ${weeks.map(w=>`<th>${fmtWeekHdr(w)}</th>`).join('')}
+    <th>Total</th>
+  </tr></thead>`;
+
+  const rows = staffToShow.length ? staffToShow.map(s=>{
+    const grade = (db.grades||[]).find(g=>g.id===s.gradeId)||{};
+    const weekCells = weeks.map(w=>{
+      const allocs = getAllocations().filter(a=>a.staffId===s.id&&a.projectId===projectId&&a.weekStart===weekKey(w));
+      const hrs = allocs.reduce((t,a)=>t+(+a.hours||0),0);
+      return `<td onclick="openCellModal('${s.id}','${weekKey(w)}')" style="${hrs?'background:'+projColorAlpha(projectId,0.15):''}">
+        ${hrs?`<span style="font-weight:700;color:var(--white)">${hrs}h</span>`:''}
+      </td>`;
+    }).join('');
+    const total = weeks.reduce((t,w)=>t+getAllocations().filter(a=>a.staffId===s.id&&a.projectId===projectId&&a.weekStart===weekKey(w)).reduce((s2,a)=>s2+(+a.hours||0),0),0);
+    return `<tr>
+      <td class="col-name"><div class="res-staff-name">${s.first} ${s.last}</div><div class="res-staff-grade">${grade.name||'—'}</div></td>
+      ${weekCells}
+      <td style="font-weight:700;color:var(--white)">${total||'—'}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="${RES_WEEKS+2}" class="res-empty">No staff allocated to this project in the next ${RES_WEEKS} weeks.</td></tr>`;
+
+  body.innerHTML = `<div class="res-grid-wrap"><table class="res-grid">${thead}<tbody>${rows}</tbody></table></div>`;
+}
+
+// ── BY STAFF ──
+function renderResByStaff(init) {
+  const sel = document.getElementById('res-staff-select');
+  if(init || !sel) {
+    if(sel) {
+      sel.innerHTML = '<option value="">— select staff member —</option>' +
+        (db.staff||[]).filter(s=>s.active!==false).map(s=>`<option value="${s.id}">${s.first} ${s.last}</option>`).join('');
+    }
+  }
+  const staffId = sel ? sel.value : '';
+  const body = document.getElementById('res-staff-body');
+  if(!body) return;
+  if(!staffId) { body.innerHTML = '<div class="res-empty">Select a staff member to view their schedule.</div>'; return; }
+
+  const st = (db.staff||[]).find(s=>s.id===staffId);
+  const grade = (db.grades||[]).find(g=>g.id===st?.gradeId)||{};
+  const weeks = getWeekDates();
+  const wkKeys = new Set(weeks.map(w=>weekKey(w)));
+
+  // Projects this staff member is on
+  const projIds = [...new Set(getAllocations().filter(a=>a.staffId===staffId&&wkKeys.has(a.weekStart)).map(a=>a.projectId))];
+  const projs = projIds.map(id=>(db.projects||[]).find(p=>p.id===id)).filter(Boolean);
+
+  // Utilization summary row
+  const utilRow = `<tr style="border-top:2px solid var(--gl)">
+    <td class="col-name" style="font-weight:700;color:var(--gm);font-size:10px;text-transform:uppercase;letter-spacing:.04em">Total / 40h</td>
+    ${weeks.map(w=>{
+      const total = totalHoursForStaffWeek(staffId, w);
+      const pct = Math.min(Math.round((total/40)*100),200);
+      const cls = total>=40?'u-over':total>=30?'u-warn':'u-ok';
+      return `<td><span class="res-util-pill ${cls}">${total}h</span></td>`;
+    }).join('')}
+    <td></td>
+  </tr>`;
+
+  const rows = projs.length ? projs.map(proj=>{
+    const weekCells = weeks.map(w=>{
+      const hrs = getAllocations().filter(a=>a.staffId===staffId&&a.projectId===proj.id&&a.weekStart===weekKey(w)).reduce((t,a)=>t+(+a.hours||0),0);
+      return `<td onclick="openCellModal('${staffId}','${weekKey(w)}')" style="${hrs?'background:'+projColorAlpha(proj.id,0.15):''}">
+        ${hrs?`<span style="font-weight:700;color:${projColor(proj.id)}">${hrs}h</span>`:''}
+      </td>`;
+    }).join('');
+    const total = weeks.reduce((t,w)=>t+getAllocations().filter(a=>a.staffId===staffId&&a.projectId===proj.id&&a.weekStart===weekKey(w)).reduce((s,a)=>s+(+a.hours||0),0),0);
+    return `<tr>
+      <td class="col-name">
+        <span class="res-proj-badge" style="background:${projColorAlpha(proj.id,0.2)};color:${projColor(proj.id)}">${proj.name.split(' ')[0]}</span>
+        <div style="font-size:10px;color:var(--gm);margin-top:2px">${proj.client||''}</div>
+      </td>
+      ${weekCells}
+      <td style="font-weight:700;color:var(--white)">${total||'—'}</td>
+    </tr>`;
+  }).join('') : `<tr><td colspan="${RES_WEEKS+2}" class="res-empty">No allocations in the next ${RES_WEEKS} weeks.</td></tr>`;
+
+  const thead = `<thead><tr>
+    <th class="col-name">Project</th>
+    ${weeks.map(w=>`<th>${fmtWeekHdr(w)}</th>`).join('')}
+    <th>Total</th>
+  </tr></thead>`;
+
+  body.innerHTML = `
+    <div class="res-stat-cards" style="grid-template-columns:repeat(3,1fr)">
+      <div class="res-stat"><div class="res-stat-val">${st?.first} ${st?.last}</div><div class="res-stat-lbl">${grade.name||'—'}</div></div>
+      <div class="res-stat"><div class="res-stat-val">${grade.billableRate?'AED '+grade.billableRate+'/hr':'—'}</div><div class="res-stat-lbl">Billable Rate</div></div>
+      <div class="res-stat"><div class="res-stat-val">${projs.length}</div><div class="res-stat-lbl">Projects (12wk)</div></div>
+    </div>
+    <div class="res-grid-wrap"><table class="res-grid">${thead}<tbody>${rows}${utilRow}</tbody></table></div>`;
+}
+
+// ── MODAL: Add Allocation ──
+let editingAllocStaffId = null;
+let editingAllocWeek = null;
+
+function openAllocModal(context) {
+  document.getElementById('mo-alloc-title').textContent = 'Add Allocation';
+  // Populate staff
+  const staffSel = document.getElementById('alloc-f-staff');
+  staffSel.innerHTML = '<option value="">— select staff —</option>' +
+    (db.staff||[]).filter(s=>s.active!==false).map(s=>`<option value="${s.id}">${s.first} ${s.last}</option>`).join('');
+
+  // Pre-select from context
+  if(context==='proj') {
+    const projSel = document.getElementById('res-proj-select');
+    if(projSel?.value) {
+      // pre-select project
+      const pSel = document.getElementById('alloc-f-project');
+      setTimeout(()=>{ if(pSel) pSel.value = projSel.value; }, 50);
+    }
+  }
+
+  // Populate projects
+  const projSel = document.getElementById('alloc-f-project');
+  projSel.innerHTML = '<option value="">— select project —</option>' +
+    (db.projects||[]).filter(p=>p.status==='Live'||p.status==='Planned').map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+
+  // Default week to current Monday
+  document.getElementById('alloc-f-week').value = isoDate(getMonday(new Date()));
+  document.getElementById('alloc-f-duration').value = '1';
+  document.getElementById('alloc-f-hours').value = '20';
+  openMo('mo-alloc');
+}
+
+function saveAlloc() {
+  const staffId = document.getElementById('alloc-f-staff').value;
+  const projectId = document.getElementById('alloc-f-project').value;
+  const weekVal = document.getElementById('alloc-f-week').value;
+  const duration = +document.getElementById('alloc-f-duration').value || 1;
+  const hours = +document.getElementById('alloc-f-hours').value || 0;
+  if(!staffId || !projectId || !weekVal) { alert('Staff, project and week are required.'); return; }
+  if(!hours) { alert('Hours must be greater than 0.'); return; }
+
+  if(!db.allocations) db.allocations = [];
+  const startMonday = getMonday(new Date(weekVal+'T00:00'));
+  for(let i=0; i<duration; i++) {
+    const wk = isoDate(addWeeks(startMonday, i));
+    // Upsert: if same staff+project+week exists, update hours
+    const existing = db.allocations.find(a=>a.staffId===staffId&&a.projectId===projectId&&a.weekStart===wk);
+    if(existing) { existing.hours = hours; }
+    else { db.allocations.push({ id:'alloc_'+uid(), staffId, projectId, weekStart: wk, hours }); }
+  }
+  markDirty(); saveDB(); closeMo('mo-alloc');
+  const active = document.querySelector('.sec.active');
+  if(active?.id==='sec-res-overview') renderResOverview();
+  else if(active?.id==='sec-res-project') renderResByProject();
+  else if(active?.id==='sec-res-staff') renderResByStaff();
+}
+
+// ── MODAL: Edit Cell ──
+function openCellModal(staffId, weekStr) {
+  editingAllocStaffId = staffId;
+  editingAllocWeek = weekStr;
+  const st = (db.staff||[]).find(s=>s.id===staffId)||{};
+  const weekDate = new Date(weekStr+'T00:00');
+  document.getElementById('mo-alloc-edit-desc').textContent =
+    `${st.first} ${st.last} — week of ${fmtWeekHdr(weekDate)}`;
+
+  // List existing allocations for this cell
+  const cellAllocs = getAllocations().filter(a=>a.staffId===staffId&&a.weekStart===weekStr);
+  const proj = document.getElementById('alloc-edit-proj');
+  proj.innerHTML = '<option value="">— select project —</option>' +
+    (db.projects||[]).filter(p=>p.status==='Live'||p.status==='Planned').map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  document.getElementById('alloc-edit-hrs').value = '';
+
+  const list = document.getElementById('mo-alloc-edit-list');
+  list.innerHTML = cellAllocs.length ? cellAllocs.map(a=>{
+    const p = (db.projects||[]).find(x=>x.id===a.projectId)||{};
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--gl)">
+      <div>
+        <span class="res-alloc-tag">${p.name||'Unknown project'}</span>
+        <span style="margin-left:8px;font-weight:700;color:var(--white)">${a.hours}h</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-ghost btn-xs" onclick="editAllocHrs('${a.id}',this)">Edit</button>
+        <button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="deleteAllocFromCell('${a.id}')">Del</button>
+      </div>
+    </div>`;
+  }).join('') : '<div style="color:var(--gm);font-size:11px;padding:8px 0">No allocations this week.</div>';
+
+  openMo('mo-alloc-edit');
+}
+
+function editAllocHrs(id, btn) {
+  const newHrs = prompt('New hours for this allocation:');
+  if(newHrs===null) return;
+  const h = +newHrs;
+  if(!h || h<=0) { alert('Invalid hours'); return; }
+  const a = getAllocations().find(x=>x.id===id);
+  if(a) { a.hours = h; markDirty(); saveDB(); }
+  openCellModal(editingAllocStaffId, editingAllocWeek);
+}
+
+function deleteAllocFromCell(id) {
+  deleteAlloc(id);
+  openCellModal(editingAllocStaffId, editingAllocWeek);
+}
+
+function addAllocFromCell() {
+  const hrs = +document.getElementById('alloc-edit-hrs').value;
+  const projId = document.getElementById('alloc-edit-proj').value;
+  if(!hrs || !projId) { alert('Select a project and enter hours.'); return; }
+  if(!db.allocations) db.allocations=[];
+  const existing = db.allocations.find(a=>a.staffId===editingAllocStaffId&&a.projectId===projId&&a.weekStart===editingAllocWeek);
+  if(existing) { existing.hours=hrs; }
+  else { db.allocations.push({id:'alloc_'+uid(), staffId:editingAllocStaffId, projectId:projId, weekStart:editingAllocWeek, hours:hrs}); }
+  markDirty(); saveDB();
+  openCellModal(editingAllocStaffId, editingAllocWeek);
+  const active = document.querySelector('.sec.active');
+  if(active?.id==='sec-res-overview') renderResOverview();
+  else if(active?.id==='sec-res-project') renderResByProject();
+  else if(active?.id==='sec-res-staff') renderResByStaff();
+}
+
+// ── Seed some demo allocations ──
+function initResourceData() {
+  if(!db.allocations) db.allocations = [];
+  if(db.allocations.length) return;
+  // Seed a few allocations for demo
+  const staff = db.staff||[];
+  const projects = (db.projects||[]).filter(p=>p.status==='Live');
+  if(!staff.length || !projects.length) return;
+  const mon = getMonday(new Date());
+  const pairs = [
+    [0,0,30], [0,1,10], [1,0,20], [1,1,20],
+    [2,0,40], [3,1,40], [4,0,20], [4,0,40],
+  ];
+  pairs.forEach(([si,pi,hrs],idx)=>{
+    const s = staff[si%staff.length];
+    const p = projects[pi%projects.length];
+    if(!s||!p) return;
+    for(let w=0;w<4;w++) {
+      const wk = isoDate(addWeeks(addWeeks(mon,-1),w));
+      const exists = db.allocations.find(a=>a.staffId===s.id&&a.projectId===p.id&&a.weekStart===wk);
+      if(!exists) db.allocations.push({id:'alloc_seed_'+idx+'_'+w, staffId:s.id, projectId:p.id, weekStart:wk, hours:hrs});
+    }
+  });
+  saveDB();
 }
 
 // ═══════════════════════════════════════════════════
