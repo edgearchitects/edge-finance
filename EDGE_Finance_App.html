@@ -1179,8 +1179,8 @@ window._msalLoaded = true;
 <div class="sec" id="sec-bid-closed"><div id="bid-closed-view"></div></div>
 
 <!-- Bid detail modal -->
-<div class="mo-backdrop" id="mo-bid-backdrop" onclick="closeMo('mo-bid')" style="display:none"></div>
-<div class="mo" id="mo-bid" style="display:none;max-width:680px">
+<div class="mo" id="mo-bid">
+  <div class="modal" style="max-width:680px">
   <div class="mhead"><span class="mtitle" id="mo-bid-title">Bid Detail</span><button class="mclose" onclick="closeMo('mo-bid')">×</button></div>
   <div class="mbody" id="mo-bid-body" style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
     <div class="fgrp full"><label>Bid Reference</label><input id="bid-f-ref" type="text" placeholder="EDGE-2025-001"></div>
@@ -1208,11 +1208,12 @@ window._msalLoaded = true;
     <button class="btn btn-ghost" onclick="closeMo('mo-bid')">Cancel</button>
     <button class="btn btn-y" onclick="saveBid()">Save</button>
   </div>
+  </div>
 </div>
 
 <!-- Go/No-Go Assessment modal -->
-<div class="mo-backdrop" id="mo-gonogo-backdrop" onclick="closeMo('mo-gonogo')" style="display:none"></div>
-<div class="mo" id="mo-gonogo" style="display:none;max-width:600px">
+<div class="mo" id="mo-gonogo">
+  <div class="modal" style="max-width:600px">
   <div class="mhead"><span class="mtitle" id="mo-gonogo-title">Go / No-Go Assessment</span><button class="mclose" onclick="closeMo('mo-gonogo')">×</button></div>
   <div class="mbody" style="padding:0" id="mo-gonogo-body"></div>
   <div class="mfoot" id="mo-gonogo-foot">
@@ -1220,11 +1221,12 @@ window._msalLoaded = true;
     <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="saveGoNoGo('no-go')">✗ No-Go</button>
     <button class="btn btn-y" onclick="saveGoNoGo('go')">✓ Go</button>
   </div>
+  </div>
 </div>
 
 <!-- Bid stage advancement modal -->
-<div class="mo-backdrop" id="mo-bidstage-backdrop" onclick="closeMo('mo-bidstage')" style="display:none"></div>
-<div class="mo" id="mo-bidstage" style="display:none;max-width:400px">
+<div class="mo" id="mo-bidstage">
+  <div class="modal" style="max-width:400px">
   <div class="mhead"><span class="mtitle">Advance Stage</span><button class="mclose" onclick="closeMo('mo-bidstage')">×</button></div>
   <div class="mbody" style="padding:16px">
     <div style="font-size:12px;color:var(--gm);margin-bottom:12px">Move this bid to the next stage. This will also update the CRM pipeline.</div>
@@ -1234,6 +1236,7 @@ window._msalLoaded = true;
   <div class="mfoot">
     <button class="btn btn-ghost" onclick="closeMo('mo-bidstage')">Cancel</button>
     <button class="btn btn-y" onclick="saveBidStage()">Update Stage</button>
+  </div>
   </div>
 </div>
 
@@ -1280,8 +1283,8 @@ window._msalLoaded = true;
 </div>
 
 <!-- Grade modal -->
-<div class="mo-backdrop" id="mo-grade-backdrop" onclick="closeMo('mo-grade')" style="display:none"></div>
-<div class="mo" id="mo-grade" style="display:none;max-width:420px">
+<div class="mo" id="mo-grade">
+  <div class="modal" style="max-width:420px">
   <div class="mhead"><span class="mtitle" id="mo-grade-title">Add Grade</span><button class="mclose" onclick="closeMo('mo-grade')">×</button></div>
   <div class="mbody" style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
     <div class="fgrp full"><label>Grade / Title *</label><input id="grade-f-name" type="text" placeholder="e.g. Senior Architect"></div>
@@ -1292,11 +1295,12 @@ window._msalLoaded = true;
     <button class="btn btn-ghost" onclick="closeMo('mo-grade')">Cancel</button>
     <button class="btn btn-y" onclick="saveGrade()">Save</button>
   </div>
+  </div>
 </div>
 
 <!-- Staff modal -->
-<div class="mo-backdrop" id="mo-staff-backdrop" onclick="closeMo('mo-staff')" style="display:none"></div>
-<div class="mo" id="mo-staff" style="display:none;max-width:460px">
+<div class="mo" id="mo-staff">
+  <div class="modal" style="max-width:460px">
   <div class="mhead"><span class="mtitle" id="mo-staff-title">Add Staff Member</span><button class="mclose" onclick="closeMo('mo-staff')">×</button></div>
   <div class="mbody" style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
     <div class="fgrp"><label>First Name *</label><input id="staff-f-first" type="text" placeholder="First name"></div>
@@ -1308,6 +1312,7 @@ window._msalLoaded = true;
   <div class="mfoot">
     <button class="btn btn-ghost" onclick="closeMo('mo-staff')">Cancel</button>
     <button class="btn btn-y" onclick="saveStaff()">Save</button>
+  </div>
   </div>
 </div>
 
