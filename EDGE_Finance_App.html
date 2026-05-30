@@ -7350,17 +7350,18 @@ function renderCrmDashboard() {
     </div>
   </div>
   ${(()=>{
-    const wonWithFinance = wonOpps.map(o=>({ opp:o, proj: findFinanceProject(o.name) })).filter(x=>x.proj);
-    if(!wonWithFinance.length) return '';
+    const finProjects = (db.projects||[]).filter(p=>p.status==='Live'||p.status==='Planned');
+    if(!finProjects.length) return '';
+    const totalFee = finProjects.reduce((s,p)=>s+(+p.fee||0),0);
     return `<div style="padding:0 20px 24px">
       <div class="crm-dash-panel-title" style="padding:16px 0 10px;border-top:1px solid var(--gl);display:flex;align-items:center;justify-content:space-between">
-        <span>Won Deals → Active in Finance (${wonWithFinance.length})</span>
+        <span>Active Finance Projects (${finProjects.length}) · <span style="color:var(--yellow)">AED ${fmtN(totalFee)} total</span></span>
         <button class="btn btn-ghost btn-xs" onclick="enterModule('finance');go('projects')">Open Finance →</button>
       </div>
       <table class="crm-table"><thead><tr><th>Project</th><th>Client</th><th>Contract Fee</th><th>Status</th><th>Lead</th><th></th></tr></thead>
-      <tbody>${wonWithFinance.map(({opp,proj})=>`<tr>
+      <tbody>${finProjects.map(proj=>`<tr>
         <td class="name-cell">${proj.name}</td>
-        <td class="meta-cell">${proj.client||crmAccName(opp.accountId)||'—'}</td>
+        <td class="meta-cell">${proj.client||'—'}</td>
         <td class="meta-cell" style="font-weight:600">AED ${fmtN(proj.fee||0)}</td>
         <td><span class="badge ${proj.status==='Live'?'b-live':'b-planned'}">${proj.status}</span></td>
         <td class="meta-cell">${proj.lead||'—'}</td>
