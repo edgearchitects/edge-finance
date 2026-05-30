@@ -4989,14 +4989,22 @@ function renderBidClosed() {
 
   const bidRow = (b, isWon) => {
     const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId)||{};
+    const finProj = isWon ? findFinanceProject(opp.name) : null;
     return `<tr>
-      <td><div class="name-cell">${opp.name||'—'}</div>${b.bidRef?`<div style="font-size:10px;color:var(--gm)">${b.bidRef}</div>`:''}</td>
+      <td>
+        <div class="name-cell">${opp.name||'—'}</div>
+        ${b.bidRef?`<div style="font-size:10px;color:var(--gm)">${b.bidRef}</div>`:''}
+        ${finProj?`<div style="margin-top:4px"><span style="font-size:9px;background:#1a2e1a;color:#4caf50;padding:2px 7px;border-radius:2px;font-weight:600;cursor:pointer" onclick="enterModule('finance');go('projects')" title="View in Finance module">● Live in Finance</span></div>`:''}
+      </td>
       <td class="meta-cell">${crmAccName(opp.accountId)}</td>
       <td class="meta-cell">${opp.sector||'—'}</td>
       <td class="meta-cell" style="font-weight:600;color:${isWon?'var(--green)':'var(--red)'}">${isWon?crmFmtVal(b.awardedFee||b.submittedFee):crmFmtVal(b.submittedFee)}</td>
       <td class="meta-cell">${isWon?'—':(b.lossReason||opp.lossReason||'Not recorded')}</td>
       <td class="meta-cell">${b.competitor||'—'}</td>
-      <td class="action-cell"><button class="btn btn-ghost btn-xs" onclick="openBidDetail('${b.id}')">View</button></td>
+      <td class="action-cell">
+        <button class="btn btn-ghost btn-xs" onclick="openBidDetail('${b.id}')">View</button>
+        ${finProj?`<button class="btn btn-ghost btn-xs" style="color:var(--green)" onclick="enterModule('finance');go('projects')" title="${finProj.name}">→ Finance</button>`:''}
+      </td>
     </tr>`;
   };
 
@@ -7224,6 +7232,18 @@ function goProcurement(sub) {
 }
 
 // ── Helpers ──
+
+// Cross-module: fuzzy-match a bid/opportunity name against Finance projects
+function findFinanceProject(name) {
+  if(!name) return null;
+  const norm = s => s.toLowerCase().replace(/\[.*?\]/g,'').replace(/[^a-z0-9]/g,' ').trim().replace(/\s+/g,' ');
+  const n = norm(name);
+  return (db.projects||[]).find(p => {
+    const pn = norm(p.name);
+    return pn === n || pn.includes(n) || n.includes(pn);
+  }) || null;
+}
+
 function crmFmtVal(v) {
   if(!v) return '—';
   const n = +v;
@@ -7328,7 +7348,26 @@ function renderCrmDashboard() {
           <div style="font-size:9px;color:var(--gm);text-transform:uppercase;white-space:nowrap">${t.type||''}</div>
         </div>`).join('') : '<div style="color:var(--gm);font-size:11px">No open tasks.</div>'}
     </div>
-  </div>`;
+  </div>
+  ${(()=>{
+    const wonWithFinance = wonOpps.map(o=>({ opp:o, proj: findFinanceProject(o.name) })).filter(x=>x.proj);
+    if(!wonWithFinance.length) return '';
+    return `<div style="padding:0 20px 24px">
+      <div class="crm-dash-panel-title" style="padding:16px 0 10px;border-top:1px solid var(--gl);display:flex;align-items:center;justify-content:space-between">
+        <span>Won Deals → Active in Finance (${wonWithFinance.length})</span>
+        <button class="btn btn-ghost btn-xs" onclick="enterModule('finance');go('projects')">Open Finance →</button>
+      </div>
+      <table class="crm-table"><thead><tr><th>Project</th><th>Client</th><th>Contract Fee</th><th>Status</th><th>Lead</th><th></th></tr></thead>
+      <tbody>${wonWithFinance.map(({opp,proj})=>`<tr>
+        <td class="name-cell">${proj.name}</td>
+        <td class="meta-cell">${proj.client||crmAccName(opp.accountId)||'—'}</td>
+        <td class="meta-cell" style="font-weight:600">AED ${fmtN(proj.fee||0)}</td>
+        <td><span class="badge ${proj.status==='Live'?'b-live':'b-planned'}">${proj.status}</span></td>
+        <td class="meta-cell">${proj.lead||'—'}</td>
+        <td class="action-cell"><button class="btn btn-ghost btn-xs" style="color:var(--green)" onclick="enterModule('finance');go('projects')">→ Finance</button></td>
+      </tr>`).join('')}</tbody></table>
+    </div>`;
+  })()}`;
 }
 
 // ── PIPELINE ──
@@ -7388,6 +7427,7 @@ function crmOppCardHTML(o, stage) {
   const age = crmDaysAgo(o.updatedAt || o.createdAt);
   const ageLabel = age===null?'':(age<1?'today':age===1?'1d':age+'d');
   const ageCls = crmAgeClass(o.updatedAt || o.createdAt);
+  const finProj = stage.id === 'signed' ? findFinanceProject(o.name) : null;
   return `<div class="opp-card stg-${stage.id}" draggable="true" onclick="openOppDetail('${o.id}')"
     ondragstart="crmDragStart(event,'${o.id}')" ondragend="crmDragEnd(event)">
     <div class="opp-card-name">${o.name}</div>
@@ -7397,6 +7437,10 @@ function crmOppCardHTML(o, stage) {
       ${ageLabel ? `<div class="opp-card-age ${ageCls}">${ageLabel}</div>` : ''}
     </div>
     ${o.prob ? `<div style="font-size:9px;color:var(--gm);margin-top:4px">${o.prob}% · ${crmFmtDate(o.closeDate)}</div>` : ''}
+    ${finProj ? `<div style="margin-top:6px;display:flex;align-items:center;justify-content:space-between">
+      <span style="font-size:9px;background:#1a2e1a;color:#4caf50;padding:2px 6px;border-radius:2px;font-weight:600">● Live in Finance</span>
+      <span style="font-size:9px;color:var(--green);cursor:pointer;text-decoration:underline" onclick="event.stopPropagation();enterModule('finance');go('projects')">→ View</span>
+    </div>` : ''}
   </div>`;
 }
 
