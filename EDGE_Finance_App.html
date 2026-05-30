@@ -6635,8 +6635,21 @@ function openOppDetail(oppId) {
     <button class="btn btn-ghost" onclick="closeMo('mo-opp-detail')">Close</button>
     <button class="btn btn-ghost" onclick="closeMo('mo-opp-detail');openEditOppModal('${oppId}')">Edit</button>
     <button class="btn btn-ghost btn-sm" onclick="openFeeEntry('${oppId}')">+ Fee</button>
-    <button class="btn btn-y btn-sm" onclick="closeMo('mo-opp-detail');openNewTaskModal('${oppId}')">+ Task</button>`;
+    <button class="btn btn-y btn-sm" onclick="closeMo('mo-opp-detail');openNewTaskModal('${oppId}')">+ Task</button>
+    <button class="btn btn-ghost btn-sm" style="color:var(--red);margin-left:auto" onclick="deleteOpp('${oppId}')">Delete</button>`;
   openMo('mo-opp-detail');
+}
+function deleteOpp(oppId) {
+  const o = (db.crm.opportunities||[]).find(x=>x.id===oppId);
+  if(!o) return;
+  const hasBid = (db.bids||[]).some(b=>b.oppId===oppId);
+  const warn = hasBid ? '\n\nThis opportunity has a linked bid record which will also be deleted.' : '';
+  if(!confirm(`Delete "${o.name}"?${warn}\n\nThis cannot be undone.`)) return;
+  db.crm.opportunities = (db.crm.opportunities||[]).filter(x=>x.id!==oppId);
+  if(hasBid) db.bids = (db.bids||[]).filter(b=>b.oppId!==oppId);
+  markDirty(); saveDB(); closeMo('mo-opp-detail');
+  if(currentModule==='procurement') goProcurement('pipeline');
+  else if(currentModule==='bidding') goBidding('queue');
 }
 
 // ── MODALS — Opportunity ──
