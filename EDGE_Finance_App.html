@@ -852,6 +852,8 @@ window._msalLoaded = true;
   </div>
   <div class="ntabs" id="navTabs-admin" style="display:none">
     <div class="ntab active" onclick="goAdmin('users')">Users</div>
+    <div class="ntab" onclick="goAdmin('grades')">Grades &amp; Rates</div>
+    <div class="ntab" onclick="goAdmin('staff')">Staff</div>
   </div>
   <div class="ntabs" id="navTabs-bidding" style="display:none">
     <div class="ntab active" onclick="goBidding('queue')">Open Bids</div>
@@ -1189,8 +1191,10 @@ window._msalLoaded = true;
     <div class="fgrp"><label>Actual Submission Date</label><input id="bid-f-submitted" type="date"></div>
     <div class="fgrp" style="display:flex;align-items:center;gap:8px"><label style="margin:0"><input id="bid-f-eoi" type="checkbox" style="margin-right:6px">EOI Required</label></div>
     <div class="fgrp"><label>EOI Submitted Date</label><input id="bid-f-eoisubmitted" type="date"></div>
+    <div class="fgrp full"><label>EOI Document Reference</label><input id="bid-f-eoidoc" type="text" placeholder="Filename or SharePoint URL of signed EOI"></div>
     <div class="fgrp" style="display:flex;align-items:center;gap:8px"><label style="margin:0"><input id="bid-f-nda" type="checkbox" style="margin-right:6px">NDA Required</label></div>
     <div class="fgrp"><label>NDA Signed Date</label><input id="bid-f-ndasigned" type="date"></div>
+    <div class="fgrp full"><label>NDA Document Reference</label><input id="bid-f-ndadoc" type="text" placeholder="Filename or SharePoint URL of signed NDA"></div>
     <div class="fgrp"><label>Technical Lead</label><select id="bid-f-techlead"><option value="">— select —</option></select></div>
     <div class="fgrp"><label>Commercial Lead</label><select id="bid-f-complead"><option value="">— select —</option></select></div>
     <div class="fgrp"><label>Technical Status</label><select id="bid-f-techstatus"><option value="draft">Draft</option><option value="review">In Review</option><option value="complete">Complete</option></select></div>
@@ -1203,6 +1207,18 @@ window._msalLoaded = true;
   <div class="mfoot" id="mo-bid-foot">
     <button class="btn btn-ghost" onclick="closeMo('mo-bid')">Cancel</button>
     <button class="btn btn-y" onclick="saveBid()">Save</button>
+  </div>
+</div>
+
+<!-- Go/No-Go Assessment modal -->
+<div class="mo-backdrop" id="mo-gonogo-backdrop" onclick="closeMo('mo-gonogo')" style="display:none"></div>
+<div class="mo" id="mo-gonogo" style="display:none;max-width:600px">
+  <div class="mhead"><span class="mtitle" id="mo-gonogo-title">Go / No-Go Assessment</span><button class="mclose" onclick="closeMo('mo-gonogo')">×</button></div>
+  <div class="mbody" style="padding:0" id="mo-gonogo-body"></div>
+  <div class="mfoot" id="mo-gonogo-foot">
+    <button class="btn btn-ghost" onclick="closeMo('mo-gonogo')">Cancel</button>
+    <button class="btn btn-ghost btn-sm" style="color:var(--red)" onclick="saveGoNoGo('no-go')">✗ No-Go</button>
+    <button class="btn btn-y" onclick="saveGoNoGo('go')">✓ Go</button>
   </div>
 </div>
 
@@ -1240,11 +1256,59 @@ window._msalLoaded = true;
 
 <!-- ═══════════════ ADMIN MODULE ═══════════════ -->
 <div class="sec" id="sec-admin">
-  <div class="ph">
-    <div><div class="ph-title">User Administration</div><div class="ph-sub">Manage users and assign per-module feature permissions</div></div>
-    <button class="btn btn-y" onclick="openAddUserModal()">+ Add User</button>
+  <div id="admin-users-view" style="display:none">
+    <div class="ph">
+      <div><div class="ph-title">User Administration</div><div class="ph-sub">Manage users and assign per-module feature permissions</div></div>
+      <button class="btn btn-y" onclick="openAddUserModal()">+ Add User</button>
+    </div>
+    <div id="admin-users-list"></div>
   </div>
-  <div id="admin-users-view"></div>
+  <div id="admin-grades-view" style="display:none">
+    <div class="ph">
+      <div><div class="ph-title">Grades &amp; Billable Rates</div><div class="ph-sub">Define staff grades and hourly billable rates used in resource schedules</div></div>
+      <button class="btn btn-y" onclick="openAddGradeModal()">+ Add Grade</button>
+    </div>
+    <div id="admin-grades-list"></div>
+  </div>
+  <div id="admin-staff-view" style="display:none">
+    <div class="ph">
+      <div><div class="ph-title">Staff</div><div class="ph-sub">Staff members, cost rates and division assignments</div></div>
+      <button class="btn btn-y" onclick="openAddStaffModal()">+ Add Staff Member</button>
+    </div>
+    <div id="admin-staff-list"></div>
+  </div>
+</div>
+
+<!-- Grade modal -->
+<div class="mo-backdrop" id="mo-grade-backdrop" onclick="closeMo('mo-grade')" style="display:none"></div>
+<div class="mo" id="mo-grade" style="display:none;max-width:420px">
+  <div class="mhead"><span class="mtitle" id="mo-grade-title">Add Grade</span><button class="mclose" onclick="closeMo('mo-grade')">×</button></div>
+  <div class="mbody" style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="fgrp full"><label>Grade / Title *</label><input id="grade-f-name" type="text" placeholder="e.g. Senior Architect"></div>
+    <div class="fgrp"><label>Division *</label><select id="grade-f-division"><option value="">— select —</option><option>Architecture</option><option>Interior Design</option><option>Contract Administration</option></select></div>
+    <div class="fgrp"><label>Billable Rate (AED/hr)</label><input id="grade-f-rate" type="number" min="0" placeholder="0"></div>
+  </div>
+  <div class="mfoot">
+    <button class="btn btn-ghost" onclick="closeMo('mo-grade')">Cancel</button>
+    <button class="btn btn-y" onclick="saveGrade()">Save</button>
+  </div>
+</div>
+
+<!-- Staff modal -->
+<div class="mo-backdrop" id="mo-staff-backdrop" onclick="closeMo('mo-staff')" style="display:none"></div>
+<div class="mo" id="mo-staff" style="display:none;max-width:460px">
+  <div class="mhead"><span class="mtitle" id="mo-staff-title">Add Staff Member</span><button class="mclose" onclick="closeMo('mo-staff')">×</button></div>
+  <div class="mbody" style="padding:16px;display:grid;grid-template-columns:1fr 1fr;gap:12px">
+    <div class="fgrp"><label>First Name *</label><input id="staff-f-first" type="text" placeholder="First name"></div>
+    <div class="fgrp"><label>Last Name *</label><input id="staff-f-last" type="text" placeholder="Last name"></div>
+    <div class="fgrp full"><label>Grade *</label><select id="staff-f-grade"><option value="">— select grade —</option></select></div>
+    <div class="fgrp"><label>Cost Rate (AED/hr)</label><input id="staff-f-costrate" type="number" min="0" placeholder="0" title="Individual cost rate per hour"></div>
+    <div class="fgrp"><label>Active</label><select id="staff-f-active"><option value="true">Active</option><option value="false">Inactive</option></select></div>
+  </div>
+  <div class="mfoot">
+    <button class="btn btn-ghost" onclick="closeMo('mo-staff')">Cancel</button>
+    <button class="btn btn-y" onclick="saveStaff()">Save</button>
+  </div>
 </div>
 
 <!-- SOP Detail View (full document) -->
@@ -1669,7 +1733,7 @@ const CONFIG = {
 // DATA
 // ═══════════════════════════════════════════════════
 const SK = 'edge_v3';
-let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{}, users:[], checklistRuns:[], projectStages:{}, crm:{ accounts:[], contacts:[], opportunities:[], tasks:[] }, bids:[] };
+let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{}, users:[], checklistRuns:[], projectStages:{}, crm:{ accounts:[], contacts:[], opportunities:[], tasks:[] }, bids:[], grades:[], staff:[] };
 let dbSnapshot = null;   // snapshot of last saved state for dirty detection
 let editState = {};
 let msalInstance = null;
@@ -2254,7 +2318,7 @@ function render(id) {
   else if(id==='home') goHome();
   else if(id==='sops') { renderSopLibrary(); }
   else if(id==='checklists') { renderChecklistRuns(); }
-  else if(id==='admin') { renderAdmin(); }
+  else if(id==='admin') { goAdmin('users'); }
 }
 
 let currentModule = 'home';
@@ -2314,10 +2378,17 @@ function goProjects(sub) {
 }
 
 function goAdmin(sub) {
-  document.querySelectorAll('#navTabs-admin .ntab').forEach((t,i)=>t.classList.toggle('active',i===0));
+  sub = sub || 'users';
+  const subOrder = ['users','grades','staff'];
+  document.querySelectorAll('#navTabs-admin .ntab').forEach((t,i)=>t.classList.toggle('active', i===subOrder.indexOf(sub)));
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
-  renderAdmin();
   document.getElementById('sec-admin').classList.add('active');
+  ['admin-users-view','admin-grades-view','admin-staff-view'].forEach(id=>{
+    const el = document.getElementById(id); if(el) el.style.display='none';
+  });
+  if(sub==='users') { document.getElementById('admin-users-view').style.display=''; renderAdminUsers(); }
+  else if(sub==='grades') { document.getElementById('admin-grades-view').style.display=''; renderAdminGrades(); }
+  else if(sub==='staff') { document.getElementById('admin-staff-view').style.display=''; renderAdminStaff(); }
 }
 
 // ═══════════════════════════════════════════════════
@@ -3133,8 +3204,8 @@ const DEFAULT_PERMISSIONS = {
   admin: { view: false, manage: false }
 };
 
-function renderAdmin() {
-  const el = document.getElementById('admin-users-view');
+function renderAdminUsers() {
+  const el = document.getElementById('admin-users-list');
   if(!el) return;
   const users = db.users || [];
   if(!users.length) {
@@ -3205,7 +3276,7 @@ function togglePerm(userId, module, key) {
   if(!user.permissions[module]) user.permissions[module] = {};
   user.permissions[module][key] = !user.permissions[module][key];
   markDirty();
-  renderAdmin();
+  renderAdminUsers();
   const expEl = document.getElementById(`uexpand-${userId}`);
   if(expEl) expEl.style.display = 'block';
 }
@@ -3214,7 +3285,7 @@ function deleteUser(userId) {
   if(!confirm('Remove this user?')) return;
   db.users = (db.users||[]).filter(u=>u.id!==userId);
   markDirty();
-  renderAdmin();
+  renderAdminUsers();
 }
 
 function openAddUserModal() {
@@ -3265,7 +3336,7 @@ function saveNewUser() {
   db.users.push({ id: 'u-'+Date.now(), name, email, role, permissions: perms });
   markDirty();
   closeMo('mo-add-user');
-  renderAdmin();
+  renderAdminUsers();
 }
 
 // ═══════════════════════════════════════════════════
@@ -4337,6 +4408,7 @@ function ensureCrm() {
 
 function initCRM() {
   ensureCrm();
+  initStaffData();
   // Only seed when accounts are genuinely empty — never on version mismatch
   // to prevent any risk of overwriting user-entered opportunities/tasks
   if(!db.crm.accounts.length) { seedCRM(); return; }
@@ -4689,7 +4761,7 @@ function renderBidQueue() {
   <div style="padding:0 20px 32px">
   <table class="crm-table">
     <thead><tr>
-      <th>Opportunity</th><th>Account</th><th>Stage</th><th>Deadline</th><th>Tech</th><th>Comm</th><th>Fee (AED)</th><th></th>
+      <th>Opportunity</th><th>Account</th><th>Stage</th><th>G/NG</th><th>Deadline</th><th>Tech</th><th>Comm</th><th>Fee (AED)</th><th></th>
     </tr></thead>
     <tbody>${bids.map(b => {
       const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId)||{};
@@ -4702,11 +4774,13 @@ function renderBidQueue() {
         <td><div class="name-cell" style="cursor:pointer" onclick="openBidDetail('${b.id}')">${opp.name||'—'}</div>${b.bidRef?`<div style="font-size:10px;color:var(--gm)">${b.bidRef}</div>`:''}</td>
         <td class="meta-cell">${crmAccName(opp.accountId)}</td>
         <td>${bidOppStageLabel(opp.stage)}</td>
+        <td style="text-align:center">${b.goNoGoResult==='go'?'<span style="color:var(--green);font-weight:700;font-size:11px">GO</span>':b.goNoGoResult==='no-go'?'<span style="color:var(--red);font-weight:700;font-size:11px">NO-GO</span>':'<span style="color:var(--gm);font-size:10px">—</span>'}</td>
         <td class="meta-cell" style="${dlStyle}">${daysLabel}${b.submissionDeadline?`<div style="font-size:10px;font-weight:400;color:var(--gm)">${crmFmtDate(b.submissionDeadline)}</div>`:''}</td>
         <td style="text-align:center;font-size:13px">${techBadge}</td>
         <td style="text-align:center;font-size:13px">${commBadge}</td>
         <td class="meta-cell" style="font-weight:600">${b.submittedFee?crmFmtVal(b.submittedFee):'—'}</td>
         <td class="action-cell">
+          <button class="btn btn-ghost btn-xs" onclick="openGoNoGo('${b.id}')">Go/No-Go</button>
           <button class="btn btn-ghost btn-xs" onclick="openBidDetail('${b.id}')">Edit</button>
           <button class="btn btn-y btn-xs" onclick="openAdvanceStage('${b.id}')">Stage →</button>
         </td>
@@ -4791,8 +4865,10 @@ function openBidDetail(bidId) {
   document.getElementById('bid-f-submitted').value = b.submissionDate||'';
   document.getElementById('bid-f-eoi').checked = !!b.eoiRequired;
   document.getElementById('bid-f-eoisubmitted').value = b.eoiSubmitted||'';
+  document.getElementById('bid-f-eoidoc').value = b.eoiDocRef||'';
   document.getElementById('bid-f-nda').checked = !!b.ndaRequired;
   document.getElementById('bid-f-ndasigned').value = b.ndaSigned||'';
+  document.getElementById('bid-f-ndadoc').value = b.ndaDocRef||'';
   document.getElementById('bid-f-techlead').value = b.technicalLead||'';
   document.getElementById('bid-f-complead').value = b.commercialLead||'';
   document.getElementById('bid-f-techstatus').value = b.technicalStatus||'draft';
@@ -4815,8 +4891,10 @@ function saveBid() {
   b.submissionDate = document.getElementById('bid-f-submitted').value;
   b.eoiRequired = document.getElementById('bid-f-eoi').checked;
   b.eoiSubmitted = document.getElementById('bid-f-eoisubmitted').value;
+  b.eoiDocRef = document.getElementById('bid-f-eoidoc').value.trim();
   b.ndaRequired = document.getElementById('bid-f-nda').checked;
   b.ndaSigned = document.getElementById('bid-f-ndasigned').value;
+  b.ndaDocRef = document.getElementById('bid-f-ndadoc').value.trim();
   b.technicalLead = document.getElementById('bid-f-techlead').value;
   b.commercialLead = document.getElementById('bid-f-complead').value;
   b.technicalStatus = document.getElementById('bid-f-techstatus').value;
@@ -4878,6 +4956,347 @@ function saveBidStage() {
   markDirty(); saveDB(); closeMo('mo-bidstage');
   const isOpen = ['proposal','submitted','negotiation','verbal'].includes(newStage);
   goBidding(isOpen?'queue':'closed');
+}
+
+// ── ADMIN: Grades ──
+let editingGradeId = null;
+function openAddGradeModal() {
+  editingGradeId = null;
+  document.getElementById('mo-grade-title').textContent = 'Add Grade';
+  document.getElementById('grade-f-name').value = '';
+  document.getElementById('grade-f-division').value = '';
+  document.getElementById('grade-f-rate').value = '';
+  openMo('mo-grade');
+}
+function openEditGradeModal(id) {
+  const g = (db.grades||[]).find(x=>x.id===id);
+  if(!g) return;
+  editingGradeId = id;
+  document.getElementById('mo-grade-title').textContent = 'Edit Grade';
+  document.getElementById('grade-f-name').value = g.name||'';
+  document.getElementById('grade-f-division').value = g.division||'';
+  document.getElementById('grade-f-rate').value = g.billableRate||'';
+  openMo('mo-grade');
+}
+function saveGrade() {
+  const name = document.getElementById('grade-f-name').value.trim();
+  const division = document.getElementById('grade-f-division').value;
+  if(!name || !division) { alert('Grade name and division are required.'); return; }
+  if(!db.grades) db.grades = [];
+  const obj = { name, division, billableRate: +document.getElementById('grade-f-rate').value||0 };
+  if(editingGradeId) {
+    const idx = db.grades.findIndex(x=>x.id===editingGradeId);
+    if(idx>=0) db.grades[idx] = { ...db.grades[idx], ...obj };
+  } else {
+    db.grades.push({ id:'grade_'+uid(), ...obj });
+  }
+  markDirty(); saveDB(); closeMo('mo-grade'); renderAdminGrades();
+}
+function deleteGrade(id) {
+  const g = (db.grades||[]).find(x=>x.id===id);
+  if(!g || !confirm(`Delete grade "${g.name}"? Staff assigned this grade will need reassignment.`)) return;
+  db.grades = (db.grades||[]).filter(x=>x.id!==id);
+  markDirty(); saveDB(); renderAdminGrades();
+}
+function renderAdminGrades() {
+  const el = document.getElementById('admin-grades-list');
+  if(!el) return;
+  if(!db.grades) db.grades = [];
+  const divOrder = ['Architecture','Interior Design','Contract Administration'];
+  const byDiv = {};
+  divOrder.forEach(d => { byDiv[d] = db.grades.filter(g=>g.division===d); });
+  if(!db.grades.length) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gm)">No grades added yet.</div>'; return;
+  }
+  el.innerHTML = divOrder.filter(d=>byDiv[d].length).map(div=>`
+    <div style="margin:0 20px 20px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);padding:12px 0 6px">${div}</div>
+      <table class="crm-table"><thead><tr><th>Grade / Title</th><th>Division</th><th>Billable Rate (AED/hr)</th><th></th></tr></thead>
+      <tbody>${byDiv[div].map(g=>`<tr>
+        <td class="name-cell">${g.name}</td>
+        <td class="meta-cell">${g.division}</td>
+        <td class="meta-cell" style="font-weight:600">${g.billableRate?'AED '+g.billableRate.toLocaleString()+'/hr':'—'}</td>
+        <td class="action-cell">
+          <button class="btn btn-ghost btn-xs" onclick="openEditGradeModal('${g.id}')">Edit</button>
+          <button class="btn btn-ghost btn-xs" onclick="deleteGrade('${g.id}')" style="color:var(--red)">Del</button>
+        </td>
+      </tr>`).join('')}</tbody></table>
+    </div>`).join('');
+}
+
+// ── ADMIN: Staff ──
+let editingStaffId = null;
+function openAddStaffModal() {
+  editingStaffId = null;
+  document.getElementById('mo-staff-title').textContent = 'Add Staff Member';
+  ['staff-f-first','staff-f-last','staff-f-costrate'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('staff-f-active').value = 'true';
+  populateStaffGradeDropdown('');
+  openMo('mo-staff');
+}
+function openEditStaffModal(id) {
+  const s = (db.staff||[]).find(x=>x.id===id);
+  if(!s) return;
+  editingStaffId = id;
+  document.getElementById('mo-staff-title').textContent = 'Edit Staff Member';
+  document.getElementById('staff-f-first').value = s.first||'';
+  document.getElementById('staff-f-last').value = s.last||'';
+  document.getElementById('staff-f-costrate').value = s.costRate||'';
+  document.getElementById('staff-f-active').value = s.active===false?'false':'true';
+  populateStaffGradeDropdown(s.gradeId||'');
+  openMo('mo-staff');
+}
+function populateStaffGradeDropdown(selectedId) {
+  const sel = document.getElementById('staff-f-grade');
+  const divOrder = ['Architecture','Interior Design','Contract Administration'];
+  const byDiv = {};
+  divOrder.forEach(d => { byDiv[d] = (db.grades||[]).filter(g=>g.division===d); });
+  sel.innerHTML = '<option value="">— select grade —</option>' + divOrder.filter(d=>byDiv[d].length).map(d=>
+    `<optgroup label="${d}">${byDiv[d].map(g=>`<option value="${g.id}"${g.id===selectedId?' selected':''}>${g.name}</option>`).join('')}</optgroup>`
+  ).join('');
+}
+function saveStaff() {
+  const first = document.getElementById('staff-f-first').value.trim();
+  const last = document.getElementById('staff-f-last').value.trim();
+  const gradeId = document.getElementById('staff-f-grade').value;
+  if(!first || !gradeId) { alert('First name and grade are required.'); return; }
+  if(!db.staff) db.staff = [];
+  const grade = (db.grades||[]).find(g=>g.id===gradeId);
+  const obj = {
+    first, last, gradeId,
+    division: grade ? grade.division : '',
+    costRate: +document.getElementById('staff-f-costrate').value||0,
+    active: document.getElementById('staff-f-active').value !== 'false'
+  };
+  if(editingStaffId) {
+    const idx = db.staff.findIndex(x=>x.id===editingStaffId);
+    if(idx>=0) db.staff[idx] = { ...db.staff[idx], ...obj };
+  } else {
+    db.staff.push({ id:'staff_'+uid(), ...obj });
+  }
+  markDirty(); saveDB(); closeMo('mo-staff'); renderAdminStaff();
+}
+function deleteStaff(id) {
+  const s = (db.staff||[]).find(x=>x.id===id);
+  if(!s || !confirm(`Remove ${s.first} ${s.last} from staff?`)) return;
+  db.staff = (db.staff||[]).filter(x=>x.id!==id);
+  markDirty(); saveDB(); renderAdminStaff();
+}
+function renderAdminStaff() {
+  const el = document.getElementById('admin-staff-list');
+  if(!el) return;
+  if(!db.staff) db.staff = [];
+  const divOrder = ['Architecture','Interior Design','Contract Administration'];
+  const byDiv = {};
+  divOrder.forEach(d => { byDiv[d] = db.staff.filter(s=>s.division===d); });
+  if(!db.staff.length) {
+    el.innerHTML = '<div style="padding:24px;text-align:center;color:var(--gm)">No staff added yet. Add grades first, then staff members.</div>'; return;
+  }
+  el.innerHTML = divOrder.filter(d=>byDiv[d].length).map(div=>`
+    <div style="margin:0 20px 20px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);padding:12px 0 6px">${div} (${byDiv[div].length})</div>
+      <table class="crm-table"><thead><tr><th>Name</th><th>Grade</th><th>Cost Rate</th><th>Billable Rate</th><th>Status</th><th></th></tr></thead>
+      <tbody>${byDiv[div].map(s=>{
+        const grade = (db.grades||[]).find(g=>g.id===s.gradeId)||{};
+        return `<tr>
+          <td class="name-cell">${s.first} ${s.last}</td>
+          <td class="meta-cell">${grade.name||'—'}</td>
+          <td class="meta-cell">${s.costRate?'AED '+s.costRate+'/hr':'—'}</td>
+          <td class="meta-cell" style="font-weight:600">${grade.billableRate?'AED '+grade.billableRate+'/hr':'—'}</td>
+          <td><span style="font-size:10px;padding:2px 7px;border-radius:2px;background:${s.active!==false?'#e8f5e9':'#f5f5f5'};color:${s.active!==false?'var(--green)':'var(--gm)'}">${s.active!==false?'Active':'Inactive'}</span></td>
+          <td class="action-cell">
+            <button class="btn btn-ghost btn-xs" onclick="openEditStaffModal('${s.id}')">Edit</button>
+            <button class="btn btn-ghost btn-xs" onclick="deleteStaff('${s.id}')" style="color:var(--red)">Del</button>
+          </td>
+        </tr>`;
+      }).join('')}</tbody></table>
+    </div>`).join('');
+}
+function initStaffData() {
+  if(!db.grades) db.grades = [];
+  if(!db.staff) db.staff = [];
+  if(db.grades.length) return; // already seeded
+  // ── Seed grades ──
+  const gradeSeeds = [
+    // Architecture
+    {id:'gr_arch_md',    name:'Managing Director',          division:'Architecture',           billableRate:1000},
+    {id:'gr_arch_dd',    name:'Design Director',            division:'Architecture',           billableRate:1100},
+    {id:'gr_arch_assoc', name:'Associate',                  division:'Architecture',           billableRate:850},
+    {id:'gr_arch_sa',    name:'Senior Architect',           division:'Architecture',           billableRate:650},
+    {id:'gr_arch_arch',  name:'Architect',                  division:'Architecture',           billableRate:550},
+    {id:'gr_arch_ja',    name:'Junior Architect',           division:'Architecture',           billableRate:350},
+    {id:'gr_arch_grad',  name:'Graduate & Intern',          division:'Architecture',           billableRate:280},
+    {id:'gr_arch_bim',   name:'BIM Technician',             division:'Architecture',           billableRate:450},
+    {id:'gr_arch_3d',    name:'3D Visualiser',              division:'Architecture',           billableRate:280},
+    // Interior Design
+    {id:'gr_id_sia',     name:'Senior Interior Architect',  division:'Interior Design',        billableRate:650},
+    {id:'gr_id_ia',      name:'Interior Architect',         division:'Interior Design',        billableRate:550},
+    {id:'gr_id_bim',     name:'BIM Technician (Interior)',  division:'Interior Design',        billableRate:450},
+    {id:'gr_id_3d',      name:'3D Visualiser (Interior)',   division:'Interior Design',        billableRate:280},
+    // Contract Administration
+    {id:'gr_ca_sca',     name:'Senior Contract Administrator', division:'Contract Administration', billableRate:650},
+    {id:'gr_ca_ca',      name:'Contract Administrator',     division:'Contract Administration', billableRate:450},
+    {id:'gr_ca_si',      name:'Site Inspector',             division:'Contract Administration', billableRate:350},
+    {id:'gr_ca_dc',      name:'Document Controller',        division:'Contract Administration', billableRate:280},
+    {id:'gr_ca_qs',      name:'QS (Quantity Surveyor)',     division:'Contract Administration', billableRate:500},
+    {id:'gr_ca_pe',      name:'Planning Engineer',          division:'Contract Administration', billableRate:450},
+  ];
+  db.grades = gradeSeeds;
+  // ── Seed staff (names from resource schedule — rates set to 0, enter via Admin) ──
+  const staffSeeds = [
+    // Architecture
+    {id:'st_001', first:'Jeremy',      last:'Robinson',    gradeId:'gr_arch_md',    division:'Architecture',    costRate:0, active:true},
+    {id:'st_002', first:'Stephan',     last:'Frantzen',    gradeId:'gr_arch_dd',    division:'Architecture',    costRate:0, active:true},
+    {id:'st_003', first:'Naeife',      last:'Halabi',      gradeId:'gr_arch_assoc', division:'Architecture',    costRate:0, active:true},
+    {id:'st_004', first:'Rob',         last:'Croaswell',   gradeId:'gr_arch_sa',    division:'Architecture',    costRate:0, active:true},
+    {id:'st_005', first:'Mohammed',    last:'Al Mammar',   gradeId:'gr_arch_sa',    division:'Architecture',    costRate:0, active:true},
+    {id:'st_006', first:'Shail',       last:'Antony',      gradeId:'gr_arch_bim',   division:'Architecture',    costRate:0, active:true},
+    {id:'st_007', first:'Priya',       last:'Balakuman',   gradeId:'gr_arch_bim',   division:'Architecture',    costRate:0, active:true},
+    {id:'st_008', first:'Nadeem',      last:'Raja',        gradeId:'gr_arch_grad',  division:'Architecture',    costRate:0, active:true},
+    {id:'st_009', first:'Alex',        last:'Kurnat',      gradeId:'gr_arch_grad',  division:'Architecture',    costRate:0, active:true},
+    {id:'st_010', first:'Vikram',      last:'Thakur',      gradeId:'gr_arch_3d',    division:'Architecture',    costRate:0, active:true},
+    // Interior Design
+    {id:'st_020', first:'Reem',        last:'Nasralla',    gradeId:'gr_id_sia',     division:'Interior Design', costRate:0, active:true},
+    {id:'st_021', first:'Dina',        last:'Hayak',       gradeId:'gr_id_ia',      division:'Interior Design', costRate:0, active:true},
+    {id:'st_022', first:'Maryam',      last:'Stattu',      gradeId:'gr_id_bim',     division:'Interior Design', costRate:0, active:true},
+  ];
+  db.staff = staffSeeds;
+  markDirty(); saveDB();
+}
+
+// ── BIDDING: Go/No-Go ──
+const GONOGO_MATRIX = [
+  { category:'Project Details', weight:0.20, questions:[
+    { id:'pd1', q:'What is the status of the project?', options:[{l:'New',s:3},{l:'Ongoing',s:4},{l:'Repeat client',s:5}] },
+    { id:'pd2', q:'What is the period until the submission date?', options:[{l:'0–7 days',s:1},{l:'8–15 days',s:3},{l:'16+ days',s:5}] },
+    { id:'pd3', q:'What is the duration of the project?', options:[{l:'< 3 months',s:1},{l:'3–6 months',s:2},{l:'6–9 months',s:3},{l:'9+ months',s:5}] },
+    { id:'pd4', q:'Is our role Lead Design Consultant?', options:[{l:'Yes – LDC',s:5},{l:'No – specialist/sub role',s:2}] },
+    { id:'pd5', q:'Is the project requiring design and site supervision?', options:[{l:'Yes – full scope',s:5},{l:'Design only',s:3},{l:'Site supervision only',s:2},{l:'No',s:1}] },
+    { id:'pd6', q:'When is the project due to commence?', options:[{l:'Immediately',s:3},{l:'1–2 months',s:4},{l:'3–6 months',s:5},{l:'6+ months',s:2}] }
+  ]},
+  { category:'Client', weight:0.20, questions:[
+    { id:'cl1', q:'Does the client have a credible payment history?', options:[{l:'Yes',s:5},{l:'Unknown / first time',s:3},{l:'No',s:1}] },
+    { id:'cl2', q:'Is this project from a repeat client?', options:[{l:'Yes',s:5},{l:'No',s:3}] },
+    { id:'cl3', q:'Is there potential for follow-on projects with this client?', options:[{l:'High potential',s:5},{l:'Some potential',s:3},{l:'None',s:1}] }
+  ]},
+  { category:'Commercial', weight:0.10, questions:[
+    { id:'co1', q:'Does this allow for a mobilisation fee?', options:[{l:'Yes',s:5},{l:'No',s:2}] },
+    { id:'co2', q:'Is there a defined budget for the project?', options:[{l:'Yes',s:5},{l:'Unknown',s:2},{l:'No',s:1}] }
+  ]},
+  { category:'Capability', weight:0.50, questions:[
+    { id:'ca1', q:'Do we have the expertise in this particular sector?', options:[{l:'Strong expertise',s:5},{l:'Moderate experience',s:3},{l:'None',s:1}] },
+    { id:'ca2', q:'Do we have the resources to man this project?', options:[{l:'Yes',s:5},{l:'Requires additional resource',s:2},{l:'No',s:0}] },
+    { id:'ca3', q:'Do we need to outsource any specialty services to fulfil the scope?', options:[{l:'None required',s:5},{l:'Minor outsourcing',s:3},{l:'Significant outsourcing',s:1}] }
+  ]}
+];
+const GONOGO_THRESHOLDS = { noGo:7.0, consider:11.5 };
+
+let goNoGoBidId = null;
+function openGoNoGo(bidId) {
+  const b = (db.bids||[]).find(x=>x.id===bidId);
+  if(!b) return;
+  goNoGoBidId = bidId;
+  const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId)||{};
+  document.getElementById('mo-gonogo-title').textContent = 'Go / No-Go — ' + opp.name;
+  const answers = b.goNoGoAnswers || {};
+  document.getElementById('mo-gonogo-body').innerHTML = `
+    <div style="padding:12px 16px 0">
+    ${GONOGO_MATRIX.map(cat=>`
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);padding:8px 0 6px;border-bottom:1px solid var(--gl);margin-bottom:8px">${cat.category} <span style="font-weight:400">(${Math.round(cat.weight*100)}% weight)</span></div>
+        ${cat.questions.map(q=>`
+          <div style="margin-bottom:10px">
+            <div style="font-size:12px;margin-bottom:4px">${q.q}</div>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              ${q.options.map(o=>`<button class="gonogo-opt${answers[q.id]===o.l?' selected':''}" onclick="gngSelect('${q.id}','${o.l.replace(/'/g,"\\'")}',this)" style="padding:4px 10px;border-radius:3px;border:1px solid ${answers[q.id]===o.l?'var(--blue)':'var(--gl)'};background:${answers[q.id]===o.l?'#e8f0fe':'var(--white)'};font-size:11px;cursor:pointer;color:${answers[q.id]===o.l?'var(--blue)':'var(--black)'}">${o.l} <span style="font-size:9px;color:var(--gm)">(${o.s})</span></button>`).join('')}
+            </div>
+          </div>`).join('')}
+      </div>`).join('')}
+    </div>
+    <div id="gonogo-score-bar" style="padding:12px 16px;background:var(--offwhite);border-top:1px solid var(--gl);display:flex;align-items:center;gap:12px">
+      <div style="font-size:12px;color:var(--gm)">Score:</div>
+      <div id="gonogo-score-val" style="font-size:18px;font-weight:700">—</div>
+      <div id="gonogo-score-label" style="font-size:11px;padding:3px 10px;border-radius:3px"></div>
+      <div style="font-size:10px;color:var(--gm);margin-left:auto">Thresholds: &lt;${GONOGO_THRESHOLDS.noGo} No-Go · ${GONOGO_THRESHOLDS.noGo}–${GONOGO_THRESHOLDS.consider} Consider · &gt;${GONOGO_THRESHOLDS.consider} Go</div>
+    </div>`;
+  updateGoNoGoScore();
+  openMo('mo-gonogo');
+}
+function gngSelect(qid, label, btn) {
+  const b = (db.bids||[]).find(x=>x.id===goNoGoBidId);
+  if(!b) return;
+  if(!b.goNoGoAnswers) b.goNoGoAnswers = {};
+  b.goNoGoAnswers[qid] = label;
+  // update button styles in DOM
+  const container = btn.parentElement;
+  container.querySelectorAll('button').forEach(el => {
+    el.style.borderColor = 'var(--gl)';
+    el.style.background = 'var(--white)';
+    el.style.color = 'var(--black)';
+  });
+  btn.style.borderColor = 'var(--blue)';
+  btn.style.background = '#e8f0fe';
+  btn.style.color = 'var(--blue)';
+  updateGoNoGoScore();
+}
+function calcGoNoGoScore(answers) {
+  let total = 0;
+  GONOGO_MATRIX.forEach(cat => {
+    let catSum = 0;
+    cat.questions.forEach(q => {
+      const ans = answers[q.id];
+      const opt = q.options.find(o=>o.l===ans);
+      catSum += opt ? opt.s : 0;
+    });
+    total += catSum * cat.weight;
+  });
+  return Math.round(total * 10) / 10;
+}
+function updateGoNoGoScore() {
+  const b = (db.bids||[]).find(x=>x.id===goNoGoBidId);
+  if(!b) return;
+  const score = calcGoNoGoScore(b.goNoGoAnswers||{});
+  const el = document.getElementById('gonogo-score-val');
+  const lbl = document.getElementById('gonogo-score-label');
+  if(!el) return;
+  el.textContent = score;
+  if(score === 0) { lbl.textContent = ''; lbl.style.background=''; return; }
+  if(score < GONOGO_THRESHOLDS.noGo) {
+    el.style.color = 'var(--red)'; lbl.textContent = 'No-Go';
+    lbl.style.background = '#fdecea'; lbl.style.color = 'var(--red)';
+  } else if(score <= GONOGO_THRESHOLDS.consider) {
+    el.style.color = '#E8913A'; lbl.textContent = 'Requires Investigation';
+    lbl.style.background = '#fff3e0'; lbl.style.color = '#E8913A';
+  } else {
+    el.style.color = 'var(--green)'; lbl.textContent = 'Go';
+    lbl.style.background = '#e8f5e9'; lbl.style.color = 'var(--green)';
+  }
+}
+function saveGoNoGo(decision) {
+  const b = (db.bids||[]).find(x=>x.id===goNoGoBidId);
+  if(!b) return;
+  const score = calcGoNoGoScore(b.goNoGoAnswers||{});
+  b.goNoGoScore = score;
+  b.goNoGoResult = decision;
+  b.goNoGoDate = new Date().toISOString().slice(0,10);
+  if(decision === 'no-go') {
+    // Return opportunity to Qualified stage in CRM
+    const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId);
+    if(opp) {
+      opp.stage = 'qualified';
+      opp.updatedAt = new Date().toISOString().slice(0,10);
+      const autoP = typeof STAGE_PROB !== 'undefined' ? STAGE_PROB['qualified'] : null;
+      if(autoP !== null && autoP !== undefined) opp.prob = autoP;
+    }
+    // Remove bid record
+    db.bids = (db.bids||[]).filter(x=>x.id!==goNoGoBidId);
+    markDirty(); saveDB(); closeMo('mo-gonogo');
+    alert('Bid rejected. Opportunity returned to Qualified in CRM.');
+    goBidding('queue');
+    return;
+  }
+  markDirty(); saveDB(); closeMo('mo-gonogo');
+  goBidding('queue');
 }
 
 function forceSeedCRM() {
@@ -6759,7 +7178,8 @@ function ensureBidForOpp(oppId) {
     id: 'bid_'+uid(), oppId, createdAt: new Date().toISOString().slice(0,10),
     updatedAt: new Date().toISOString().slice(0,10),
     bidRef:'', clientRef:'', rfpReceivedDate:'', submissionDeadline:'', submissionDate:'',
-    clarificationDeadline:'', eoiRequired:false, eoiSubmitted:'', ndaRequired:false, ndaSigned:'',
+    clarificationDeadline:'', eoiRequired:false, eoiSubmitted:'', eoiDocRef:'', ndaRequired:false, ndaSigned:'', ndaDocRef:'',
+    goNoGoScore:null, goNoGoResult:null, goNoGoAnswers:{}, goNoGoDate:'',
     technicalLead:'', commercialLead:'', technicalStatus:'draft', commercialStatus:'draft',
     subConsultants:[], submittedFee: opp ? opp.value : 0, targetMargin:0, revisedFee:null,
     clarifications:[], result:null, awardedFee:null, lossReason:'', competitor:'', feedbackNotes:''
