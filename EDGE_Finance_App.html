@@ -303,6 +303,73 @@ tbody td{padding:8px 11px;vertical-align:middle}
 .pipeline-val{font-size:11px;color:var(--amber);font-weight:600}
 
 /* ── RESOURCE SCHEDULE ── */
+.rs-list{padding:20px}
+.rs-card{background:#111;border:1px solid #2a2a2a;border-radius:var(--r);padding:16px 20px;margin-bottom:10px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:border-color .15s}
+.rs-card:hover{border-color:var(--yellow)}
+.rs-card-num{font-size:22px;font-weight:700;font-family:var(--font-display);color:var(--yellow);min-width:40px}
+.rs-card-body{flex:1}
+.rs-card-name{font-size:13px;font-weight:600;color:var(--white);margin-bottom:3px}
+.rs-card-meta{font-size:11px;color:var(--gm)}
+.rs-card-stats{display:flex;gap:16px;text-align:right}
+.rs-card-stat-val{font-size:14px;font-weight:700;color:var(--yellow)}
+.rs-card-stat-lbl{font-size:9px;color:var(--gm);text-transform:uppercase;letter-spacing:.04em}
+.rs-card-arrow{color:var(--gm);font-size:18px}
+.rs-detail-hdr{display:flex;align-items:center;gap:12px;padding:14px 20px;border-bottom:1px solid #222;background:#0d0d0d}
+.rs-back{background:none;border:none;color:var(--gm);cursor:pointer;font-size:20px;padding:0 6px 0 0;line-height:1}
+.rs-back:hover{color:var(--white)}
+.rs-detail-title{font-size:14px;font-weight:700;color:var(--white);font-family:var(--font-display);text-transform:uppercase;letter-spacing:-.01em;flex:1}
+.rs-detail-tabs{display:flex;gap:0;border-bottom:1px solid #222}
+.rs-detail-tab{padding:10px 20px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;cursor:pointer;color:var(--gm);border-bottom:2px solid transparent;background:none;border-top:none;border-left:none;border-right:none}
+.rs-detail-tab:hover{color:var(--white)}
+.rs-detail-tab.active{color:var(--yellow);border-bottom-color:var(--yellow)}
+.rs-setup{padding:16px 20px;border-bottom:1px solid #1a1a1a;display:flex;gap:20px;align-items:flex-end;flex-wrap:wrap;background:#0a0a0a}
+.rs-setup-group{display:flex;flex-direction:column;gap:4px}
+.rs-setup-lbl{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);font-weight:600}
+.rs-setup-input{background:#1a1a1a;border:1px solid #333;color:var(--white);padding:5px 10px;border-radius:var(--r);font-size:12px;font-family:var(--font)}
+.rs-setup-input:focus{outline:none;border-color:var(--yellow)}
+.rs-stages-panel{padding:12px 20px;border-bottom:1px solid #1a1a1a;background:#0d0d0d}
+.rs-stages-title{font-size:10px;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);font-weight:700;margin-bottom:8px}
+.rs-stage-row{display:flex;align-items:center;gap:10px;padding:4px 0;border-bottom:1px solid #1a1a1a}
+.rs-stage-row:last-child{border-bottom:none}
+.rs-stage-num{font-size:10px;color:var(--gm);min-width:20px}
+.rs-stage-name{flex:1;font-size:12px;color:var(--white)}
+.rs-stage-weeks-input{width:56px;background:#1a1a1a;border:1px solid #333;color:var(--yellow);padding:3px 7px;border-radius:3px;font-size:12px;text-align:center;font-weight:700}
+.rs-stage-weeks-input:focus{outline:none;border-color:var(--yellow)}
+.rs-stage-toggle{cursor:pointer;width:14px;height:14px;accent-color:var(--yellow)}
+.rs-staff-panel{padding:10px 20px;border-bottom:1px solid #1a1a1a;background:#0d0d0d;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.rs-staff-chip{display:inline-flex;align-items:center;gap:5px;background:#1a1a1a;border:1px solid #333;border-radius:3px;padding:3px 8px;font-size:11px;color:var(--white)}
+.rs-staff-chip-remove{background:none;border:none;color:#555;cursor:pointer;font-size:12px;padding:0;line-height:1}
+.rs-staff-chip-remove:hover{color:var(--red)}
+.rs-add-staff-btn{background:none;border:1px dashed #333;color:var(--gm);padding:3px 10px;border-radius:3px;font-size:11px;cursor:pointer}
+.rs-add-staff-btn:hover{border-color:var(--yellow);color:var(--yellow)}
+.rs-grid-outer{overflow-x:auto;background:#080808}
+.rs-grid{border-collapse:collapse;min-width:600px;font-size:11px}
+.rs-grid th{padding:5px 8px;text-align:center;white-space:nowrap;font-weight:600;font-size:10px;letter-spacing:.03em;border:1px solid #1e1e1e}
+.rs-grid th.rs-th-name{text-align:left;min-width:180px;background:#111;color:var(--gm);text-transform:uppercase;letter-spacing:.05em;position:sticky;left:0;z-index:2}
+.rs-grid th.rs-th-stage{color:#fff;text-transform:uppercase;letter-spacing:.04em;font-size:9px}
+.rs-grid th.rs-th-week{color:#555;font-size:9px;background:#0d0d0d;min-width:48px}
+.rs-grid td{padding:2px 4px;border:1px solid #1a1a1a;text-align:center;vertical-align:middle}
+.rs-grid td.rs-td-name{text-align:left;background:#111;padding:6px 10px;white-space:nowrap;position:sticky;left:0;z-index:1}
+.rs-grid td.rs-td-total{background:#111;font-weight:700;color:var(--yellow);font-size:11px}
+.rs-grid td.rs-td-fee{background:#0d0d0d;color:#4caf50;font-size:10px;font-weight:600}
+.rs-grid tr.rs-tr-totals td{background:#1a1a1a;font-weight:700;color:var(--white)}
+.rs-grid tr.rs-tr-totals td.rs-td-name{color:var(--gm);text-transform:uppercase;font-size:10px;letter-spacing:.05em}
+.rs-hrs-input{width:40px;background:transparent;border:none;color:var(--white);text-align:center;font-size:12px;font-weight:600;font-family:var(--font);padding:4px 2px}
+.rs-hrs-input:focus{outline:none;background:#1e1e1e;border-radius:2px}
+.rs-hrs-input:hover{background:#1a1a1a}
+.rs-hrs-input[value="0"],.rs-hrs-input:placeholder-shown{color:#333}
+.rs-staff-name-cell{font-weight:600;color:var(--white);font-size:12px}
+.rs-staff-grade-cell{font-size:10px;color:var(--gm)}
+.rs-staff-rate-cell{font-size:10px;color:#666}
+.rs-division-hdr td{background:#0d0d0d !important;color:var(--gm);font-size:9px;text-transform:uppercase;letter-spacing:.07em;font-weight:700;padding:8px 10px !important}
+.rs-sub-panel{padding:20px}
+.rs-sub-row{background:#111;border:1px solid #222;border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.rs-sub-name{font-size:13px;font-weight:600;color:var(--white);margin-bottom:3px}
+.rs-sub-disc{font-size:11px;color:var(--gm)}
+.rs-sub-stage-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:8px;margin-top:12px}
+.rs-sub-stage-item{background:#0d0d0d;border:1px solid #1e1e1e;border-radius:3px;padding:8px 10px}
+.rs-sub-stage-name{font-size:10px;color:var(--gm);margin-bottom:4px}
+.rs-sub-stage-fee{font-size:13px;font-weight:700;color:var(--yellow)}
 .res-toolbar{display:flex;align-items:center;gap:10px;padding:16px 20px 12px;border-bottom:1px solid var(--gl)}
 .res-week-nav{display:flex;align-items:center;gap:6px}
 .res-week-nav button{background:none;border:1px solid var(--gl);color:var(--gm);padding:3px 9px;border-radius:var(--r);cursor:pointer;font-size:11px}
@@ -337,6 +404,7 @@ tbody td{padding:8px 11px;vertical-align:middle}
 .res-section-hdr{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);padding:14px 20px 6px}
 .res-proj-select{background:var(--card);border:1px solid var(--gl);color:var(--white);padding:5px 10px;border-radius:var(--r);font-size:11px;min-width:220px}
 .res-alloc-tag{display:inline-block;font-size:9px;padding:1px 6px;border-radius:2px;background:#1e3a1e;color:#81c784;font-weight:600;margin:1px}
+.rs-empty{padding:48px;text-align:center;color:var(--gm);font-size:13px}
 
 /* PDF print styles */
 @media print {
@@ -897,9 +965,8 @@ window._msalLoaded = true;
     <div class="ntab" onclick="goBidding('vendors')">Vendor DB</div>
   </div>
   <div class="ntabs" id="navTabs-resources" style="display:none">
-    <div class="ntab active" onclick="goResources('overview')">Overview</div>
-    <div class="ntab" onclick="goResources('project')">By Project</div>
-    <div class="ntab" onclick="goResources('staff')">By Staff</div>
+    <div class="ntab active" onclick="goResources('schedules')">Schedules</div>
+    <div class="ntab" onclick="goResources('overview')">Live Overview</div>
   </div>
   <div class="ntabs" id="navTabs-procurement" style="display:none">
     <div class="ntab active" onclick="goProcurement('dashboard')">Dashboard</div>
@@ -1223,7 +1290,27 @@ window._msalLoaded = true;
 <div class="sec" id="sec-bid-closed"><div id="bid-closed-view"></div></div>
 <div class="sec" id="sec-bid-vendors"><div id="bid-vendors-view"></div></div>
 
-<!-- RESOURCE SCHEDULE -->
+<!-- RESOURCE SCHEDULE: List -->
+<div class="sec" id="sec-res-schedules">
+  <div id="rs-list-body"></div>
+</div>
+
+<!-- RESOURCE SCHEDULE: Detail -->
+<div class="sec" id="sec-res-detail">
+  <div class="rs-detail-hdr">
+    <button class="rs-back" onclick="goResources('schedules')">←</button>
+    <div class="rs-detail-title" id="rs-detail-title">Resource Schedule</div>
+    <div id="rs-detail-badge" style="margin-left:auto"></div>
+  </div>
+  <div class="rs-detail-tabs">
+    <button class="rs-detail-tab active" onclick="rsDetailTab('team')">Team Schedule</button>
+    <button class="rs-detail-tab" onclick="rsDetailTab('subs')">Sub-Consultants</button>
+  </div>
+  <div id="rs-detail-team"></div>
+  <div id="rs-detail-subs" style="display:none"></div>
+</div>
+
+<!-- RESOURCE SCHEDULE: Live Overview -->
 <div class="sec" id="sec-res-overview">
   <div class="res-stat-cards" id="res-stat-cards"></div>
   <div class="res-toolbar">
@@ -1238,25 +1325,6 @@ window._msalLoaded = true;
     <button class="btn btn-ghost btn-sm" onclick="resWeekOffset(0,true)">Today</button>
   </div>
   <div class="res-grid-wrap"><table class="res-grid" id="res-overview-table"></table></div>
-</div>
-
-<div class="sec" id="sec-res-project">
-  <div class="res-toolbar">
-    <select class="res-proj-select" id="res-proj-select" onchange="renderResByProject()">
-      <option value="">— select project —</option>
-    </select>
-    <button class="btn btn-y btn-sm" onclick="openAllocModal('proj')">+ Allocate</button>
-  </div>
-  <div id="res-project-body"></div>
-</div>
-
-<div class="sec" id="sec-res-staff">
-  <div class="res-toolbar">
-    <select class="res-proj-select" id="res-staff-select" onchange="renderResByStaff()">
-      <option value="">— select staff member —</option>
-    </select>
-  </div>
-  <div id="res-staff-body"></div>
 </div>
 
 <!-- ALLOC MODAL -->
@@ -6070,27 +6138,54 @@ function renderBidSubsList() {
   if(!tempBidSubs.length) {
     el.innerHTML = '<div style="font-size:11px;color:var(--gm);padding:2px 0">No subconsultants assigned.</div>'; return;
   }
-  el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:11px">
-    <thead><tr style="border-bottom:1px solid var(--gl)">
-      <th style="text-align:left;padding:4px 6px;color:var(--gm);font-weight:600">Vendor</th>
-      <th style="text-align:left;padding:4px 6px;color:var(--gm);font-weight:600">Discipline</th>
-      <th style="text-align:right;padding:4px 6px;color:var(--gm);font-weight:600">Fee (AED)</th>
-      <th style="text-align:left;padding:4px 6px;color:var(--gm);font-weight:600">Status</th>
-      <th></th>
-    </tr></thead>
-    <tbody>${tempBidSubs.map((s,i)=>`<tr>
-      <td style="padding:5px 6px;font-weight:500">${s.vendorName}</td>
-      <td style="padding:5px 6px;color:var(--gm)">${s.discipline}</td>
-      <td style="padding:5px 6px;text-align:right">${s.fee?s.fee.toLocaleString():'—'}</td>
-      <td style="padding:5px 6px"><select style="font-size:11px;border:1px solid var(--gl);border-radius:3px;padding:2px 4px" onchange="tempBidSubs[${i}].status=this.value">
-        <option value="pending"${s.status==='pending'?' selected':''}>Pending</option>
-        <option value="appointed"${s.status==='appointed'?' selected':''}>Appointed</option>
-        <option value="signed"${s.status==='signed'?' selected':''}>Signed</option>
-        <option value="rejected"${s.status==='rejected'?' selected':''}>Rejected</option>
-      </select></td>
-      <td style="padding:5px 6px;text-align:right"><button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="removeBidSub(${i})">✕</button></td>
-    </tr>`).join('')}</tbody>
-  </table>`;
+  const EDGE_STAGES_LIST = ['Data Collection & Pre Concept','Concept Design','Schematic Design','Detailed Design','Authority Approvals','Tender Stage','Issued for Construction','Construction Supervision','Handover / Closeout','Defect Liability Period'];
+  el.innerHTML = tempBidSubs.map((s,i)=>{
+    const split = s.stageSplit||{};
+    const splitTotal = Object.values(split).reduce((t,v)=>t+(+v||0),0);
+    const over = s.fee && splitTotal > s.fee;
+    const splitOpen = s._splitOpen;
+    return `<div style="border:1px solid var(--gl);border-radius:var(--r);margin-bottom:6px;overflow:hidden">
+      <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto auto;gap:6px;align-items:center;padding:6px 8px;background:var(--offwhite)">
+        <div style="font-weight:500;font-size:12px">${s.vendorName}</div>
+        <div style="font-size:11px;color:var(--gm)">${s.discipline}</div>
+        <div style="font-size:12px;text-align:right">${s.fee?'AED '+s.fee.toLocaleString():'—'}</div>
+        <div><select style="font-size:11px;border:1px solid var(--gl);border-radius:3px;padding:2px 4px;width:100%" onchange="tempBidSubs[${i}].status=this.value">
+          <option value="pending"${s.status==='pending'?' selected':''}>Pending</option>
+          <option value="appointed"${s.status==='appointed'?' selected':''}>Appointed</option>
+          <option value="signed"${s.status==='signed'?' selected':''}>Signed</option>
+          <option value="rejected"${s.status==='rejected'?' selected':''}>Rejected</option>
+        </select></div>
+        <button class="btn btn-ghost btn-xs" onclick="tempBidSubs[${i}]._splitOpen=!tempBidSubs[${i}]._splitOpen;renderBidSubsList()" style="${splitTotal>0?'color:var(--green)':''}">Stage Split${splitTotal>0?' ✓':''}</button>
+        <button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="removeBidSub(${i})">✕</button>
+      </div>
+      ${splitOpen?`<div style="padding:8px 12px;background:#0d0d0d;border-top:1px solid var(--gl)">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-bottom:8px">Stage Fee Split</div>
+        ${EDGE_STAGES_LIST.map(stage=>`
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:5px">
+            <div style="flex:1;font-size:11px;color:var(--white)">${stage}</div>
+            <input type="number" min="0" placeholder="AED" value="${split[stage]||''}"
+              style="width:120px;background:#1a1a1a;border:1px solid var(--gl);color:var(--white);padding:3px 7px;border-radius:3px;font-size:11px"
+              oninput="if(!tempBidSubs[${i}].stageSplit)tempBidSubs[${i}].stageSplit={};tempBidSubs[${i}].stageSplit['${stage}']=+this.value||0;updateBidSubSplitTotal(${i})">
+          </div>`).join('')}
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:8px;border-top:1px solid var(--gl)">
+          <span style="font-size:11px;color:var(--gm)">Split Total</span>
+          <span id="bid-sub-split-total-${i}" style="font-size:12px;font-weight:700;color:${over?'var(--red)':'var(--green)'}">${splitTotal?'AED '+splitTotal.toLocaleString():'—'}${over?' ⚠ exceeds fee':''}</span>
+        </div>
+      </div>`:''}
+    </div>`;
+  }).join('');
+}
+
+function updateBidSubSplitTotal(i) {
+  const s = tempBidSubs[i];
+  const split = s.stageSplit||{};
+  const total = Object.values(split).reduce((t,v)=>t+(+v||0),0);
+  const el = document.getElementById('bid-sub-split-total-'+i);
+  if(el) {
+    const over = s.fee && total > s.fee;
+    el.style.color = over ? 'var(--red)' : 'var(--green)';
+    el.textContent = total ? 'AED '+total.toLocaleString()+(over?' ⚠ exceeds fee':'') : '—';
+  }
 }
 
 
@@ -7999,6 +8094,7 @@ function saveOpp() {
   }
   // Auto-create bid record when opportunity first reaches Proposal Stage
   if(BID_STAGES.includes(_oppStage)) ensureBidForOpp(savedOppId);
+  if(_oppStage==='signed') unifyResourceSchedule(savedOppId);
   markDirty(); saveDB(); closeMo('mo-opp');
   if(currentModule==='procurement') goProcurement('pipeline');
   else if(currentModule==='bidding') goBidding('queue');
@@ -8017,6 +8113,7 @@ function ensureBidForOpp(oppId) {
     subConsultants:[], submittedFee: opp ? opp.value : 0, targetMargin:0, revisedFee:null,
     clarifications:[], result:null, awardedFee:null, lossReason:'', competitor:'', feedbackNotes:''
   });
+  ensureResourceScheduleForOpp(oppId);
 }
 
 // ── MODALS — Account ──
@@ -8570,6 +8667,41 @@ async function spRunImport() {
 // PHASE 4: RESOURCE SCHEDULE
 // ══════════════════════════════════════════════════════════
 
+// ── Stage Frameworks ──
+const RS_FRAMEWORKS = {
+  EDGE: [
+    { name:'Data Collection & Pre Concept', defaultWeeks:2 },
+    { name:'Concept Design',                defaultWeeks:4 },
+    { name:'Schematic Design',              defaultWeeks:4 },
+    { name:'Detailed Design',               defaultWeeks:6 },
+    { name:'Authority Approvals',           defaultWeeks:4 },
+    { name:'Tender Stage',                  defaultWeeks:3 },
+    { name:'Issued for Construction',       defaultWeeks:2 },
+    { name:'Construction Supervision',      defaultWeeks:12 },
+    { name:'Handover / Closeout',           defaultWeeks:2 },
+    { name:'Defect Liability Period',       defaultWeeks:4 }
+  ],
+  RIBA: [
+    { name:'Stage 0: Strategic Definition',    defaultWeeks:2 },
+    { name:'Stage 1: Preparation & Brief',     defaultWeeks:3 },
+    { name:'Stage 2: Concept Design',          defaultWeeks:5 },
+    { name:'Stage 3: Spatial Coordination',    defaultWeeks:5 },
+    { name:'Stage 4: Technical Design',        defaultWeeks:6 },
+    { name:'Stage 5: Manufacturing & Construction', defaultWeeks:12 },
+    { name:'Stage 6: Handover',                defaultWeeks:2 },
+    { name:'Stage 7: Use',                     defaultWeeks:4 }
+  ],
+  AIA: [
+    { name:'Schematic Design (SD)',       defaultWeeks:4 },
+    { name:'Design Development (DD)',     defaultWeeks:5 },
+    { name:'Construction Documents (CD)', defaultWeeks:6 },
+    { name:'Bidding / Negotiation',       defaultWeeks:3 },
+    { name:'Construction Administration (CA)', defaultWeeks:12 }
+  ]
+};
+
+const RS_STAGE_COLORS = ['#2196F3','#4CAF50','#FF9800','#9C27B0','#00BCD4','#F44336','#8BC34A','#FF5722','#3F51B5','#009688'];
+
 // ── Week helpers ──
 function getMonday(d) {
   const dt = new Date(d);
@@ -8643,15 +8775,362 @@ function deleteAlloc(id) {
 }
 
 // ── Navigation ──
+let currentRsId = null;
+
 function goResources(sub) {
-  sub = sub || 'overview';
+  sub = sub || 'schedules';
   const tabs = document.querySelectorAll('#navTabs-resources .ntab');
-  const subs = ['overview','project','staff'];
-  tabs.forEach((t,i) => t.classList.toggle('active', i===subs.indexOf(sub)));
+  const subs = ['schedules','overview'];
+  tabs.forEach((t,i)=>t.classList.toggle('active',i===subs.indexOf(sub)));
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
-  if(sub==='overview') { renderResOverview(); document.getElementById('sec-res-overview').classList.add('active'); }
-  else if(sub==='project') { renderResByProject(true); document.getElementById('sec-res-project').classList.add('active'); }
-  else if(sub==='staff') { renderResByStaff(true); document.getElementById('sec-res-staff').classList.add('active'); }
+  if(sub==='schedules') { renderRsScheduleList(); document.getElementById('sec-res-schedules').classList.add('active'); }
+  else if(sub==='detail') {
+    document.getElementById('sec-res-detail').classList.add('active');
+  }
+  else if(sub==='overview') { renderResOverview(); document.getElementById('sec-res-overview').classList.add('active'); }
+}
+
+function rsDetailTab(tab) {
+  document.querySelectorAll('.rs-detail-tab').forEach((t,i)=>t.classList.toggle('active',['team','subs'][i]===tab));
+  document.getElementById('rs-detail-team').style.display = tab==='team'?'':'none';
+  document.getElementById('rs-detail-subs').style.display = tab==='subs'?'':'none';
+}
+
+// ── Schedule List ──
+function renderRsScheduleList() {
+  const el = document.getElementById('rs-list-body');
+  if(!el) return;
+  const schedules = getResourceSchedules();
+  const opps = db.crm.opportunities||[];
+  const bids = db.bids||[];
+
+  const BID_STAGES=['proposal','submitted','negotiation','verbal','signed'];
+  opps.filter(o=>BID_STAGES.includes(o.stage)).forEach(o=>ensureResourceScheduleForOpp(o.id));
+
+  if(!schedules.length) {
+    el.innerHTML = `<div class="rs-empty">No resource schedules yet.<br><small>Schedules are created automatically when an opportunity reaches Proposal Stage.</small></div>`;
+    return;
+  }
+
+  el.innerHTML = `<div class="rs-list">${schedules.map((rs,idx)=>{
+    const opp = opps.find(o=>o.id===rs.oppId)||{};
+    const bid = bids.find(b=>b.oppId===rs.oppId)||{};
+    const totalWeeks = rsTotalWeeks(rs);
+    const totalStaff = rs.staff.length;
+    const totalHrs = (rs.allocations||[]).reduce((t,a)=>t+(+a.hours||0),0);
+    const totalFee = (rs.staff||[]).reduce((t,sId)=>{
+      const s=(db.staff||[]).find(x=>x.id===sId)||{};
+      const g=(db.grades||[]).find(x=>x.id===s.gradeId)||{};
+      const hrs=(rs.allocations||[]).filter(a=>a.staffId===sId).reduce((h,a)=>h+(+a.hours||0),0);
+      return t+hrs*(+g.billableRate||0);
+    },0);
+    const statusBadge = rs.status==='live'
+      ? '<span style="font-size:9px;background:#1a2e1a;color:#4caf50;padding:2px 7px;border-radius:2px;font-weight:600">● LIVE</span>'
+      : '<span style="font-size:9px;background:#2a2a00;color:#ffc107;padding:2px 7px;border-radius:2px;font-weight:600">DRAFT</span>';
+    return `<div class="rs-card" onclick="openRsDetail('${rs.id}')">
+      <div class="rs-card-num">${String(idx+1).padStart(2,'0')}</div>
+      <div class="rs-card-body">
+        <div class="rs-card-name">${opp.name||'Unnamed Project'} ${statusBadge}</div>
+        <div class="rs-card-meta">${rs.framework} · ${totalWeeks} weeks · Start: ${rs.startDate||'—'} · ${bid.technicalLead||'No lead assigned'}</div>
+      </div>
+      <div class="rs-card-stats">
+        <div><div class="rs-card-stat-val">${totalStaff}</div><div class="rs-card-stat-lbl">Staff</div></div>
+        <div><div class="rs-card-stat-val">${totalHrs}h</div><div class="rs-card-stat-lbl">Hours</div></div>
+        <div><div class="rs-card-stat-val">${totalFee?'AED '+fmtN(totalFee):'—'}</div><div class="rs-card-stat-lbl">Bid Value</div></div>
+      </div>
+      <div class="rs-card-arrow">→</div>
+    </div>`;
+  }).join('')}</div>`;
+}
+
+// ── Schedule Detail ──
+function openRsDetail(rsId) {
+  currentRsId = rsId;
+  const rs = (db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs) return;
+  const opp = (db.crm.opportunities||[]).find(o=>o.id===rs.oppId)||{};
+  document.getElementById('rs-detail-title').textContent = opp.name||'Resource Schedule';
+  const badge = document.getElementById('rs-detail-badge');
+  badge.innerHTML = rs.status==='live'
+    ? '<span style="font-size:10px;background:#1a2e1a;color:#4caf50;padding:3px 10px;border-radius:2px;font-weight:600">● LIVE PROJECT</span>'
+    : '<span style="font-size:10px;background:#2a2a00;color:#ffc107;padding:3px 10px;border-radius:2px;font-weight:600">DRAFT</span>';
+  rsDetailTab('team');
+  renderRsTeam(rsId);
+  renderRsSubs(rsId);
+  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-res-detail').classList.add('active');
+  document.querySelectorAll('#navTabs-resources .ntab').forEach((t,i)=>t.classList.toggle('active',i===0));
+}
+
+// ── Team Setup Panel ──
+function renderRsTeam(rsId) {
+  const el = document.getElementById('rs-detail-team');
+  if(!el) return;
+  const rs = (db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs) return;
+  const editable = canEditRS(rsId);
+
+  const setupHTML = `<div class="rs-setup">
+    <div class="rs-setup-group">
+      <div class="rs-setup-lbl">Stage Framework</div>
+      <select class="rs-setup-input" ${editable?'':'disabled'} onchange="rsChangeFramework('${rsId}',this.value)">
+        ${['EDGE','RIBA','AIA'].map(f=>`<option value="${f}"${rs.framework===f?' selected':''}>${f}</option>`).join('')}
+      </select>
+    </div>
+    <div class="rs-setup-group">
+      <div class="rs-setup-lbl">Project Start Date</div>
+      <input type="date" class="rs-setup-input" value="${rs.startDate||''}" ${editable?'':'disabled'}
+        onchange="rsUpdateField('${rsId}','startDate',this.value)">
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px;align-items:flex-end">
+      ${editable?`<button class="btn btn-ghost btn-sm" onclick="rsToggleStagesPanel('${rsId}')">⚙ Configure Stages</button>`:''}
+    </div>
+  </div>`;
+
+  const stagesHTML = `<div id="rs-stages-panel-${rsId}" style="display:none">
+    <div class="rs-stages-panel">
+      <div class="rs-stages-title">Configure Stages — check to include, set duration in weeks</div>
+      ${(rs.stages||[]).map((s,i)=>`
+        <div class="rs-stage-row">
+          <input type="checkbox" class="rs-stage-toggle" ${s.enabled?'checked':''} ${editable?'':'disabled'}
+            onchange="rsToggleStage('${rsId}','${s.id}',this.checked)">
+          <div class="rs-stage-num">${i+1}</div>
+          <div class="rs-stage-name">${s.name}</div>
+          <input type="number" class="rs-stage-weeks-input" value="${s.weeks}" min="1" max="52" ${editable?'':'disabled'}
+            onchange="rsUpdateStageWeeks('${rsId}','${s.id}',+this.value)" title="Duration in weeks">
+          <span style="font-size:10px;color:var(--gm)">wks</span>
+        </div>`).join('')}
+    </div>
+  </div>`;
+
+  const staffHTML = `<div class="rs-staff-panel">
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);margin-right:4px">Staff:</div>
+    ${(rs.staff||[]).map(sId=>{
+      const s=(db.staff||[]).find(x=>x.id===sId)||{};
+      const g=(db.grades||[]).find(x=>x.id===s.gradeId)||{};
+      return `<span class="rs-staff-chip">${s.first} ${s.last} <span style="color:var(--gm)">${g.name||''}</span>
+        ${editable?`<button class="rs-staff-chip-remove" onclick="rsRemoveStaff('${rsId}','${sId}')" title="Remove">×</button>`:''}
+      </span>`;
+    }).join('')}
+    ${editable?`<select class="rs-add-staff-btn" onchange="rsAddStaff('${rsId}',this.value);this.value=''">
+      <option value="">+ Add Staff</option>
+      ${(db.staff||[]).filter(s=>s.active!==false&&!(rs.staff||[]).includes(s.id)).map(s=>{
+        const g=(db.grades||[]).find(x=>x.id===s.gradeId)||{};
+        return `<option value="${s.id}">${s.first} ${s.last} (${g.name||'—'})`;
+      }).join('')}
+    </select>`:''}
+  </div>`;
+
+  const gridHTML = renderRsGrid(rsId);
+
+  el.innerHTML = setupHTML + stagesHTML + staffHTML + gridHTML;
+}
+
+function rsToggleStagesPanel(rsId) {
+  const p = document.getElementById('rs-stages-panel-'+rsId);
+  if(p) p.style.display = p.style.display==='none'?'':'none';
+}
+
+function renderRsGrid(rsId) {
+  const rs = (db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs) return '';
+  const editable = canEditRS(rsId);
+  const stageRanges = rsStageWeekRanges(rs);
+  const totalWeeks = rsTotalWeeks(rs);
+  if(!totalWeeks) return '<div class="rs-empty">Configure stages to generate the schedule grid.</div>';
+
+  const startMon = getMonday(new Date((rs.startDate||isoDate(new Date()))+'T00:00'));
+  const weekDates = Array.from({length:totalWeeks},(_,i)=>addWeeks(startMon,i));
+
+  const stageHeaderCells = stageRanges.map((sr,ci)=>{
+    const col = RS_STAGE_COLORS[ci%RS_STAGE_COLORS.length];
+    return `<th class="rs-th-stage" colspan="${sr.weeks}" style="background:${col}22;border-bottom:3px solid ${col};color:${col}">${sr.name}</th>`;
+  }).join('');
+
+  const weekHeaderCells = weekDates.map((d,wi)=>{
+    const stage = stageRanges.find(sr=>wi>=sr.startWeek&&wi<=sr.endWeek);
+    const col = stage ? RS_STAGE_COLORS[stageRanges.indexOf(stage)%RS_STAGE_COLORS.length] : '#333';
+    return `<th class="rs-th-week" style="border-top:2px solid ${col}22">${fmtWeekHdr(d)}</th>`;
+  }).join('');
+
+  const divOrder = ['Architecture','Interior Design','Contract Administration'];
+  const selectedStaff = (rs.staff||[]).map(sId=>(db.staff||[]).find(x=>x.id===sId)).filter(Boolean);
+  const byDiv = {};
+  divOrder.forEach(d=>{ byDiv[d]=selectedStaff.filter(s=>s.division===d); });
+
+  let staffRows = '';
+  divOrder.forEach(div=>{
+    if(!byDiv[div].length) return;
+    staffRows += `<tr class="rs-division-hdr"><td colspan="${totalWeeks+3}">${div}</td></tr>`;
+    byDiv[div].forEach(s=>{
+      const grade = (db.grades||[]).find(g=>g.id===s.gradeId)||{};
+      const rate = +grade.billableRate||0;
+      const cells = weekDates.map((_,wi)=>{
+        const alloc = (rs.allocations||[]).find(a=>a.staffId===s.id&&a.weekIndex===wi);
+        const hrs = alloc?.hours||0;
+        const stage = stageRanges.find(sr=>wi>=sr.startWeek&&wi<=sr.endWeek);
+        const col = stage ? RS_STAGE_COLORS[stageRanges.indexOf(stage)%RS_STAGE_COLORS.length] : '';
+        const bg = hrs>0&&col ? col+'18' : '';
+        return `<td style="${bg?'background:'+bg:''}">${editable
+          ? `<input class="rs-hrs-input" type="number" min="0" max="80" value="${hrs||''}" placeholder="0"
+              onchange="rsSetHours('${rsId}','${s.id}',${wi},+this.value||0)">`
+          : `<span style="font-weight:600;color:${hrs?'var(--white)':'#333'}">${hrs||''}</span>`
+        }</td>`;
+      }).join('');
+      const totalHrs = (rs.allocations||[]).filter(a=>a.staffId===s.id).reduce((t,a)=>t+(+a.hours||0),0);
+      const totalFee = totalHrs * rate;
+      staffRows += `<tr>
+        <td class="rs-td-name">
+          <div class="rs-staff-name-cell">${s.first} ${s.last}</div>
+          <div class="rs-staff-grade-cell">${grade.name||'—'}</div>
+          ${rate?`<div class="rs-staff-rate-cell">AED ${rate}/hr</div>`:''}
+        </td>
+        ${cells}
+        <td class="rs-td-total">${totalHrs||'—'}</td>
+        <td class="rs-td-fee">${totalFee?'AED '+fmtN(totalFee):'—'}</td>
+      </tr>`;
+    });
+  });
+
+  const weekTotals = weekDates.map((_,wi)=>
+    (rs.allocations||[]).filter(a=>a.weekIndex===wi).reduce((t,a)=>t+(+a.hours||0),0)
+  );
+  const grandTotalHrs = weekTotals.reduce((t,h)=>t+h,0);
+  const grandTotalFee = (rs.staff||[]).reduce((t,sId)=>{
+    const s=(db.staff||[]).find(x=>x.id===sId)||{};
+    const g=(db.grades||[]).find(x=>x.id===s.gradeId)||{};
+    const hrs=(rs.allocations||[]).filter(a=>a.staffId===sId).reduce((h,a)=>h+(+a.hours||0),0);
+    return t+hrs*(+g.billableRate||0);
+  },0);
+  const totalRow = `<tr class="rs-tr-totals">
+    <td class="rs-td-name rs-tr-totals">Total Hours / Week</td>
+    ${weekTotals.map(h=>`<td>${h||''}</td>`).join('')}
+    <td class="rs-td-total">${grandTotalHrs}</td>
+    <td class="rs-td-fee">${grandTotalFee?'AED '+fmtN(grandTotalFee):'—'}</td>
+  </tr>`;
+
+  if(!selectedStaff.length) {
+    return `<div class="rs-empty">Add staff members above to start building the schedule.</div>`;
+  }
+
+  return `<div class="rs-grid-outer">
+    <table class="rs-grid">
+      <thead>
+        <tr>
+          <th class="rs-th-name" rowspan="2">Staff Member</th>
+          ${stageHeaderCells}
+          <th rowspan="2" style="background:#111;color:var(--gm);font-size:9px;white-space:nowrap;min-width:60px">Total<br>Hours</th>
+          <th rowspan="2" style="background:#0d0d0d;color:var(--gm);font-size:9px;white-space:nowrap;min-width:80px">Bid<br>Fee</th>
+        </tr>
+        <tr>${weekHeaderCells}</tr>
+      </thead>
+      <tbody>${staffRows}${totalRow}</tbody>
+    </table>
+  </div>`;
+}
+
+// ── Sub-Consultants Tab ──
+function renderRsSubs(rsId) {
+  const el = document.getElementById('rs-detail-subs');
+  if(!el) return;
+  const rs = (db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs) return;
+  const bid = (db.bids||[]).find(b=>b.oppId===rs.oppId);
+  if(!bid) { el.innerHTML='<div class="rs-empty">No bid record found for this schedule.</div>'; return; }
+  const appointed = (bid.subConsultants||[]).filter(s=>s.status==='appointed'||s.status==='signed');
+  if(!appointed.length) { el.innerHTML='<div class="rs-empty">No appointed sub-consultants on this bid yet.<br><small>Set a sub-consultant status to "Appointed" in the Bidding module.</small></div>'; return; }
+  const stageRanges = rsStageWeekRanges(rs);
+
+  el.innerHTML = `<div class="rs-sub-panel">
+    <div style="font-size:11px;color:var(--gm);margin-bottom:16px">${appointed.length} appointed sub-consultant${appointed.length!==1?'s':''} — fee splits entered in the bid</div>
+    ${appointed.map((s,i)=>{
+      const split = s.stageSplit||{};
+      const splitTotal = Object.values(split).reduce((t,v)=>t+(+v||0),0);
+      const over = s.fee && splitTotal > s.fee;
+      const stageItems = stageRanges.map(sr=>`
+        <div class="rs-sub-stage-item">
+          <div class="rs-sub-stage-name">${sr.name}</div>
+          <div class="rs-sub-stage-fee">${split[sr.name]?'AED '+fmtN(split[sr.name]):'—'}</div>
+        </div>`).join('');
+      return `<div class="rs-sub-row">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between">
+          <div>
+            <div class="rs-sub-name">${s.vendorName}</div>
+            <div class="rs-sub-disc">${s.discipline} · <span style="color:${s.status==='signed'?'#4caf50':'#ffc107'};font-weight:600;text-transform:uppercase;font-size:10px">${s.status}</span></div>
+          </div>
+          <div style="text-align:right">
+            <div style="font-size:14px;font-weight:700;color:var(--yellow)">AED ${fmtN(s.fee||0)}</div>
+            <div style="font-size:10px;color:var(--gm)">Total Fee</div>
+            ${splitTotal?`<div style="font-size:11px;color:${over?'var(--red)':'#4caf50'};margin-top:2px">${over?'⚠ Split exceeds fee':'✓ Split: AED '+fmtN(splitTotal)}</div>`:''}
+          </div>
+        </div>
+        ${stageRanges.length?`<div class="rs-sub-stage-grid">${stageItems}</div>`:''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+// ── Mutation helpers ──
+function rsSetHours(rsId, staffId, weekIndex, hours) {
+  const rs = (db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs||!canEditRS(rsId)) return;
+  if(!rs.allocations) rs.allocations=[];
+  const idx = rs.allocations.findIndex(a=>a.staffId===staffId&&a.weekIndex===weekIndex);
+  if(hours===0) { if(idx>=0) rs.allocations.splice(idx,1); }
+  else if(idx>=0) { rs.allocations[idx].hours=hours; }
+  else { rs.allocations.push({staffId, weekIndex, hours}); }
+  rs.updatedAt=new Date().toISOString().slice(0,10);
+  markDirty(); saveDB();
+}
+
+function rsAddStaff(rsId, staffId) {
+  if(!staffId) return;
+  const rs=(db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs||!canEditRS(rsId)) return;
+  if(!(rs.staff||[]).includes(staffId)) { if(!rs.staff)rs.staff=[]; rs.staff.push(staffId); }
+  rs.updatedAt=new Date().toISOString().slice(0,10);
+  markDirty(); saveDB(); renderRsTeam(rsId);
+}
+
+function rsRemoveStaff(rsId, staffId) {
+  const rs=(db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs||!canEditRS(rsId)) return;
+  rs.staff=(rs.staff||[]).filter(id=>id!==staffId);
+  rs.allocations=(rs.allocations||[]).filter(a=>a.staffId!==staffId);
+  rs.updatedAt=new Date().toISOString().slice(0,10);
+  markDirty(); saveDB(); renderRsTeam(rsId);
+}
+
+function rsUpdateField(rsId, field, value) {
+  const rs=(db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs||!canEditRS(rsId)) return;
+  rs[field]=value; rs.updatedAt=new Date().toISOString().slice(0,10);
+  markDirty(); saveDB(); renderRsTeam(rsId);
+}
+
+function rsChangeFramework(rsId, fw) {
+  const rs=(db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs||!canEditRS(rsId)) return;
+  if(!confirm('Changing the stage framework will replace the current stages. Allocations will be cleared. Continue?')) return;
+  rs.framework=fw;
+  rs.stages=RS_FRAMEWORKS[fw].map((s,i)=>({id:'rst_'+uid(),name:s.name,defaultWeeks:s.defaultWeeks,weeks:s.defaultWeeks,enabled:true,order:i}));
+  rs.allocations=[];
+  rs.updatedAt=new Date().toISOString().slice(0,10);
+  markDirty(); saveDB(); renderRsTeam(rsId);
+}
+
+function rsToggleStage(rsId, stageId, enabled) {
+  const rs=(db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs||!canEditRS(rsId)) return;
+  const st=rs.stages.find(s=>s.id===stageId);
+  if(st) { st.enabled=enabled; rs.updatedAt=new Date().toISOString().slice(0,10); markDirty(); saveDB(); renderRsTeam(rsId); }
+}
+
+function rsUpdateStageWeeks(rsId, stageId, weeks) {
+  const rs=(db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs||!canEditRS(rsId)) return;
+  const st=rs.stages.find(s=>s.id===stageId);
+  if(st&&weeks>0) { st.weeks=weeks; rs.updatedAt=new Date().toISOString().slice(0,10); markDirty(); saveDB(); }
 }
 
 // ── OVERVIEW ──
@@ -8913,8 +9392,7 @@ function saveAlloc() {
   markDirty(); saveDB(); closeMo('mo-alloc');
   const active = document.querySelector('.sec.active');
   if(active?.id==='sec-res-overview') renderResOverview();
-  else if(active?.id==='sec-res-project') renderResByProject();
-  else if(active?.id==='sec-res-staff') renderResByStaff();
+  else if(active?.id==='sec-res-schedules') renderRsScheduleList();
 }
 
 // ── MODAL: Edit Cell ──
@@ -8978,34 +9456,95 @@ function addAllocFromCell() {
   openCellModal(editingAllocStaffId, editingAllocWeek);
   const active = document.querySelector('.sec.active');
   if(active?.id==='sec-res-overview') renderResOverview();
-  else if(active?.id==='sec-res-project') renderResByProject();
-  else if(active?.id==='sec-res-staff') renderResByStaff();
+  else if(active?.id==='sec-res-schedules') renderRsScheduleList();
 }
 
 // ── Seed some demo allocations ──
 function initResourceData() {
   if(!db.allocations) db.allocations = [];
+  if(!db.resourceSchedules) db.resourceSchedules = [];
+  // Seed demo allocations only if no resource schedules exist yet (old simple model)
+  if(db.resourceSchedules.length) return;
   if(db.allocations.length) return;
-  // Seed a few allocations for demo
   const staff = db.staff||[];
   const projects = (db.projects||[]).filter(p=>p.status==='Live');
-  if(!staff.length || !projects.length) return;
+  if(!staff.length||!projects.length) return;
   const mon = getMonday(new Date());
-  const pairs = [
-    [0,0,30], [0,1,10], [1,0,20], [1,1,20],
-    [2,0,40], [3,1,40], [4,0,20], [4,0,40],
-  ];
+  const pairs = [[0,0,30],[0,1,10],[1,0,20],[1,1,20],[2,0,40],[3,1,40]];
   pairs.forEach(([si,pi,hrs],idx)=>{
-    const s = staff[si%staff.length];
-    const p = projects[pi%projects.length];
+    const s=staff[si%staff.length], p=projects[pi%projects.length];
     if(!s||!p) return;
-    for(let w=0;w<4;w++) {
-      const wk = isoDate(addWeeks(addWeeks(mon,-1),w));
-      const exists = db.allocations.find(a=>a.staffId===s.id&&a.projectId===p.id&&a.weekStart===wk);
-      if(!exists) db.allocations.push({id:'alloc_seed_'+idx+'_'+w, staffId:s.id, projectId:p.id, weekStart:wk, hours:hrs});
+    for(let w=0;w<4;w++){
+      const wk=isoDate(addWeeks(addWeeks(mon,-1),w));
+      if(!db.allocations.find(a=>a.staffId===s.id&&a.projectId===p.id&&a.weekStart===wk))
+        db.allocations.push({id:'alloc_seed_'+idx+'_'+w,staffId:s.id,projectId:p.id,weekStart:wk,hours:hrs});
     }
   });
   saveDB();
+}
+
+function getResourceSchedules() { if(!db.resourceSchedules) db.resourceSchedules=[]; return db.resourceSchedules; }
+
+function ensureResourceScheduleForOpp(oppId) {
+  if(!db.resourceSchedules) db.resourceSchedules=[];
+  if(db.resourceSchedules.some(rs=>rs.oppId===oppId)) return;
+  const opp = (db.crm.opportunities||[]).find(o=>o.id===oppId)||{};
+  const fw = 'EDGE';
+  const stages = RS_FRAMEWORKS[fw].map((s,i)=>({
+    id:'rst_'+uid(), name:s.name, defaultWeeks:s.defaultWeeks, weeks:s.defaultWeeks, enabled:true, order:i
+  }));
+  db.resourceSchedules.push({
+    id:'rs_'+uid(), oppId,
+    projectId: null,
+    framework: fw,
+    startDate: isoDate(getMonday(new Date())),
+    stages,
+    staff:[],
+    allocations:[],
+    status:'draft',
+    createdAt: new Date().toISOString().slice(0,10),
+    updatedAt: new Date().toISOString().slice(0,10)
+  });
+  markDirty(); saveDB();
+}
+
+function getResourceScheduleForOpp(oppId) {
+  return (db.resourceSchedules||[]).find(rs=>rs.oppId===oppId)||null;
+}
+
+function rsStageWeekRanges(rs) {
+  let offset=0;
+  return (rs.stages||[]).filter(s=>s.enabled).map(s=>{
+    const start=offset; offset+=s.weeks;
+    return {...s, startWeek:start, endWeek:offset-1};
+  });
+}
+
+function rsTotalWeeks(rs) {
+  return (rs.stages||[]).filter(s=>s.enabled).reduce((t,s)=>t+s.weeks,0);
+}
+
+function canEditRS(rsId) {
+  const rs = (db.resourceSchedules||[]).find(x=>x.id===rsId);
+  if(!rs) return false;
+  const currentUser = db.users?.find(u=>u.id===currentUserId||u.email===currentUserId);
+  if(currentUser?.role==='admin') return true;
+  const bid = (db.bids||[]).find(b=>b.oppId===rs.oppId);
+  if(!bid) return true;
+  const techLead = bid.technicalLead||'';
+  return !techLead || techLead===currentUserId || techLead===(currentUser?.name||'');
+}
+
+function unifyResourceSchedule(oppId) {
+  const rs = getResourceScheduleForOpp(oppId);
+  if(!rs || rs.status==='live') return;
+  const opp = (db.crm.opportunities||[]).find(o=>o.id===oppId)||{};
+  const norm = s=>s.toLowerCase().replace(/\[.*?\]/g,'').replace(/[^a-z0-9]/g,' ').trim().replace(/\s+/g,' ');
+  const proj = (db.projects||[]).find(p=>norm(p.name)===norm(opp.name)||norm(p.name).includes(norm(opp.name))||norm(opp.name).includes(norm(p.name)));
+  rs.status='live';
+  if(proj) rs.projectId=proj.id;
+  rs.updatedAt=new Date().toISOString().slice(0,10);
+  markDirty(); saveDB();
 }
 
 // ═══════════════════════════════════════════════════
