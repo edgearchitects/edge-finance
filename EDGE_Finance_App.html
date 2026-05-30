@@ -858,6 +858,7 @@ window._msalLoaded = true;
   <div class="ntabs" id="navTabs-bidding" style="display:none">
     <div class="ntab active" onclick="goBidding('queue')">Open Bids</div>
     <div class="ntab" onclick="goBidding('closed')">Closed</div>
+    <div class="ntab" onclick="goBidding('vendors')">Vendor DB</div>
   </div>
   <div class="ntabs" id="navTabs-procurement" style="display:none">
     <div class="ntab active" onclick="goProcurement('dashboard')">Dashboard</div>
@@ -1177,6 +1178,7 @@ window._msalLoaded = true;
 <!-- ═══════════════ BIDDING & PROPOSALS MODULE ═══════════════ -->
 <div class="sec" id="sec-bid-queue"><div id="bid-queue-view"></div></div>
 <div class="sec" id="sec-bid-closed"><div id="bid-closed-view"></div></div>
+<div class="sec" id="sec-bid-vendors"><div id="bid-vendors-view"></div></div>
 
 <!-- Bid detail modal -->
 <div class="mo" id="mo-bid">
@@ -1203,6 +1205,22 @@ window._msalLoaded = true;
     <div class="fgrp"><label>Target Margin %</label><input id="bid-f-margin" type="number" placeholder="0" min="0" max="100"></div>
     <div class="fgrp full"><label>Competitor (if known)</label><input id="bid-f-competitor" type="text" placeholder="Which firm are we competing against?"></div>
     <div class="fgrp full"><label>Feedback / Notes</label><textarea id="bid-f-notes" rows="3" placeholder="Client feedback, debrief notes, lessons learned…"></textarea></div>
+    <div class="fgrp full" style="grid-column:1/-1;border-top:1px solid var(--gl);padding-top:12px;margin-top:4px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <label style="margin:0">Subconsultants</label>
+        <button class="btn btn-ghost btn-xs" onclick="showBidSubRow()">+ Add Sub</button>
+      </div>
+      <div id="bid-subs-list" style="margin-bottom:6px"></div>
+      <div id="bid-sub-add-row" style="display:none;display:grid;grid-template-columns:2fr 1fr 1fr auto;gap:6px;align-items:center;padding:8px;background:var(--offwhite);border-radius:4px;margin-top:4px">
+        <select id="bid-sub-vendor" style="font-size:12px"><option value="">— select vendor —</option></select>
+        <input id="bid-sub-fee" type="number" min="0" placeholder="Fee (AED)" style="font-size:12px">
+        <select id="bid-sub-status" style="font-size:12px"><option value="pending">Pending</option><option value="appointed">Appointed</option><option value="signed">Signed</option><option value="rejected">Rejected</option></select>
+        <div style="display:flex;gap:4px">
+          <button class="btn btn-y btn-xs" onclick="confirmAddBidSub()">Add</button>
+          <button class="btn btn-ghost btn-xs" onclick="document.getElementById('bid-sub-add-row').style.display='none'">✕</button>
+        </div>
+      </div>
+    </div>
   </div>
   <div class="mfoot" id="mo-bid-foot">
     <button class="btn btn-ghost" onclick="closeMo('mo-bid')">Cancel</button>
@@ -1312,6 +1330,34 @@ window._msalLoaded = true;
   <div class="mfoot">
     <button class="btn btn-ghost" onclick="closeMo('mo-staff')">Cancel</button>
     <button class="btn btn-y" onclick="saveStaff()">Save</button>
+  </div>
+  </div>
+</div>
+
+<!-- Vendor modal -->
+<div class="mo" id="mo-vendor">
+  <div class="modal" style="max-width:600px">
+  <div class="mhead"><span class="mtitle" id="mo-vendor-title">Add Vendor</span><button class="mclose" onclick="closeMo('mo-vendor')">×</button></div>
+  <div class="mbody" style="padding:16px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
+      <div class="fgrp full"><label>Company Name *</label><input id="vendor-f-name" type="text" placeholder="e.g. WSP Middle East"></div>
+      <div class="fgrp"><label>Discipline *</label><select id="vendor-f-discipline"><option value="">— select —</option></select></div>
+      <div class="fgrp"><label>Status</label><select id="vendor-f-status"><option value="active">Active</option><option value="preferred">Preferred</option><option value="do-not-use">Do Not Use</option></select></div>
+      <div class="fgrp full"><label>Website</label><input id="vendor-f-website" type="text" placeholder="https://..."></div>
+      <div class="fgrp full"><label>Notes</label><textarea id="vendor-f-notes" rows="2" placeholder="Any relevant notes…"></textarea></div>
+    </div>
+    <div style="border-top:1px solid var(--gl);padding-top:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+        <label style="font-size:11px;font-weight:600;color:var(--gm);text-transform:uppercase;letter-spacing:.04em">Contacts</label>
+        <button class="btn btn-ghost btn-xs" onclick="addVendorContactRow()">+ Add Contact</button>
+      </div>
+      <div id="vendor-contacts-list"></div>
+    </div>
+  </div>
+  <div class="mfoot">
+    <button class="btn btn-ghost btn-xs" id="vendor-delete-btn" style="margin-right:auto;color:var(--red);display:none" onclick="deleteVendorFromModal()">Delete</button>
+    <button class="btn btn-ghost" onclick="closeMo('mo-vendor')">Cancel</button>
+    <button class="btn btn-y" onclick="saveVendor()">Save</button>
   </div>
   </div>
 </div>
@@ -1738,7 +1784,7 @@ const CONFIG = {
 // DATA
 // ═══════════════════════════════════════════════════
 const SK = 'edge_v3';
-let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{}, users:[], checklistRuns:[], projectStages:{}, crm:{ accounts:[], contacts:[], opportunities:[], tasks:[] }, bids:[], grades:[], staff:[] };
+let db = { projects:[], stageFees:[], milestoneFees:[], monthlyFees:[], voRegister:[], invoiceTracker:[], config:{}, users:[], checklistRuns:[], projectStages:{}, crm:{ accounts:[], contacts:[], opportunities:[], tasks:[] }, bids:[], grades:[], staff:[], vendors:[] };
 let dbSnapshot = null;   // snapshot of last saved state for dirty detection
 let editState = {};
 let msalInstance = null;
@@ -4414,6 +4460,7 @@ function ensureCrm() {
 function initCRM() {
   ensureCrm();
   initStaffData();
+  initVendorData();
   // Only seed when accounts are genuinely empty — never on version mismatch
   // to prevent any risk of overwriting user-entered opportunities/tasks
   if(!db.crm.accounts.length) { seedCRM(); return; }
@@ -4712,10 +4759,12 @@ let advancingBidId = null;
 function goBidding(sub) {
   if(!db.bids) db.bids = [];
   const tabs = document.querySelectorAll('#navTabs-bidding .ntab');
-  tabs.forEach((t,i) => t.classList.toggle('active', i === (sub==='queue'?0:1)));
+  const subIdx = sub==='queue'?0:sub==='closed'?1:2;
+  tabs.forEach((t,i) => t.classList.toggle('active', i === subIdx));
   document.querySelectorAll('.sec').forEach(s => s.classList.remove('active'));
   if(sub === 'queue') { renderBidQueue(); document.getElementById('sec-bid-queue').classList.add('active'); }
   else if(sub === 'closed') { renderBidClosed(); document.getElementById('sec-bid-closed').classList.add('active'); }
+  else if(sub === 'vendors') { renderVendors(); document.getElementById('sec-bid-vendors').classList.add('active'); }
 }
 
 function bidOppStageLabel(stage) {
@@ -4882,6 +4931,9 @@ function openBidDetail(bidId) {
   document.getElementById('bid-f-margin').value = b.targetMargin||'';
   document.getElementById('bid-f-competitor').value = b.competitor||'';
   document.getElementById('bid-f-notes').value = b.feedbackNotes||'';
+  tempBidSubs = JSON.parse(JSON.stringify(b.subConsultants||[]));
+  renderBidSubsList();
+  document.getElementById('bid-sub-add-row').style.display = 'none';
   openMo('mo-bid');
 }
 
@@ -4908,6 +4960,7 @@ function saveBid() {
   b.targetMargin = +document.getElementById('bid-f-margin').value||0;
   b.competitor = document.getElementById('bid-f-competitor').value.trim();
   b.feedbackNotes = document.getElementById('bid-f-notes').value.trim();
+  b.subConsultants = tempBidSubs;
   b.updatedAt = new Date().toISOString().slice(0,10);
   // Sync fee back to opportunity
   const opp = (db.crm.opportunities||[]).find(o=>o.id===b.oppId);
@@ -5303,6 +5356,520 @@ function saveGoNoGo(decision) {
   markDirty(); saveDB(); closeMo('mo-gonogo');
   goBidding('queue');
 }
+
+const VENDOR_SEED_DATA = [
+  {id:"ven_001",name:"SANKALIT IT CONSULTANT",discipline:"AV / IT",website:"",status:"active",notes:"",contacts:[{"name": "Jigar Mehta", "email": "jigar@sankalit.in"}]},
+  {id:"ven_002",name:"INFOSIGHT CONSLUTANTS DMCC",discipline:"AV / IT",website:"",status:"active",notes:"",contacts:[{"name": "Jorge Luis", "email": "rfpinfosight@gmail.com"}]},
+  {id:"ven_003",name:"NV5",discipline:"AV / IT",website:"",status:"active",notes:"",contacts:[{"name": "Nathan Cartwright Executive Director", "email": "nathan.cartwright@nv5.com"}]},
+  {id:"ven_004",name:"BARC SOLUTION",discipline:"AV / IT",website:"",status:"active",notes:"",contacts:[{"name": "OLIVER VAN DEN BROEK", "email": "oliver@barc.solutions"}]},
+  {id:"ven_005",name:"SHEN MILSON & WILKE LLC (DUBAI)",discipline:"AV / IT",website:"https://www.smwllc.com",status:"active",notes:"",contacts:[{"name": "RUSSELL WOOD", "email": "rwood@smwllc.com"}]},
+  {id:"ven_006",name:"T2 CONSULTING GROUP (DUBAI)",discipline:"AV / IT",website:"https://www.t2-consulting.com",status:"active",notes:"",contacts:[{"name": "DON NOLASCO"}]},
+  {id:"ven_007",name:"MEDIATECH DESIGN GROUP (DUBAI)",discipline:"AV / IT",website:"https://www.mediatech.ae",status:"active",notes:"",contacts:[{"name": "FRANCA RISI-NORRIS", "email": "gking@mediatech.ae"}]},
+  {id:"ven_008",name:"DESIGN INFINITY",discipline:"AV / IT",website:"https://www.design-infinity.com",status:"active",notes:"",contacts:[{"name": "ABDUL HAMID AL ASADI", "email": "abdul@design-infinity.com"}]},
+  {id:"ven_009",name:"EUROTECH ME",discipline:"AV / IT",website:"https://www.eurotechme.com",status:"active",notes:"",contacts:[{"name": "JACQUES POTGIETER", "email": "jp@eurotechme.com"}]},
+  {id:"ven_010",name:"VTI GLOBAL",discipline:"Conveying Systems",website:"https://www.consultvtig.com",status:"active",notes:"",contacts:[{"name": "Sathis Vembar Lead Consultant", "email": "sv@consultvtig.com"}]},
+  {id:"ven_011",name:"LERCH BATES",discipline:"Conveying Systems",website:"https://www.lerchbates.com",status:"active",notes:"",contacts:[{"name": "Richard Roberts", "email": "richard.roberts@lerchbates.com"}]},
+  {id:"ven_012",name:"WSP",discipline:"Environmental Impact (EIS)",website:"",status:"active",notes:"",contacts:[{"name": "Nefertari", "email": "nefertari.egara@wspgroup.ae"}]},
+  {id:"ven_013",name:"ASG",discipline:"Environmental Impact (EIS)",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_014",name:"MEG",discipline:"Energy Consultancy",website:"https://www.meg-consultants.com",status:"active",notes:"",contacts:[{"name": "Bilal Maarouf", "email": "bilal.maarouf@meg-consultants.com"}]},
+  {id:"ven_015",name:"WSP",discipline:"Engineering Design",website:"",status:"active",notes:"",contacts:[{"name": "TOM HOBAN BART LECLERCQ Peter Richardson Samantha Mac Tague Peter Hodgkinson", "email": "tom.hoban@wspgroup.ae"}]},
+  {id:"ven_016",name:"WME",discipline:"Engineering Design",website:"https://www.wme-ae.com",status:"active",notes:"",contacts:[{"name": "PEYMAN MOHAJER GOPAN RAJ LOUISE COLLINS DAVID BARLEY GEM PALOMAR AMBIKA NAIR", "email": "p.mohajer@wme-ae.com"}]},
+  {id:"ven_017",name:"ARCADIS",discipline:"Engineering Design",website:"https://www.arcadis.com",status:"active",notes:"",contacts:[{"name": "PETER PARDOE DIMA QUMSIEH", "email": "peter.pardoe@arcadis.com"}]},
+  {id:"ven_018",name:"MEECON",discipline:"Engineering Design",website:"",status:"active",notes:"",contacts:[{"name": "GHASSAN E EID AHMED NAGUIB", "email": "ghassan@meecon.ae"}]},
+  {id:"ven_019",name:"PRIME 1102 One by Omniyat, Business Bay",discipline:"Engineering Design",website:"",status:"active",notes:"",contacts:[{"name": "MAKAR NAGEH", "email": "makar@primeec.com"}]},
+  {id:"ven_020",name:"ARUP'S MIDDLE EAST",discipline:"Engineering Design",website:"",status:"active",notes:"",contacts:[{"name": "RAHUL NANDA HEATH ANDERSEN MELISSA D SOUZA PAUL SIMMONITE", "email": "rahul.nanda@arup.com"}]},
+  {id:"ven_021",name:"BLACK & WHITE ENGINEERING",discipline:"Engineering Design",website:"https://www.bw-engineering.com",status:"active",notes:"",contacts:[{"name": "DANIEL WILLIAMS", "email": "dwilliams@bw-engineering.com"}]},
+  {id:"ven_022",name:"ROBERT BIRD GROUP",discipline:"Engineering Design",website:"",status:"active",notes:"",contacts:[{"name": "SAMER JARRAR"}]},
+  {id:"ven_023",name:"AURECON",discipline:"Engineering Design",website:"https://www.aurecongroup.com",status:"active",notes:"",contacts:[{"name": "BAT LECLERCQ DAVID MARTIN TANYA POTGIETER", "email": "bart.leclercq@aurecongroup.com"}]},
+  {id:"ven_024",name:"SAEED ENGINEERING",discipline:"Engineering Design",website:"https://www.seedengineering.com",status:"active",notes:"",contacts:[{"name": "SANU MATHEW ANAND KRISHNAN", "email": "sanu@seedenigneering.com"}]},
+  {id:"ven_025",name:"CEC - Consistent Engineering",discipline:"Engineering Design",website:"https://www.consistentconsultants.com",status:"active",notes:"",contacts:[{"name": "PIYUSH SHAH PRATIK BIDWAI SAGAR KULKARNI", "email": "piyush@consistentconsultants.com"}]},
+  {id:"ven_026",name:"CLARKE SAMADHIN",discipline:"Engineering Design",website:"https://www.clarkesamadhin.com",status:"active",notes:"",contacts:[{"name": "NELI CLARKE MICHALE SAMADHIN", "email": "nclarke@clarkesamadhin.com"}]},
+  {id:"ven_027",name:"DESIMONE",discipline:"Engineering Design",website:"https://www.de-simone.com",status:"active",notes:"",contacts:[{"name": "AHMED M OSMAN PURSHOTAM TAPARIYA", "email": "ahmed.osman@de-simone.com"}]},
+  {id:"ven_028",name:"EHAF CONSULTING ENGINEERS",discipline:"Engineering Design",website:"https://www.ehaf.com",status:"active",notes:"",contacts:[{"name": "NADER NABIL MARWAN WALLY", "email": "nader.nabi@ehafconsulting.org"}]},
+  {id:"ven_029",name:"SALAMA - STR",discipline:"Engineering Design",website:"https://www.sseweb.ae",status:"active",notes:"",contacts:[{"name": "MARIANNE MAGDY HENRY BISHARA", "email": "mmagdy@sseweb.ae"}]},
+  {id:"ven_030",name:"OMRANIA ARCHITECTS & ENGINEERS - KSA",discipline:"Engineering Design",website:"https://omrania@omrania.com.sa",status:"active",notes:"",contacts:[{"name": "MAJDI EL-SHAMI RUKN ELDEEN MOHAMMED"}]},
+  {id:"ven_031",name:"NOOR ENGINEERING CONSULTANTS",discipline:"Engineering Design",website:"https://www.necgroup.ae",status:"active",notes:"",contacts:[{"name": "RAJ", "email": "admin@necgroup.ae"}]},
+  {id:"ven_032",name:"AESG",discipline:"Fa\u00e7ade",website:"https://www.aesg.com",status:"active",notes:"",contacts:[{"name": "Belarmino Cordero", "email": "b.cordero@aesg-me.com"}]},
+  {id:"ven_033",name:"TERRACO",discipline:"Fa\u00e7ade",website:"https://www.terraco.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_034",name:"FICHER",discipline:"Fa\u00e7ade",website:"https://www.fischer.ae",status:"active",notes:"",contacts:[{"name": "AHMAD AL NAIMI", "email": "ahamad.alnaimi@fischer.ae"}]},
+  {id:"ven_035",name:"SAINT-GOBAIN",discipline:"Fa\u00e7ade",website:"https://www.saint-gobain-emme.com",status:"active",notes:"",contacts:[{"name": "AIHAM MASOUTI", "email": "aiham.masouti@saint-gobain.com"}]},
+  {id:"ven_036",name:"PRIEDEMANN",discipline:"Fa\u00e7ade",website:"https://priedemann.net/en",status:"active",notes:"",contacts:[{"name": "ANEES A. BACKER", "email": "anees.backer@pridemann.net"}]},
+  {id:"ven_037",name:"TEAM SPIRIT FACADE LLC",discipline:"Fa\u00e7ade",website:"https://www.teamalaber.com",status:"active",notes:"",contacts:[{"name": "ANISH RAVI", "email": "operations@teamalaber.com"}]},
+  {id:"ven_038",name:"OPTIMISE",discipline:"Fire & Life Safety",website:"",status:"active",notes:"",contacts:[{"name": "MARKOS CHRIS", "email": "info@optimise-eu.com"}]},
+  {id:"ven_039",name:"JOULE GROUP",discipline:"Fire & Life Safety",website:"https://joule-group.com",status:"active",notes:"",contacts:[{"name": "JOHN NOONE JOHN MCCOLGAN DANNA FAITH LINCO NATALIE LINNEL", "email": "johnnoone@joule-group.com"}]},
+  {id:"ven_040",name:"TENABLE",discipline:"Fire & Life Safety",website:"",status:"active",notes:"",contacts:[{"name": "CALUDIA SHAJAIE SAM ALCOCK ANITA BIN HAYER", "email": "caludi@tenablefec.com"}]},
+  {id:"ven_041",name:"TEBODIN MIDDLE EAST LTD",discipline:"Fire & Life Safety",website:"",status:"active",notes:"",contacts:[{"name": "EMEE BALMORES RAFEEQ MUNDOCHALIL HANAN ABUDAID SAJAD RAJA", "email": "emee.lou.balmores@tebodin.com"}]},
+  {id:"ven_042",name:"PHOENIX BUILDING INTERNATIONAL FS CONSULTANCY",discipline:"Fire & Life Safety",website:"",status:"active",notes:"",contacts:[{"name": "JOSEPH HALLAL MOHAD. ASLAM ARUNAKUMARI PONNADA", "email": "joseph@phoenixinternational.com.au"}]},
+  {id:"ven_043",name:"JENSEN HUGHES",discipline:"Fire & Life Safety",website:"https://www.jensenhughes.com",status:"active",notes:"",contacts:[{"name": "SHAMIM SUMAR", "email": "ssumar@rjagroup.com"}]},
+  {id:"ven_044",name:"EXOVA (DUBAI)",discipline:"Fire & Life Safety",website:"https://www.exova.com",status:"active",notes:"",contacts:[{"name": "HIREN PATEL", "email": "hiren.patel@exova.com"}]},
+  {id:"ven_045",name:"FERCO",discipline:"Fire & Life Safety",website:"https://www.fercoshutters.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_046",name:"FIRESTONE",discipline:"Fire & Life Safety",website:"https://www.firestone.com",status:"active",notes:"",contacts:[{"name": "ALBERT CEDIEL", "email": "acediel@firestonebps.com"}]},
+  {id:"ven_047",name:"KDF GROUP",discipline:"Flooring",website:"https://www.kdf.gr",status:"active",notes:"",contacts:[{"name": "IRYNA LOBACHOVA", "email": "i.lobachova@premiumflooringuae.com"}]},
+  {id:"ven_048",name:"COVERING CONCEPTSGLOBAL",discipline:"Flooring",website:"https://www.coveringconceptsglobal.com",status:"active",notes:"",contacts:[{"name": "NANDIA RACHDI", "email": "nadia.r@nicheme.com"}]},
+  {id:"ven_049",name:"METER SQUARED",discipline:"Flooring",website:"https://www.metresquared.ae",status:"active",notes:"",contacts:[{"name": "NEHA SONAR", "email": "neha@metersquared.com"}]},
+  {id:"ven_050",name:"ACE",discipline:"Geotechnical",website:"",status:"active",notes:"",contacts:[{"name": "MOHAMMED AL SHATNANWI", "email": "mshatnawi@aces-int.com"}]},
+  {id:"ven_051",name:"THE VERO STUDIO",discipline:"Landscape",website:"https://www.theverostudio.com",status:"active",notes:"",contacts:[{"name": "HENRY DUCK KATHERINE LIM MAYA ZOUEIN", "email": "henry@theverostudio.com"}]},
+  {id:"ven_052",name:"CRACKNELL",discipline:"Landscape",website:"https://www.cracknell.com",status:"active",notes:"",contacts:[{"name": "DAVID CRACKNELL VINOD GEORGE ROBERT SHAKESPEAR DONNA MARTINEZ HELEN BURNSIDE BINDU THOMAS JOCELYN ESTERLLA TAN", "email": "david.cracknell@cracknell.com"}]},
+  {id:"ven_053",name:"KAMELIA",discipline:"Landscape",website:"https://www.kamelia.ae",status:"active",notes:"",contacts:[{"name": "KAMELIA BIN ZAAL LOVELLA GOMOLO MAYNARD L PRINCIPE LEIYAH MENDOZA", "email": "kamelia@kamelia.ae"}]},
+  {id:"ven_054",name:"CDG COTTINGHAM DESIGN GROUP",discipline:"Landscape",website:"https://www.cdesigngrp.com",status:"active",notes:"",contacts:[{"name": "ANN IBRAHIM", "email": "annreda@cdesigngrp.com"}]},
+  {id:"ven_055",name:"LW",discipline:"Landscape",website:"",status:"active",notes:"",contacts:[{"name": "JOZEF KRALIK", "email": "jozef.kralik@lw.co"}]},
+  {id:"ven_056",name:"WAHO",discipline:"Landscape",website:"https://www.waholandscape.com",status:"active",notes:"",contacts:[{"name": "SAM SPINKS SUZIE KAINER", "email": "sam@wahodesign.com"}]},
+  {id:"ven_057",name:"DESERT INK",discipline:"Landscape",website:"https://www.desert-ink.com",status:"active",notes:"",contacts:[{"name": "DUNCAN DENLEY", "email": "duncan.denley@desertgroup.ae"}]},
+  {id:"ven_058",name:"INSITE LANDSCAPE",discipline:"Landscape",website:"https://www.insiteinternational.com",status:"active",notes:"",contacts:[{"name": "LYSHEL CARDANO ROWAN D'ACRY REMI BINT", "email": "lyshel.cardano@insiteinternational.com"}]},
+  {id:"ven_059",name:"ICON - LandScape & Infra",discipline:"Landscape",website:"https://www.i-con.ae",status:"active",notes:"",contacts:[{"name": "ALEXANDER CARLILE AILA", "email": "alexander.carlile@i-con.ae"}]},
+  {id:"ven_060",name:"SQUARE M",discipline:"Landscape",website:"https://www.squaremdesign.co",status:"active",notes:"",contacts:[{"name": "QUINTINE DAVIDSON MATTHEW EMLPSALL", "email": "quintin@squaremdesign.co"}]},
+  {id:"ven_061",name:"WITTEVEEN + BOS (W+B)",discipline:"Landscape",website:"https://www.witteveenbos.com",status:"active",notes:"",contacts:[{"name": "PATRICK BLOM", "email": "partick.blom@witteveenbos.com"}]},
+  {id:"ven_062",name:"BIOO ARABIA",discipline:"Landscape",website:"https://www.biooarabia.com",status:"active",notes:"",contacts:[{"name": "TALAL M.ADDAS", "email": "talal@biooarabia.com"}]},
+  {id:"ven_063",name:"KRISTINA ZANIC",discipline:"Interior Design",website:"https://www.kristinazanic.com",status:"active",notes:"",contacts:[{"name": "KRISTINA ZANIC MAY RV GALLARDO", "email": "kristina@kristinazanic.com"}]},
+  {id:"ven_064",name:"LW",discipline:"Interior Design",website:"https://www.lw.co",status:"active",notes:"",contacts:[{"name": "JESPER GODSK ISABLE PINTADO", "email": "jesper.godsk@lw.co"}]},
+  {id:"ven_065",name:"WA INTERNATIONAL",discipline:"Interior Design",website:"https://www.wa-international.com",status:"active",notes:"",contacts:[{"name": "MARCELLE JAGGARD GOVIND NAYAK", "email": "marcelle.j@wai.ae"}]},
+  {id:"ven_066",name:"PALLAVI DEAN",discipline:"Interior Design",website:"https://www.designbyroar.com",status:"active",notes:"",contacts:[{"name": "PALLAVI DEAN", "email": "pallavi@pallavidean.com"}]},
+  {id:"ven_067",name:"MMAC",discipline:"Interior Design",website:"",status:"active",notes:"",contacts:[{"name": "CHRISTIAN MERIEAU", "email": "cmerieau@mmac-associates.com"}]},
+  {id:"ven_068",name:"GA DESIGN (BUDAPEST)",discipline:"Interior Design",website:"https://www.thega-group.com",status:"active",notes:"",contacts:[{"name": "PAUL WOODS", "email": "pwoods@thega-group.com"}]},
+  {id:"ven_069",name:"HBA (Dubai)",discipline:"Interior Design",website:"https://www.hba.com",status:"active",notes:"",contacts:[{"name": "SARA ALI IBRAHIM", "email": "sara.ali@hba.com"}]},
+  {id:"ven_070",name:"GAJ",discipline:"Interior Design",website:"https://www.godwinaustenjohnson.com",status:"active",notes:"",contacts:[{"name": "NATHAN CARTWRIGHT", "email": "nathan.cartwright@gaj.ae"}]},
+  {id:"ven_071",name:"WILSON & ASSOCIATES",discipline:"Interior Design",website:"https://www.wilsonassociates.com",status:"active",notes:"",contacts:[{"name": "DARCY L LAWRENCE ISABALE PINTADO ANDREJA MAROLT", "email": "dlawrence@wilsonassoc.com"}]},
+  {id:"ven_072",name:"DWP",discipline:"Interior Design",website:"https://www.dwp.com",status:"active",notes:"",contacts:[{"name": "ELIZABETH VALKOVICS KIMBERLEY DEAN JUSTIN WELLS", "email": "elizabeth.v@dwp.com"}]},
+  {id:"ven_073",name:"KCA INTERNATIONAL DESIGNERS LTD.",discipline:"Interior Design",website:"https://www.kca-int.com",status:"active",notes:"",contacts:[{"name": "GRAHAM BENTON", "email": "graham.benton@kca-int.com"}]},
+  {id:"ven_074",name:"PERKINS + WILL",discipline:"Interior Design",website:"https://www.perkinswill.com",status:"active",notes:"",contacts:[{"name": "OMAR FAROOQ DIANE THORSEN", "email": "omar.farooq@perkinswill.com"}]},
+  {id:"ven_075",name:"LW DESIGN GROUP (DUBAI)",discipline:"Interior Design",website:"https://www.lwdesigngroup.com",status:"active",notes:"",contacts:[{"name": "COLIN DOYLE", "email": "colin.doyle@lw.co"}]},
+  {id:"ven_076",name:"IR IDEAL REALITY INTERIOR (DUBAI)",discipline:"Interior Design",website:"https://www.irinterior.com",status:"active",notes:"",contacts:[{"email": "info@irinterior.com"}]},
+  {id:"ven_077",name:"SENSI TRADING",discipline:"Interior Design",website:"https://www.sensi.ae",status:"active",notes:"",contacts:[{"name": "RAYAN", "email": "rayan@sensi.ae"}]},
+  {id:"ven_078",name:"METER SQUARED",discipline:"Interior Design",website:"https://www.metersquared.com",status:"active",notes:"",contacts:[{"name": "NEHA SONAR", "email": "neha@metersquared.ae"}]},
+  {id:"ven_079",name:"DUTCO INTERIORS",discipline:"Interior Design",website:"https://www.dutcoconstruction.com",status:"active",notes:"",contacts:[{"name": "JOANE MORADA", "email": "joane.morada@dbb.ae"}]},
+  {id:"ven_080",name:"MCTS",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[{"name": "MICHAEL CHABOWSKI", "email": "mchabowski@mctservices.com"}]},
+  {id:"ven_081",name:"CKP",discipline:"Kitchen & Hospitality",website:"https://www.ckphospitality.com",status:"active",notes:"",contacts:[{"name": "MELISSA YARMAN JOCELYN PANLAQUI", "email": "info@ckphospitality.com"}]},
+  {id:"ven_082",name:"TRICON",discipline:"Kitchen & Hospitality",website:"https://www.tricon.ae",status:"active",notes:"",contacts:[{"name": "EDWARD HARVEY PAUL GREENWOOD", "email": "sales@tricon.ae"}]},
+  {id:"ven_083",name:"FONDUE",discipline:"Kitchen & Hospitality",website:"https://www.fondue-group.com",status:"active",notes:"",contacts:[{"name": "MARK A BURNS", "email": "info@fondue-group.com"}]},
+  {id:"ven_084",name:"HPG",discipline:"Kitchen & Hospitality",website:"https://www.hpgconsulting.com",status:"active",notes:"",contacts:[{"name": "NAVIN KUMAR YOGESH NAGER", "email": "navin@hpgconsulting.com"}]},
+  {id:"ven_085",name:"FLOATW AND DREW (GERMANY)",discipline:"Kitchen & Hospitality",website:"https://www.fdconsult.de",status:"active",notes:"",contacts:[{"name": "MICHAEL FLATOW", "email": "mflatow@fdconsult.de"}]},
+  {id:"ven_086",name:"FSCS (SINGAPORE)",discipline:"Kitchen & Hospitality",website:"https://www.fscs.sg",status:"active",notes:"",contacts:[{"name": "KUEK JUN", "email": "weijun.kuek@fscs.sg"}]},
+  {id:"ven_087",name:"HOUSE OF ROHI",discipline:"Kitchen & Hospitality",website:"https://www.houseofrohl.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_088",name:"UTOPIA BATH & KITCHEN",discipline:"Kitchen & Hospitality",website:"https://www.utopiabathandkitchen.com",status:"active",notes:"",contacts:[{"name": "AFRAH FAROOQUI", "email": "afrah@utopiabathandkitchen.com"}]},
+  {id:"ven_089",name:"PEDINI KITCHEN",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_090",name:"DELTA LIGHTING",discipline:"Lighting Design",website:"http://deltalightingdesign.com",status:"active",notes:"",contacts:[{"name": "ZIAD FATTOUH ELENI SAVVIDOU MAYA ZOUEIN", "email": "ziad@deltalighting.ae"}]},
+  {id:"ven_091",name:"LIGHT TOUCH PLD",discipline:"Lighting Design",website:"https://www.lighttouchpld.com",status:"active",notes:"",contacts:[{"name": "PAUL MILES REDECCA EATWELL EMMA DAVIDES MAE MANALO VINA M COMPANA", "email": "paul.miles@lighttouchpld.ae"}]},
+  {id:"ven_092",name:"DPA LIGHTING",discipline:"Lighting Design",website:"https://www.dpalighting.com",status:"active",notes:"",contacts:[{"name": "DAVID McNEIL DOUGLAS BRENNAN LEE SWEETMAN", "email": "dm@dpalighting.com"}]},
+  {id:"ven_093",name:"VISUAL ENERGY",discipline:"Lighting Design",website:"",status:"active",notes:"",contacts:[{"name": "AMY ROSSETTI LAURENCE TITTON", "email": "a.rosetti@visualenergy.org"}]},
+  {id:"ven_094",name:"LIGHTALLIANCE",discipline:"Lighting Design",website:"https://www.lightalliance.com",status:"active",notes:"",contacts:[{"name": "KEVIN J GRANT JAMIE R WATT OLIVER HILL RICK PRIOR", "email": "kevin@lightalliance.com"}]},
+  {id:"ven_095",name:"SMITH TAIT",discipline:"Lighting Design",website:"https://www.smithtait.com",status:"active",notes:"",contacts:[{"name": "RUPERT TAIT", "email": "rupert@smithtait.com>"}]},
+  {id:"ven_096",name:"NULTY LIGHTING",discipline:"Lighting Design",website:"https://www.nultylighting.co.uk",status:"active",notes:"",contacts:[{"name": "MARK VOWLES ANGELA ABOU ANTOUN", "email": "mark@nultylighting.co.uk"}]},
+  {id:"ven_097",name:"UMAYA LIGHTING DESIGN",discipline:"Lighting Design",website:"https://www.umayalighting.com",status:"active",notes:"",contacts:[{"name": "ALEX SHAW WAJIH SMADI", "email": "alex.shaw@umayalighting.com"}]},
+  {id:"ven_098",name:"PROBE ELECTRICAL",discipline:"Lighting Design",website:"",status:"active",notes:"",contacts:[{"name": "MS.GOPIKA", "email": "sales@probe-electrical.com"}]},
+  {id:"ven_099",name:"SYLVANIA LIGHTING",discipline:"Lighting Design",website:"https://www.sylvania-lighting.com",status:"active",notes:"",contacts:[{"name": "DIBYENDU SAHA ABDULSATTAR MULL", "email": "dibyendu.saha@sylvania-lighting.com"}]},
+  {id:"ven_100",name:"ZKLD LIGHT DESIGN STUDIO",discipline:"Lighting Design",website:"https://www.zkldstudio.com",status:"active",notes:"",contacts:[{"name": "FIRAT KARABAG", "email": "firat@zkldstudio.com"}]},
+  {id:"ven_101",name:"LET DESIGN (DUBAI)",discipline:"Lighting Design",website:"https://www.letdesignlighting.com",status:"active",notes:"",contacts:[{"name": "DEEPU RAJ", "email": "deepu21@eim.ae"}]},
+  {id:"ven_102",name:"CD+M LIGHTING DESIGN GROPU (DUBAI)",discipline:"Lighting Design",website:"https://www.cdmlight.com",status:"active",notes:"",contacts:[{"name": "COURTNEY MARK", "email": "cmark@cdmlight.com"}]},
+  {id:"ven_103",name:"PRECIOSA LIGHTING",discipline:"Lighting Design",website:"https://www.preciosalighting.com",status:"active",notes:"",contacts:[{"name": "JAKUB ZADMSKY", "email": "jakub.zadamsky@preciosa.com"}]},
+  {id:"ven_104",name:"MURANO LIGHTING",discipline:"Lighting Design",website:"https://www.murano.ae",status:"active",notes:"",contacts:[{"name": "KUSH SUNEJA", "email": "kush@murano.ae"}]},
+  {id:"ven_105",name:"ARTEMIDE MIDDLE EAST (D3)",discipline:"Lighting Design",website:"https://www.artemide.com",status:"active",notes:"",contacts:[{"name": "MONIQUE CALLEJA", "email": "mcalleja@artemide.com"}]},
+  {id:"ven_106",name:"ARKI LIBART",discipline:"Lighting Design",website:"https://www.arkilibart.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_107",name:"SPATIAL VIBES",discipline:"Lighting Design",website:"https://www.spatialvibes.com",status:"active",notes:"",contacts:[{"name": "KUSH SUNEJA", "email": "kush@spatialvibes.com"}]},
+  {id:"ven_108",name:"SEED ENGINEERING",discipline:"MEP",website:"https://www.seedengineering.com",status:"active",notes:"",contacts:[{"name": "SANU MATTHEW AMRUTHA PURSHU", "email": "sanu@seedengineering.com"}]},
+  {id:"ven_109",name:"CLARKE SAMADHIN",discipline:"MEP",website:"https://www.samadhin.com",status:"active",notes:"",contacts:[{"name": "NEIL CLARKE MIKE SAMADHIN", "email": "nclarke@clarkesamadhin.com"}]},
+  {id:"ven_110",name:"CONSISTENT ENGG CONSULTANTS",discipline:"MEP",website:"https://consistentconsultants.com",status:"active",notes:"",contacts:[{"name": "PIYUSH S SHAH SAGAR KULKARNI", "email": "piyush@consistentconsultants.com"}]},
+  {id:"ven_111",name:"JAIN ENGG CONSULTANTS",discipline:"MEP",website:"https://jainconsultants.com",status:"active",notes:"",contacts:[{"name": "KHALIL ATIEH", "email": "katieh@jainconsultants.com"}]},
+  {id:"ven_112",name:"IBA",discipline:"MEP",website:"",status:"active",notes:"",contacts:[{"name": "NIDAL ABDUL BAKI JAMIL BOUTEEN JAVID HUSSAIN", "email": "nidal@ianbanham.com"}]},
+  {id:"ven_113",name:"FOREMAN ROBERTS",discipline:"MEP",website:"https://foremanroberts.com",status:"active",notes:"",contacts:[{"name": "LEE WILLIAMS", "email": "igwilliams@foremanroberts.com"}]},
+  {id:"ven_114",name:"WME",discipline:"MEP",website:"",status:"active",notes:"",contacts:[{"name": "GOPAN RAJ", "email": "g.raj@wmeglobal.com"}]},
+  {id:"ven_115",name:"JPW CONSULTING GROUP",discipline:"MEP",website:"https://www.jpwconsulting.com",status:"active",notes:"",contacts:[{"name": "GARY WALTON"}]},
+  {id:"ven_116",name:"FIRST CITI CONSULTANT",discipline:"MEP",website:"https://www.firstciticonsult.com",status:"active",notes:"",contacts:[{"name": "CARLO THOMAS", "email": "cthomas@consult-ae.com"}]},
+  {id:"ven_117",name:"CROWN HOME CONSULTANT",discipline:"MEP",website:"https://www.chcint.com",status:"active",notes:"",contacts:[{"name": "MOHAMED ABDEL MONGEE", "email": "sameh.saeed@gmail.com"}]},
+  {id:"ven_118",name:"P&T ARCHITECTS (DUBAI)",discipline:"MEP",website:"https://www.p-t-group.com",status:"active",notes:"",contacts:[{"name": "JAMES ABBOTT", "email": "james@ptdubai.ae"}]},
+  {id:"ven_119",name:"SSH INTERNATIONAL (DUBAI)",discipline:"MEP",website:"https://www.sshic.com",status:"active",notes:"",contacts:[{"name": "MICHAEL BYRON", "email": "michael.byron@sshic.com"}]},
+  {id:"ven_120",name:"DEP (BEIRUT)",discipline:"MEP",website:"https://www.departners.com",status:"active",notes:"",contacts:[{"name": "YOUSSEF GHANTOUS", "email": "info@deppartners.com"}]},
+  {id:"ven_121",name:"JUNG GULF ELECTRICAL EQUIPMENT LLC",discipline:"MEP",website:"https://www.jung.ae",status:"active",notes:"",contacts:[{"name": "Yasmeen Al Shariah", "email": "y.alshariah@jung.ae"}]},
+  {id:"ven_122",name:"TOTAL BUILDING SOLUTION",discipline:"MEP",website:"https://www.tbsfze.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_123",name:"GCE CONSULTANTS",discipline:"MEP",website:"https://www.greencec.ae",status:"active",notes:"",contacts:[{"name": "ABDULLA.K", "email": "a.kutty@greencec.ae"}]},
+  {id:"ven_124",name:"DESIGN INFINITY",discipline:"MEP",website:"https://www.design-infinity.com",status:"active",notes:"",contacts:[{"name": "ABDUL HAMID AL ASADI", "email": "abdul@design-infinity.com"}]},
+  {id:"ven_125",name:"BEYOND LIMITS",discipline:"Project Management",website:"https://www.expobeyondlimits.com",status:"active",notes:"",contacts:[{"name": "Read Raydan", "email": "raed@expobeyondlimits.com>"}]},
+  {id:"ven_126",name:"ALEXANDAR MAC",discipline:"Project Management",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_127",name:"NWS INTERNATIONAL",discipline:"Quantity Surveying",website:"https://www.nws-international.com",status:"active",notes:"",contacts:[{"name": "BRYAN SCATTERTY JUSTIN VENTZKE", "email": "bryan@nwsint.com"}]},
+  {id:"ven_128",name:"BAKER WILKINS & SMITH (BWS)",discipline:"Quantity Surveying",website:"https://www.bakerwilkinssmith.com",status:"active",notes:"",contacts:[{"name": "JOHN VINT", "email": "jvint@bwsuae.ae"}]},
+  {id:"ven_129",name:"C-QUEST",discipline:"Quantity Surveying",website:"https://www.c-questintl.com",status:"active",notes:"",contacts:[{"name": "LOIDALYN IMBANG", "email": "loidalyn.imbang@c-questintl.com"}]},
+  {id:"ven_130",name:"OMNIUM",discipline:"Quantity Surveying",website:"https://www.omniumint.com",status:"active",notes:"",contacts:[{"name": "KIERAN DUCKWORTH", "email": "kieran.duckworth@omniunint.com"}]},
+  {id:"ven_131",name:"JLL",discipline:"Quantity Surveying",website:"https://www.jll-mena.com",status:"active",notes:"",contacts:[{"name": "Steven Blandford", "email": "steven.blandford@eu.jll.com"}]},
+  {id:"ven_132",name:"DTA",discipline:"Quantity Surveying",website:"https://www.dta-me.com",status:"active",notes:"",contacts:[{"name": "DIPAK TAILOR", "email": "dipak@dta-me.com"}]},
+  {id:"ven_133",name:"RESTRATA",discipline:"Security Consultancy",website:"https://www/restrata.com",status:"active",notes:"",contacts:[{"name": "ALBAN STEPHANT DAVID KAUFMAN", "email": "astephant@restrata.com"}]},
+  {id:"ven_134",name:"CONTROL RISKS",discipline:"Security Consultancy",website:"https://www.controlrisks.com",status:"active",notes:"",contacts:[{"name": "RAY HARRIS MIKE WOLFF", "email": "raymond.harris@controlrisks.com"}]},
+  {id:"ven_135",name:"INVERUS",discipline:"Security Consultancy",website:"https://www.inverusgroup.com",status:"active",notes:"",contacts:[{"name": "RAYMOND HARRIS", "email": "raymond.harris@inverusgroup.com"}]},
+  {id:"ven_136",name:"BARC SOLUTIONS",discipline:"Security Consultancy",website:"https://www.barc.solutions",status:"active",notes:"",contacts:[{"name": "OLIVER VAN DEN BROEK", "email": "oliver@barc.solutions"}]},
+  {id:"ven_137",name:"ARUP",discipline:"Security Consultancy",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_138",name:"EMAAR TECHNOLOGIES",discipline:"Security Consultancy",website:"",status:"active",notes:"",contacts:[{"name": "GANESH MITKARI", "email": "gmitkari@emaar.ae"}]},
+  {id:"ven_139",name:"INFOSIGHT CONSULTANTS DMCC",discipline:"Security Consultancy",website:"https://www.info-sight.net",status:"active",notes:"",contacts:[{"name": "JORGE LUIS", "email": "rfpinfosight@gmail.com"}]},
+  {id:"ven_140",name:"CUNDALL",discipline:"Security Consultancy",website:"https://www.cundall.com",status:"active",notes:"",contacts:[{"name": "JON LEE", "email": "j.lee@cundall.com"}]},
+  {id:"ven_141",name:"ARKAN",discipline:"Security Consultancy",website:"",status:"active",notes:"",contacts:[{"name": "ROBERT KERR SHAMEEN PINTO", "email": "robert.kerr@ejadah.ae"}]},
+  {id:"ven_142",name:"RENDERBY",discipline:"Renderings / Visualisation",website:"",status:"active",notes:"",contacts:[{"name": "HETAL PUNJABI", "email": "hetal@renderby.co"}]},
+  {id:"ven_143",name:"LIGHT ORIGIN: PRACOWNIA 3D MARCIN KASPRZAK",discipline:"Renderings / Visualisation",website:"",status:"active",notes:"",contacts:[{"email": "office@pracownia3d.pl"}]},
+  {id:"ven_144",name:"SAL COMMUNICATIONS LLC",discipline:"Renderings / Visualisation",website:"",status:"active",notes:"",contacts:[{"name": "SALIN AMANDA LOUIS", "email": "letstalk@salcommunications.com"}]},
+  {id:"ven_145",name:"DYNAMIC EMPLOYMENT SERVICES LLC",discipline:"Renderings / Visualisation",website:"",status:"active",notes:"",contacts:[{"email": "accounts@nathanhr.com"}]},
+  {id:"ven_146",name:"CG EVERMOTION",discipline:"Renderings / Visualisation",website:"",status:"active",notes:"",contacts:[{"name": "SARAH VIYAAN", "email": "info@cgevermotion.com"}]},
+  {id:"ven_147",name:"LIMAH DESIGN",discipline:"Signage & Wayfinding",website:"",status:"active",notes:"",contacts:[{"name": "OLGA ROWLEY AMER MANSOUR", "email": "olga.rowley@limahdesign.com"}]},
+  {id:"ven_148",name:"DEZIGNTECHNIC",discipline:"Signage & Wayfinding",website:"https://www.dezigntechnic.ae",status:"active",notes:"",contacts:[{"name": "SHRUTI BARNABA MOHAMED ZAKARIA ANDREW MARCHANT", "email": "shruti@edezigntechnic.ae"}]},
+  {id:"ven_149",name:"SIGN WORKS",discipline:"Signage & Wayfinding",website:"https://www.signworks.ae",status:"active",notes:"",contacts:[{"name": "JACK SIRIANI", "email": "jack@signworks.ae"}]},
+  {id:"ven_150",name:"HC DESIGN",discipline:"Signage & Wayfinding",website:"",status:"active",notes:"",contacts:[{"name": "HANNA C CHOUEIRI", "email": "hccdesignme@gmail.com"}]},
+  {id:"ven_151",name:"GENIUS LOCI",discipline:"Signage & Wayfinding",website:"https://www.geniusloci-uae.com",status:"active",notes:"",contacts:[{"name": "GRAEMIE ERNES", "email": "graeme.erens@geniusloci-uae.com"}]},
+  {id:"ven_152",name:"THE DESIGN COMPANY",discipline:"Signage & Wayfinding",website:"https://www.tdc.ae",status:"active",notes:"",contacts:[{"name": "LIAM FLYNN PAUL DERRICK", "email": "liam@tdc.ae"}]},
+  {id:"ven_153",name:"PROJECTIVE",discipline:"Signage & Wayfinding",website:"https://www.projective.design",status:"active",notes:"",contacts:[{"name": "ELENA CALDERON HANADI EL AHMADIEH", "email": "elena@projective.design>"}]},
+  {id:"ven_154",name:"M&A SIGN CONSULTANT",discipline:"Signage & Wayfinding",website:"https://www.masignconsultants.com",status:"active",notes:"",contacts:[{"name": "ANDREW ALLEN", "email": "info@masignconsultants.com"}]},
+  {id:"ven_155",name:"BRIMAXX (DUBAI)",discipline:"Signage & Wayfinding",website:"https://www.brimaxx-consultants.com",status:"active",notes:"",contacts:[{"name": "CHRISTIAN DERGLEHNER", "email": "chris@brimaxx-consultants.com"}]},
+  {id:"ven_156",name:"ATELIER DSIGN ALETIQUE",discipline:"Signage & Wayfinding",website:"https://www.atelierdsignaletique.com",status:"active",notes:"",contacts:[{"name": "MAROUA ALOUINI", "email": "maroua@atelierdsignaletique.com"}]},
+  {id:"ven_157",name:"ASG ENGG. CONSULTANTS",discipline:"Structural Design",website:"",status:"active",notes:"",contacts:[{"name": "DEREK ASTBURY", "email": "dastbury@asgconsultants.com"}]},
+  {id:"ven_158",name:"BG&E ENGINEERS",discipline:"Structural Design",website:"",status:"active",notes:"",contacts:[{"name": "SIMON CORDEROY", "email": "simon.corderoy@bgeeng.com"}]},
+  {id:"ven_159",name:"DE SIMONE",discipline:"Structural Design",website:"",status:"active",notes:"",contacts:[{"name": "AHMED OSMAN EMMY EPPERSON", "email": "ahmed.osman@de-simone.com"}]},
+  {id:"ven_160",name:"SALAMA/MAK",discipline:"Structural Design",website:"",status:"active",notes:"",contacts:[{"name": "ASSAAD IBRAHIM SALAMA HENRRY BESHARA", "email": "asalama@pdmsweb.com"}]},
+  {id:"ven_161",name:"ECONSTRUCT",discipline:"Structural Design",website:"",status:"active",notes:"",contacts:[{"name": "KHALED ISMAIL", "email": "khaled.ismail@econstruct.ae"}]},
+  {id:"ven_162",name:"CUNDALL",discipline:"Structural Design",website:"",status:"active",notes:"",contacts:[{"name": "CHRIS"}]},
+  {id:"ven_163",name:"AWAJ",discipline:"Structural Design",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_164",name:"ARUP",discipline:"Structural Design",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_165",name:"ARAB CENTER (ACES)",discipline:"Soil Investigation",website:"",status:"active",notes:"",contacts:[{"name": "MOHAMMED MUSTHAFA", "email": "aces3@emirates.net.ae"}]},
+  {id:"ven_166",name:"AL HAI AND MUKADDAM",discipline:"Soil Investigation",website:"",status:"active",notes:"",contacts:[{"name": "FARID WAQAS AHMED", "email": "info@ahamgeo.com"}]},
+  {id:"ven_167",name:"GTC",discipline:"Soil Investigation",website:"",status:"active",notes:"",contacts:[{"name": "EMAD SHARIF", "email": "admin@gtc-lab.com"}]},
+  {id:"ven_168",name:"WIMPY LABORATORIES",discipline:"Soil Investigation",website:"",status:"active",notes:"",contacts:[{"name": "VINEETH SADANANDAN", "email": "sales.dxb1@wimpylab.com"}]},
+  {id:"ven_169",name:"LONESTAR LABORATORY",discipline:"Soil Investigation",website:"",status:"active",notes:"",contacts:[{"name": "HEBA SHEIKH", "email": "sales101@lonestar-lab.com"}]},
+  {id:"ven_170",name:"FUGRO",discipline:"Soil Investigation",website:"",status:"active",notes:"",contacts:[{"name": "SUJATHA MANOJ JOEVET JANE TUMILAP LOUIS BURNAD NIDAL DANDASHI ARJEN JAEGER", "email": "s.manoj@fugrome.com"}]},
+  {id:"ven_171",name:"WATER MASTER",discipline:"Spa, Pool & Water Features",website:"",status:"active",notes:"",contacts:[{"name": "JEAN PAUL", "email": "jpboueri@watermasteruae.com"}]},
+  {id:"ven_172",name:"360 WELNESS LLC",discipline:"Spa, Pool & Water Features",website:"https://www.360-wellness.com",status:"active",notes:"",contacts:[{"name": "SHUAIB AKRAM", "email": "sales5@360-wellness.com"}]},
+  {id:"ven_173",name:"WSP",discipline:"Sustainability",website:"https://www.wsp.com",status:"active",notes:"",contacts:[{"name": "EIRINI MATSOUKI MARCIN WRONOWSKI", "email": "eirini.matsouki@wsp.com"}]},
+  {id:"ven_174",name:"SUSNOMICS ENGINEERING SYSTEMS FZ-L",discipline:"Sustainability",website:"https://www.susnomics.com",status:"active",notes:"",contacts:[{"name": "SAI KRISHNA G", "email": "saikrishna@susnomics.com"}]},
+  {id:"ven_175",name:"SEENEXUS",discipline:"Sustainability",website:"https://www.seenexus.ae",status:"active",notes:"",contacts:[{"name": "KARIM EL JISR", "email": "karim@seenexus.ae"}]},
+  {id:"ven_176",name:"MEG",discipline:"Sustainability",website:"https://www.meg-consultants.com",status:"active",notes:"",contacts:[{"name": "BILAL MAAROUF", "email": "bilal.maarouf@meg-consultants.com"}]},
+  {id:"ven_177",name:"AESG",discipline:"Sustainability",website:"https://www.aesg-me.com",status:"active",notes:"",contacts:[{"name": "PHILLIPA GRANT", "email": "p.grant@aesg-me.com"}]},
+  {id:"ven_178",name:"EMS",discipline:"Sustainability",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_179",name:"OXYGEN CONSULTANCY LIMITED",discipline:"Sustainability",website:"https://www.oxygen-sces.com",status:"active",notes:"",contacts:[{"name": "SAID QALLUD", "email": "s.qallud@oxygen-sces.com"}]},
+  {id:"ven_180",name:"ELEVATION CARBON",discipline:"Sustainability",website:"https://elevation-sbs.com",status:"active",notes:"",contacts:[{"name": "MIKE", "email": "mike@elevation-sbs.com"}]},
+  {id:"ven_181",name:"MOTT MACDONALD",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"name": "HELEN SMITH Mr. Simon Cartwright", "email": "helen.smith@mottmac.com"}]},
+  {id:"ven_182",name:"AURECON GROUP",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"name": "IAN FLYNN - DIRECTOR INFRA MAHER ALMASRI - INFRA AHMED ELOLEMY - BRIDGE NADEEM SHAKER - TIS", "email": "ian.flynn@aurecongroup.com"}]},
+  {id:"ven_183",name:"ROAD AND TRAFFICE ENGINEERING (RTC)",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"name": "KRISTINE BALAGTAS", "email": "mkristine@rtceng.com"}]},
+  {id:"ven_184",name:"CROWN CONSULTANCT",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"email": "info@crownconsult.com"}]},
+  {id:"ven_185",name:"CRISP",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"email": "info@crisp.ae"}]},
+  {id:"ven_186",name:"NRJ ENGINEEERS",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"email": "admin@nrjengineers.com"}]},
+  {id:"ven_187",name:"AQLEH ENGINEERING CONSULTANT (AEC)",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_188",name:"Arup Gulf Ltd",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"name": "Mr. Majed Kaddoura", "email": "majed.kaddoura@arup.com"}]},
+  {id:"ven_189",name:"Atkins",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"name": "Mr. Roger Cruickshank", "email": "roger.cruickshank@atkinsacuity.com"}]},
+  {id:"ven_190",name:"Jacobs [Halcrow]",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"name": "Mr. Nabeel Khan", "email": "nabeel.khan@ch2m.com"}]},
+  {id:"ven_191",name:"Parsons",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"name": "Dr. Ibrahim M. El Sanhouri", "email": "ibrahim.sanhouri@parsons.com"}]},
+  {id:"ven_192",name:"WSP Middle Eas",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"name": "Mr. Anirudh Bais", "email": "anirudh.bais@wsp.com"}]},
+  {id:"ven_193",name:"Zutari [Aurecon]",discipline:"Transport & Infrastructure",website:"",status:"active",notes:"",contacts:[{"name": "Mr. Nadeem Shakir", "email": "nadeem.shakir@zutari.com"}]},
+  {id:"ven_194",name:"EMIRATES NORTECH SURVEYS LLC",discipline:"Topographical Survey",website:"",status:"active",notes:"",contacts:[{"name": "PAUL D'SOUZA IAN WALLER", "email": "nortech@gmail.com"}]},
+  {id:"ven_195",name:"ABC SURVEYS",discipline:"Topographical Survey",website:"",status:"active",notes:"",contacts:[{"name": "Alex Jevremov", "email": "alex.jevremov@abcsurveys.ae"}]},
+  {id:"ven_196",name:"NOTTINGHAM",discipline:"Topographical Survey",website:"",status:"active",notes:"",contacts:[{"name": "MARINA TALEVSKA", "email": "marina.talevska@nottingham-mep.com"}]},
+  {id:"ven_197",name:"MIDDLE EAST SURVEY",discipline:"Topographical Survey",website:"",status:"active",notes:"",contacts:[{"name": "ASIF", "email": "info@middleeastsurvey.com"}]},
+  {id:"ven_198",name:"BIN SALMAN SURVEY ENGINEERING LLC",discipline:"Topographical Survey",website:"",status:"active",notes:"",contacts:[{"name": "PASIR MEHMOUD AWAN", "email": "landsurvey@ymail.com"}]},
+  {id:"ven_199",name:"NATIONAL SURVEY ENGINEERING",discipline:"Topographical Survey",website:"",status:"active",notes:"",contacts:[{"name": "KURAM JAVED", "email": "nsedubai@eim.ae"}]},
+  {id:"ven_200",name:"NORTH ENGINEERING SURVEY",discipline:"Topographical Survey",website:"",status:"active",notes:"",contacts:[{"name": "ALFRED BERKMANS", "email": "info@nesdubai.com"}]},
+  {id:"ven_201",name:"ACCURATE SURVEY ENGINEERING",discipline:"Topographical Survey",website:"",status:"active",notes:"",contacts:[{"name": "ANIL", "email": "info@accuratesurvey.ae"}]},
+  {id:"ven_202",name:"WIMPY LABORATORIES",discipline:"Topographical Survey",website:"https://www.wimpeylab.com",status:"active",notes:"",contacts:[{"name": "VINEETH SADANANDAN ASAD KHAN", "email": "sales.dxb1@wimpylab.com"}]},
+  {id:"ven_203",name:"FALCON SURVEY ENGINEERING CONSULTANTS",discipline:"Topographical Survey",website:"",status:"active",notes:"",contacts:[{"name": "Ms Gloria", "email": "info@falconsurveyme.com"}]},
+  {id:"ven_204",name:"GLOBAL S.I LABORATORY",discipline:"Topographical Survey",website:"",status:"active",notes:"",contacts:[{"name": "SAJJAD HUSSIN"}]},
+  {id:"ven_205",name:"LERCH BATES",discipline:"Vertical Transportation",website:"https://www.lerchbates.com",status:"active",notes:"",contacts:[{"name": "RICHARD ROBERTS GLADYS BARBOZA", "email": "richard.roberts@lerchbates.com"}]},
+  {id:"ven_206",name:"VTI GLOBAL VERTICAL TRANSPORTATION SYSTEMS CONSULTANT",discipline:"Vertical Transportation",website:"https://www.consultvtig.com",status:"active",notes:"",contacts:[{"name": "SATHIS VEMBAR", "email": "sv@consultvtig.com"}]},
+  {id:"ven_207",name:"ARTICO",discipline:"Vertical Transportation",website:"https://www.aritco.com",status:"active",notes:"",contacts:[{"name": "MOHAMMAD TAHA", "email": "mohammed.taha@aritco.com"}]},
+  {id:"ven_208",name:"ONE SIMULATIONS",discipline:"Wind Tunnel & Stack Effects",website:"",status:"active",notes:"",contacts:[{"name": "Martin Eimermann", "email": "eimermann@onesimulations.com"}]},
+  {id:"ven_209",name:"WINTECH",discipline:"Wind Tunnel & Stack Effects",website:"",status:"active",notes:"",contacts:[{"name": "STEPHEN DWANE", "email": "stephen.dwane@rvt-eng.com"}]},
+  {id:"ven_210",name:"RVT ENGINEERING CONSULTANTS",discipline:"Wind Tunnel & Stack Effects",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_211",name:"CPP WIND CONSULTANTS",discipline:"Wind Tunnel & Stack Effects",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_212",name:"BMT GROUP",discipline:"Wind Tunnel & Stack Effects",website:"https://www.cppwind.com",status:"active",notes:"",contacts:[{"name": "BHAMI ILYAS DR ROY O.DENOON", "email": "bilyas@cppwind.com"}]},
+  {id:"ven_213",name:"MECHARTES",discipline:"Wind Tunnel & Stack Effects",website:"",status:"active",notes:"",contacts:[{"name": "SRIHARI R", "email": "srihari@mechartes.com"}]},
+  {id:"ven_214",name:"RWDI",discipline:"Wind Tunnel & Stack Effects",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_215",name:"GREEN CONSULTING",discipline:"Waste Management",website:"",status:"active",notes:"",contacts:[{"name": "MOHAMED MOHSEN", "email": "mohamed.mohsen@green.co.ae"}]},
+  {id:"ven_216",name:"GREEN VISION CONSULTANTS",discipline:"Waste Management",website:"",status:"active",notes:"",contacts:[{"name": "AHMAD ALAYALY", "email": "contact@greenvisioncons.com"}]},
+  {id:"ven_217",name:"HPG",discipline:"Waste Management",website:"https://www.hpgconsulting.com",status:"active",notes:"",contacts:[{"name": "TASLEEM", "email": "tasleem@hpgconsulting.com"}]},
+  {id:"ven_218",name:"Wilson Associates (Dubai)",discipline:"Interior Design",website:"http://www.wilsonassociates.com",status:"active",notes:"",contacts:[{"name": "Darcy Lawrence", "email": "dlawrence@wilsonassoc.com", "phone": "971 50 111 9753 / 97143820900"}]},
+  {id:"ven_219",name:"MMAC (Dubai)",discipline:"Interior Design",website:"http://www.mmac-associates.com",status:"active",notes:"",contacts:[{"name": "Christian Merieau", "email": "cmerieau@mmac-associates.com", "phone": "+971 561166659/+97144565563"}]},
+  {id:"ven_220",name:"IR Idea Reality Interior (Dubai)",discipline:"Interior Design",website:"https://www.irinterior.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_221",name:"Blue Plate (US)",discipline:"F&B Consultancy",website:"http://www.wilsonassociates.com",status:"active",notes:"",contacts:[{"name": "Dan Q Kwan", "email": "web_con_ny@wilsonassoc.com", "phone": "+1 423-648-6767"}]},
+  {id:"ven_222",name:"Planet F&B (Dubai)",discipline:"F&B Consultancy",website:"http://planet-fb.com",status:"active",notes:"",contacts:[{"name": "Alec Howard", "email": "alec.howard@planet-fb.com", "phone": "+44 7814 279781"}]},
+  {id:"ven_223",name:"Meraki & Modus (Dubai)",discipline:"F&B Consultancy",website:"http://www.thisismeraki.com",status:"active",notes:"",contacts:[{"name": "Angie Hall", "email": "info@thisismeraki.com", "phone": "+971 4 430 3738"}]},
+  {id:"ven_224",name:"WSP (Dubai)",discipline:"MEP",website:"http://www.wsp-pb.com",status:"active",notes:"",contacts:[{"name": "Stephen Royston", "email": "stephen.royston@wspgroup.com", "phone": "+9714 523 1999"}]},
+  {id:"ven_225",name:"Jensen Hughes (Dubai)",discipline:"Fire & Life Safety",website:"http://www.jensenhughes.com",status:"active",notes:"",contacts:[{"name": "Shamim Sumar", "email": "ssumar@rjagroup.com", "phone": "+971 50 8465137/+971 4 8019270"}]},
+  {id:"ven_226",name:"CKP Dubai",discipline:"Kitchen & Hospitality",website:"http://www.ckphospitality.com/contact-us.php",status:"active",notes:"",contacts:[{"name": "Jocelyn Panlaqui", "email": "jocey@ckphospitality.com", "phone": "+97143278987"}]},
+  {id:"ven_227",name:"Flatow and Drew (Germany)",discipline:"Kitchen & Hospitality",website:"http://www.fdconsult.de/en/home.html",status:"active",notes:"",contacts:[{"name": "Michael Flatow", "email": "mflatow@fdconsult.de", "phone": "+49 40 525 94 9611"}]},
+  {id:"ven_228",name:"GWP",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_229",name:"HCI",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[{"name": "Dubai"}]},
+  {id:"ven_230",name:"HCTS",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[{"name": "Dubai"}]},
+  {id:"ven_231",name:"i4 CONSULTANCY SERVICES",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[{"name": "Dubai"}]},
+  {id:"ven_232",name:"KHI INTERNATIONAL (PREVIOUSLY MTD) KHI International Pty Ltd FCSI Professional Member",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[{"name": "Australia"}]},
+  {id:"ven_233",name:"ROUNDHOUSE DESIGN",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_234",name:"SDI CONSULTING",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[{"name": "USA"}]},
+  {id:"ven_235",name:"SEFTON HORN WINCH",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[{"name": "Dubai"}]},
+  {id:"ven_236",name:"THE MARSHALL ASSOCIATES INC.",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[{"name": "USA"}]},
+  {id:"ven_237",name:"HUMBLE ARNOLD ASSOCIATES",discipline:"Kitchen & Hospitality",website:"",status:"active",notes:"",contacts:[{"name": "UK"}]},
+  {id:"ven_238",name:"CD+M Lighting Design Group (Dubai",discipline:"Lighting Design",website:"https://www.cdmlight.com",status:"active",notes:"",contacts:[{"name": "Courtney Mark", "email": "cmark@cdmlight.com", "phone": "+971569598843/+97144416603"}]},
+  {id:"ven_239",name:"Shen Milsom & Wilke LLC (Dubai)",discipline:"AV / IT",website:"https://www.smwllc.com",status:"active",notes:"",contacts:[{"name": "Russell Wood", "email": "rwood@smwllc.com", "phone": "+971 50 306 0965/+971 4 390 2476"}]},
+  {id:"ven_240",name:"Dezigntechnic (Dubai)",discipline:"Signage & Wayfinding",website:"http://dezigntechnic.com",status:"active",notes:"",contacts:[{"name": "Abida Zakarya", "email": "abida@dezigntechnic.ae", "phone": "+971 4 258 3308"}]},
+  {id:"ven_241",name:"Limah design (Dubai)",discipline:"Signage & Wayfinding",website:"http://www.limahdesign.com",status:"active",notes:"",contacts:[{"name": "Amer Mansour", "email": "amer.mansour@limahdesign.com", "phone": "+971 4 3850090"}]},
+  {id:"ven_242",name:"Sensi trading llc (Dubai D3)",discipline:"Specification & Materials",website:"https://www.sensi.ae",status:"active",notes:"",contacts:[{"name": "Rayan Abi Al Mona", "email": "rayan@sensi.ae", "phone": "+971 4 447 4634 / + 971 50 5587115"}]},
+  {id:"ven_243",name:"THE FITOUT",discipline:"Fit-Out",website:"https://www.thefitout.ae",status:"active",notes:"",contacts:[{"name": "Varun Sasidharan", "email": "varun.sasidharan@thefitout.ae", "phone": "+971 4 709 444 (Ext. 415)"}]},
+  {id:"ven_244",name:"MAPIE",discipline:"General",website:"https://www.mapei.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_245",name:"SMART KONNECT",discipline:"General",website:"https://smart-konnect.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_246",name:"ALL GOOD IRONMONGEY",discipline:"General",website:"https://not sure",status:"active",notes:"",contacts:[]},
+  {id:"ven_247",name:"CONSORT ARCHITECTUREAL HARDWARE",discipline:"Specification & Materials",website:"https://www.consortme.com",status:"active",notes:"",contacts:[{"name": "DAVID GRAY DAVID MAY", "email": "david@consortme.com david.may@consortme.com", "title": "DIRECTOR OF OPERATIONS GENERAL MANAGER", "phone": "M: +971 508 281 757 M: +971 554 466 794"}]},
+  {id:"ven_248",name:"LATICRETE",discipline:"Specification & Materials",website:"https://me.laticrete.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_249",name:"MIRAGE",discipline:"Specification & Materials",website:"https://not sure",status:"active",notes:"",contacts:[]},
+  {id:"ven_250",name:"TERRACO",discipline:"Ceramic & Caldding",website:"https://www.terraco.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_251",name:"FLEXBRICK",discipline:"Fa\u00e7ade",website:"https://flexbrick.net",status:"active",notes:"",contacts:[{"name": "NAWAR HASSAN", "email": "nawar hassan <projects@flexbrick.ae>", "title": "PRODUCT CONSULTANT", "phone": "T: + 971 42 243 782"}]},
+  {id:"ven_252",name:"FERCO",discipline:"Ferco Fire & Smoke Curtains, Fire Roller Shutters",website:"https://www.fercoshutters.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_253",name:"FIRESTONE",discipline:"Fire & Safety",website:"https://www.firestone.com",status:"active",notes:"",contacts:[{"name": "ALBERT CEDIEL", "email": "acediel@firestonebps.com", "title": "SPECIFICATIONS MANAGER", "phone": "M: + 34 647 385 627"}]},
+  {id:"ven_254",name:"SNS HAUTE COUTURE LLC",discipline:"Specification & Materials",website:"https://snsgroup.eu",status:"active",notes:"",contacts:[]},
+  {id:"ven_255",name:"FOAM GLASS",discipline:"Specification & Materials",website:"https://www.foamglas.com/en-us",status:"active",notes:"",contacts:[{"name": "KAMLESH", "email": "kamlesh.patil@owenscorning.com", "phone": "M: + 971 507 084 156"}]},
+  {id:"ven_256",name:"ANDREW MOOR ASSOCIATES",discipline:"Specification & Materials",website:"https://andrewmoor.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_257",name:"CHABROS INT GROPU HARDWARE",discipline:"Specification & Materials",website:"https://www.chabros.com",status:"active",notes:"",contacts:[{"name": "ANTHOINE ZIADY LEA BCHERRAWI", "email": "antoine.ziady@chabros.com lea.bcherrawi@chabros.com", "title": "MARKETING SPECIALIST SENIOR MARKETING SPECIALIST", "phone": "M: +971 509 300 751 M: +971 557 407 168"}]},
+  {id:"ven_258",name:"HOUSE OF ROHI",discipline:"Kitchen & Bath",website:"https://houseofrohl.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_259",name:"UTOPIA BATH & KITCHEN",discipline:"Kitchen & Bath",website:"https://www.utopiabathandkitchen.com",status:"active",notes:"",contacts:[{"name": "AFRAH FAROOQUI", "email": "afrah@utopiabathandkitchen.com", "title": "INTERIOR DESIGN CONSULTANT", "phone": "M: +97158 162 1841"}]},
+  {id:"ven_260",name:"NAULTY LIGHTING",discipline:"Lighting Design",website:"https://www.nultylighting.co.uk",status:"active",notes:"",contacts:[{"name": "ANGELA ABOU ANTOUN", "email": "angela@nultylighting.co.uk", "title": "BUSINESS DEVELOPMENT MANAGER", "phone": "M: + 971 529 526 115"}]},
+  {id:"ven_261",name:"GULF 17 TRADING",discipline:"Specification & Materials",website:"https://www.gulf17trading.com",status:"active",notes:"",contacts:[{"name": "EYAD", "email": "eyad@gulf17trading.com", "phone": "M: + 971 502 090 492"}]},
+  {id:"ven_262",name:"IDEAL STANDARD",discipline:"Specification & Materials",website:"https://www.idealstandardgulf.com",status:"active",notes:"",contacts:[{"name": "SARAH NSOULI", "email": "idealstandardgulf@idealstandard.com snsouli@idealstandard.com", "title": "SPECIFICATIONS SPECIALIST", "phone": "M: +971526 450 696"}]},
+  {id:"ven_263",name:"CASA MILINO",discipline:"Specification & Materials",website:"https://casamilanoitaly.com",status:"active",notes:"",contacts:[]},
+  {id:"ven_264",name:"BRU (FABRIC LIBRARY )",discipline:"Specification & Materials",website:"https://brutex.com",status:"active",notes:"",contacts:[{"name": "JALAYNE SCHMAHL", "email": "jalayne.schmahl@fr-one.com", "title": "SALES MANAGER", "phone": "M: + 971 503 537 256"}]},
+  {id:"ven_265",name:"LEVER",discipline:"Specification & Materials",website:"https://www.lever.ae",status:"active",notes:"",contacts:[]},
+  {id:"ven_266",name:"CONSTRUCTION SPECIALITIES",discipline:"Flooring",website:"https://www.c-sgroup.com",status:"active",notes:"",contacts:[{"name": "SAHAR RAGAB", "email": "sragab@c-sgroup.com", "title": "SPECIFICATION PROGRAM MANAGER", "phone": "M: + 971 52 603 4638"}]},
+  {id:"ven_267",name:"BSH WALLS & FLOOR",discipline:"Specification & Materials",website:"https://bshwallsandfloors.com",status:"active",notes:"",contacts:[{"name": "MOHAMMAD HN", "email": "mohammadhn@bshwallsandfloors.com", "title": "BUSINESS DEVELOPMENT MANAGER", "phone": "M: + 971 506 513 283"}]},
+  {id:"ven_268",name:"PEDINI KITCHEN",discipline:"Kitchen & Bath",website:"",status:"active",notes:"",contacts:[]},
+  {id:"ven_269",name:"STUDIOVEE",discipline:"Specification & Materials",website:"https://www.stuidoveeonline.com",status:"active",notes:"",contacts:[{"name": "NELUNIKA DE SLIVA", "email": "nelunika@stuidovee.online", "title": "SALES MANAGER", "phone": "M: + 971 56 5111 149 T: + 971 42 398 322"}]},
+  {id:"ven_270",name:"ARTICO",discipline:"Vti",website:"https://www.aritco.com",status:"active",notes:"",contacts:[{"name": "MOHAMMAD TAHA", "email": "mohammed.taha@aritco.com", "title": "ACCOUNT MANAGER MIDDLE EAST", "phone": "M: + 971 58 2850 719"}]},
+  {id:"ven_271",name:"BUILD STATION",discipline:"Specification & Materials",website:"https://www.buildstation.ae",status:"active",notes:"",contacts:[{"name": "SUZANE JAHJAH", "email": "suzane.jahjah@buildstation", "title": "SPECIFICATION MANAGER", "phone": "M: + 971 5 0 9285 055 T: + 971 42 227 770"}]},
+  {id:"ven_272",name:"CAPAROL",discipline:"Specification & Materials",website:"https://www.caparolarabia.com",status:"active",notes:"",contacts:[{"name": "PAMELA", "email": "pamela.eid@caparol.ae", "title": "N/A", "phone": "T: + 800 227 2765"}]},
+  {id:"ven_273",name:"EUROART",discipline:"Architectural Hardware Furniture Fittings Glass And Showerdoor Hardware",website:"https://www.euro-art.co.uk",status:"active",notes:"",contacts:[{"name": "SANIA SAMREEN", "email": "hello@euro-art.co.uk", "title": "MARKETING SPECIALIST", "phone": "M: + 971 56 968 7500 T: + 971 42 951 105"}]},
+  {id:"ven_274",name:"OPTIMUM GULF",discipline:"Acoustics",website:"https://www.optimumgulf.com",status:"active",notes:"",contacts:[{"name": "NADINE", "email": "nadine.h@optimumgulf.com", "title": "PRODUCTS AND PROJECTS SUPPORT ENGINEER", "phone": "M: +971 50 8188953 T: + 971 4 3851797 (DXB) T: +971 2 642204"}]},
+  {id:"ven_275",name:"JUNG GULF ELECTRICAL EQUIPMENT LLC",discipline:"Electrical",website:"https://www.jung.ae",status:"active",notes:"",contacts:[{"name": "Yasmeen Al Shariah", "email": "y.alshariah@jung.ae", "title": "BUSINESS DEVELOPMENT MANAGER", "phone": "M: +971 52 354 0761 T: + 971 4 368 7275"}]},
+  {id:"ven_276",name:"STUDIO AUSTINN",discipline:"Art & Graphics",website:"https://www.studioaustinn.com",status:"active",notes:"",contacts:[{"name": "AISHA ABDULRAZAK", "email": "aisha@studioaustinn.com", "title": "MAIN ART CONSULTANT", "phone": "M: +971 58 155 8866 WA: + 971 55 510 0328"}]},
+  {id:"ven_277",name:"FOUR DOTS STUDIO",discipline:"Art & Graphics",website:"https://www.fourdotsme.com",status:"active",notes:"",contacts:[{"name": "BEN WEBB", "email": "ben@fourdotsme.com"}]},
+  {id:"ven_278",name:"C&B CONSULT",discipline:"Specification & Materials",website:"https://www.c-bco.com",status:"active",notes:"",contacts:[{"name": "MOUNIR KRONFUL", "email": "m.kronful@candbconsult.com", "title": "MANAGING DIRECTOR", "phone": "M: +971 56 702 3337"}]},
+  {id:"ven_279",name:"DUTCO INTERIORS",discipline:"Interior Fitout",website:"http://www.dutcoconstruction.com",status:"active",notes:"",contacts:[{"name": "JOANE MORADA", "email": "joane.morada@dbb.ae", "title": "BUSINESS DEVELOPMENT COORDINATOR", "phone": "M: +971 0 910 9763 T: + 971 4 880 1370"}]},
+  {id:"ven_280",name:"360 WELLNESS LLC",discipline:"Spa, Pool & Water Features",website:"https://www.360-wellness.com",status:"active",notes:"",contacts:[{"name": "SHUAIB AKRAM", "email": "sales5@360-wellness.com", "title": "ASSISTANT MANAGER-PROJECT SALES", "phone": "T +971 4 333 2175 M +971 58 823 8095"}]},
+  {id:"ven_281",name:"SEAC-SAYED ENGINEERING & ACOUSTIC CONSULTANCY",discipline:"Engineering Design",website:"https://www.syedconsultancy.com",status:"active",notes:"",contacts:[{"name": "YAQOOB SAYEED ALKHAILI", "email": "info@syedconsultancy.com", "title": "SALES ENGINEER", "phone": "M +971 502570027"}]}
+];
+
+// ══════════════════════════════════════════════════════════
+// PHASE 3: VENDOR DATABASE
+// ══════════════════════════════════════════════════════════
+
+const VENDOR_DISCIPLINES = [
+  'AV / IT','Acoustics','Art & Graphics','Conveying Systems',
+  'Energy Consultancy','Engineering Design','Environmental Impact (EIS)',
+  'F&B Consultancy','Façade','Fire & Life Safety','Fit-Out','Flooring',
+  'Geotechnical','Interior Design','Kitchen & Hospitality','Landscape',
+  'Lighting Design','MEP','Project Management','Quantity Surveying',
+  'Renderings / Visualisation','Security Consultancy','Signage & Wayfinding',
+  'Soil Investigation','Spa, Pool & Water Features','Specification & Materials',
+  'Structural Design','Sustainability','Topographical Survey',
+  'Transport & Infrastructure','Vertical Transportation','Waste Management',
+  'Wind Tunnel & Stack Effects','General'
+].sort();
+
+function initVendorData() {
+  if(!db.vendors) db.vendors = [];
+  if(db.vendors.length) return;
+  db.vendors = VENDOR_SEED_DATA;
+  markDirty(); saveDB();
+}
+
+// ── Vendor render ──
+let vendorFilterDisc = '';
+let vendorSearch = '';
+function renderVendors() {
+  initVendorData();
+  const el = document.getElementById('bid-vendors-view');
+  if(!el) return;
+  const discs = ['', ...VENDOR_DISCIPLINES];
+  const vendors = (db.vendors||[]).filter(v => {
+    if(vendorFilterDisc && v.discipline !== vendorFilterDisc) return false;
+    if(vendorSearch && !v.name.toLowerCase().includes(vendorSearch.toLowerCase()) && !(v.discipline||'').toLowerCase().includes(vendorSearch.toLowerCase())) return false;
+    return true;
+  });
+  const byDisc = {};
+  vendors.forEach(v => { (byDisc[v.discipline]=byDisc[v.discipline]||[]).push(v); });
+  const orderedDiscs = VENDOR_DISCIPLINES.filter(d => byDisc[d]);
+
+  el.innerHTML = `
+  <div class="ph">
+    <div><div class="ph-title">Vendor Database</div><div class="ph-sub">${(db.vendors||[]).length} subconsultants across ${VENDOR_DISCIPLINES.filter(d=>(db.vendors||[]).some(v=>v.discipline===d)).length} disciplines</div></div>
+    <button class="btn btn-y" onclick="openAddVendorModal()">+ Add Vendor</button>
+  </div>
+  <div style="padding:0 20px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+    <input type="text" placeholder="Search vendors…" value="${vendorSearch}" oninput="vendorSearch=this.value;renderVendors()" style="border:1px solid var(--gl);border-radius:4px;padding:5px 10px;font-size:12px;width:200px">
+    <select onchange="vendorFilterDisc=this.value;renderVendors()" style="border:1px solid var(--gl);border-radius:4px;padding:5px 10px;font-size:12px">
+      <option value="">All disciplines</option>
+      ${VENDOR_DISCIPLINES.map(d=>`<option value="${d}"${d===vendorFilterDisc?' selected':''}>${d}</option>`).join('')}
+    </select>
+    <span style="font-size:11px;color:var(--gm)">${vendors.length} result${vendors.length!==1?'s':''}</span>
+  </div>
+  <div style="padding:0 20px 32px">
+  ${orderedDiscs.length ? orderedDiscs.map(disc => `
+    <div style="margin-bottom:20px">
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--gm);padding:8px 0 6px;border-bottom:1px solid var(--gl)">${disc} <span style="font-weight:400">(${byDisc[disc].length})</span></div>
+      <table class="crm-table"><thead><tr><th>Company</th><th>Website</th><th>Contacts</th><th>Status</th><th></th></tr></thead>
+      <tbody>${byDisc[disc].map(v => `<tr>
+        <td class="name-cell" style="cursor:pointer" onclick="openEditVendorModal('${v.id}')">${v.name}</td>
+        <td class="meta-cell">${v.website?`<a href="${v.website}" target="_blank" style="color:var(--blue);font-size:11px">${v.website.replace('https://','').replace('http://','')}</a>`:'—'}</td>
+        <td class="meta-cell">${v.contacts&&v.contacts.length?v.contacts.map(c=>c.name||c.email||'').filter(Boolean).join(', '):'—'}</td>
+        <td><span style="font-size:10px;padding:2px 7px;border-radius:2px;background:${v.status==='preferred'?'#e8f5e9':v.status==='do-not-use'?'#fdecea':'#f5f5f5'};color:${v.status==='preferred'?'var(--green)':v.status==='do-not-use'?'var(--red)':'var(--gm)'}">${v.status==='preferred'?'Preferred':v.status==='do-not-use'?'Do Not Use':'Active'}</span></td>
+        <td class="action-cell"><button class="btn btn-ghost btn-xs" onclick="openEditVendorModal('${v.id}')">Edit</button></td>
+      </tr>`).join('')}</tbody></table>
+    </div>`).join('') : '<div style="padding:40px;text-align:center;color:var(--gm);font-size:13px">No vendors match this filter.</div>'}
+  </div>`;
+}
+
+// ── Vendor modal ──
+let editingVendorId = null;
+let tempVendorContacts = [];
+
+function populateVendorDisciplineDropdown(selected) {
+  const sel = document.getElementById('vendor-f-discipline');
+  sel.innerHTML = '<option value="">— select —</option>' + VENDOR_DISCIPLINES.map(d=>`<option value="${d}"${d===selected?' selected':''}>${d}</option>`).join('');
+}
+
+function openAddVendorModal() {
+  editingVendorId = null;
+  tempVendorContacts = [];
+  document.getElementById('mo-vendor-title').textContent = 'Add Vendor';
+  document.getElementById('vendor-f-name').value = '';
+  populateVendorDisciplineDropdown('');
+  document.getElementById('vendor-f-status').value = 'active';
+  document.getElementById('vendor-f-website').value = '';
+  document.getElementById('vendor-f-notes').value = '';
+  document.getElementById('vendor-delete-btn').style.display = 'none';
+  renderVendorContactsList();
+  openMo('mo-vendor');
+}
+
+function openEditVendorModal(id) {
+  const v = (db.vendors||[]).find(x=>x.id===id);
+  if(!v) return;
+  editingVendorId = id;
+  tempVendorContacts = JSON.parse(JSON.stringify(v.contacts||[]));
+  document.getElementById('mo-vendor-title').textContent = 'Edit Vendor';
+  document.getElementById('vendor-f-name').value = v.name||'';
+  populateVendorDisciplineDropdown(v.discipline||'');
+  document.getElementById('vendor-f-status').value = v.status||'active';
+  document.getElementById('vendor-f-website').value = v.website||'';
+  document.getElementById('vendor-f-notes').value = v.notes||'';
+  document.getElementById('vendor-delete-btn').style.display = '';
+  renderVendorContactsList();
+  openMo('mo-vendor');
+}
+
+function renderVendorContactsList() {
+  const el = document.getElementById('vendor-contacts-list');
+  if(!el) return;
+  if(!tempVendorContacts.length) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--gm);padding:4px 0">No contacts added yet.</div>'; return;
+  }
+  el.innerHTML = tempVendorContacts.map((c,i) => `
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:6px;margin-bottom:6px;align-items:center">
+      <input type="text" value="${c.name||''}" placeholder="Name" oninput="tempVendorContacts[${i}].name=this.value" style="border:1px solid var(--gl);border-radius:3px;padding:4px 8px;font-size:11px">
+      <input type="text" value="${c.title||''}" placeholder="Position / Title" oninput="tempVendorContacts[${i}].title=this.value" style="border:1px solid var(--gl);border-radius:3px;padding:4px 8px;font-size:11px">
+      <input type="email" value="${c.email||''}" placeholder="Email" oninput="tempVendorContacts[${i}].email=this.value" style="border:1px solid var(--gl);border-radius:3px;padding:4px 8px;font-size:11px">
+      <button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="removeVendorContact(${i})">✕</button>
+    </div>`).join('');
+}
+
+function addVendorContactRow() {
+  tempVendorContacts.push({name:'',title:'',email:''});
+  renderVendorContactsList();
+}
+
+function removeVendorContact(i) {
+  tempVendorContacts.splice(i,1);
+  renderVendorContactsList();
+}
+
+function saveVendor() {
+  const name = document.getElementById('vendor-f-name').value.trim();
+  const discipline = document.getElementById('vendor-f-discipline').value;
+  if(!name || !discipline) { alert('Company name and discipline are required.'); return; }
+  if(!db.vendors) db.vendors = [];
+  const obj = {
+    name, discipline,
+    status: document.getElementById('vendor-f-status').value,
+    website: document.getElementById('vendor-f-website').value.trim(),
+    notes: document.getElementById('vendor-f-notes').value.trim(),
+    contacts: tempVendorContacts.filter(c=>c.name||c.email)
+  };
+  if(editingVendorId) {
+    const idx = db.vendors.findIndex(x=>x.id===editingVendorId);
+    if(idx>=0) db.vendors[idx] = { ...db.vendors[idx], ...obj };
+  } else {
+    db.vendors.push({ id:'ven_'+uid(), ...obj });
+  }
+  markDirty(); saveDB(); closeMo('mo-vendor'); renderVendors();
+}
+
+function deleteVendorFromModal() {
+  const v = (db.vendors||[]).find(x=>x.id===editingVendorId);
+  if(!v || !confirm(`Delete "${v.name}" from vendor database?`)) return;
+  db.vendors = (db.vendors||[]).filter(x=>x.id!==editingVendorId);
+  markDirty(); saveDB(); closeMo('mo-vendor'); renderVendors();
+}
+
+// ── Per-bid subconsultant management ──
+let tempBidSubs = [];
+
+function populateBidSubVendorDropdown() {
+  const sel = document.getElementById('bid-sub-vendor');
+  if(!sel) return;
+  initVendorData();
+  const grouped = {};
+  (db.vendors||[]).filter(v=>v.status!=='do-not-use').forEach(v=>{
+    (grouped[v.discipline]=grouped[v.discipline]||[]).push(v);
+  });
+  sel.innerHTML = '<option value="">— select vendor —</option>' +
+    VENDOR_DISCIPLINES.filter(d=>grouped[d]).map(d=>
+      `<optgroup label="${d}">${grouped[d].map(v=>`<option value="${v.id}">${v.name}</option>`).join('')}</optgroup>`
+    ).join('');
+}
+
+function showBidSubRow() {
+  const row = document.getElementById('bid-sub-add-row');
+  if(row) { row.style.display='grid'; populateBidSubVendorDropdown(); }
+}
+
+function confirmAddBidSub() {
+  const vendorId = document.getElementById('bid-sub-vendor').value;
+  if(!vendorId) { alert('Please select a vendor.'); return; }
+  const v = (db.vendors||[]).find(x=>x.id===vendorId);
+  const fee = +document.getElementById('bid-sub-fee').value||0;
+  const status = document.getElementById('bid-sub-status').value;
+  tempBidSubs.push({ vendorId, vendorName:v?v.name:'', discipline:v?v.discipline:'', fee, status });
+  document.getElementById('bid-sub-add-row').style.display='none';
+  renderBidSubsList();
+}
+
+function removeBidSub(i) {
+  tempBidSubs.splice(i,1);
+  renderBidSubsList();
+}
+
+function renderBidSubsList() {
+  const el = document.getElementById('bid-subs-list');
+  if(!el) return;
+  if(!tempBidSubs.length) {
+    el.innerHTML = '<div style="font-size:11px;color:var(--gm);padding:2px 0">No subconsultants assigned.</div>'; return;
+  }
+  el.innerHTML = `<table style="width:100%;border-collapse:collapse;font-size:11px">
+    <thead><tr style="border-bottom:1px solid var(--gl)">
+      <th style="text-align:left;padding:4px 6px;color:var(--gm);font-weight:600">Vendor</th>
+      <th style="text-align:left;padding:4px 6px;color:var(--gm);font-weight:600">Discipline</th>
+      <th style="text-align:right;padding:4px 6px;color:var(--gm);font-weight:600">Fee (AED)</th>
+      <th style="text-align:left;padding:4px 6px;color:var(--gm);font-weight:600">Status</th>
+      <th></th>
+    </tr></thead>
+    <tbody>${tempBidSubs.map((s,i)=>`<tr>
+      <td style="padding:5px 6px;font-weight:500">${s.vendorName}</td>
+      <td style="padding:5px 6px;color:var(--gm)">${s.discipline}</td>
+      <td style="padding:5px 6px;text-align:right">${s.fee?s.fee.toLocaleString():'—'}</td>
+      <td style="padding:5px 6px"><select style="font-size:11px;border:1px solid var(--gl);border-radius:3px;padding:2px 4px" onchange="tempBidSubs[${i}].status=this.value">
+        <option value="pending"${s.status==='pending'?' selected':''}>Pending</option>
+        <option value="appointed"${s.status==='appointed'?' selected':''}>Appointed</option>
+        <option value="signed"${s.status==='signed'?' selected':''}>Signed</option>
+        <option value="rejected"${s.status==='rejected'?' selected':''}>Rejected</option>
+      </select></td>
+      <td style="padding:5px 6px;text-align:right"><button class="btn btn-ghost btn-xs" style="color:var(--red)" onclick="removeBidSub(${i})">✕</button></td>
+    </tr>`).join('')}</tbody>
+  </table>`;
+}
+
 
 function forceSeedCRM() {
   seedCRM(); saveDB(); if(typeof currentModule!=='undefined'&&currentModule==='procurement') goProcurement('accounts');
