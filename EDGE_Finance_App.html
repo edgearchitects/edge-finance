@@ -1954,10 +1954,11 @@ window._msalLoaded = true;
 // CONFIG
 // ═══════════════════════════════════════════════════
 const CONFIG = {
-  clientId: '43b85214-f99c-4e56-93eb-764fc58255f0',
+  clientId: 'c3cb2395-68f3-445e-a838-e894737c5e56',
   tenantId: '744d3632-c6d3-40c0-bdab-c699a2e7aa9c',
-  siteUrl:  'https://edgedesignuae.sharepoint.com/sites/FINANCE',
+  siteUrl:  'https://edgedesignuae.sharepoint.com/sites/EDGEPlatform',
   scopes:   ['https://graph.microsoft.com/Sites.ReadWrite.All',
+             'https://graph.microsoft.com/Files.ReadWrite.All',
              'https://graph.microsoft.com/User.Read'],
   lists: {
     projects:       'EDGE_Projects',
@@ -1966,7 +1967,9 @@ const CONFIG = {
     monthlyFees:    'EDGE_MonthlyFees',
     voRegister:     'EDGE_VORegister',
     invoiceTracker: 'EDGE_InvoiceTracker'
-  }
+  },
+  dbFileName: 'edge_db.json',
+  dbFolder:   'EdgeApp'
 };
 
 // ═══════════════════════════════════════════════════
@@ -1979,7 +1982,7 @@ let editState = {};
 let msalInstance = null;
 let currentAccount = null;
 let siteId = null;
-let listIds = {};
+let driveId = null;
 let hasUnsavedChanges = false;
 
 function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,6); }
@@ -2109,7 +2112,7 @@ async function onSignedIn() {
   document.getElementById('user-avatar').textContent = initials;
   setSyncStatus('syncing', 'Loading…');
   try {
-    await resolveSiteAndLists();
+    await resolveSiteAndDrive();
     await loadFromSharePoint();
     setSyncStatus('ok', 'Synced');
     markClean();
@@ -2145,124 +2148,91 @@ async function graphRequest(url, method='GET', body=null) {
   return resp.json();
 }
 
-async function resolveSiteAndLists() {
-  // Get site ID from URL
-  const siteHost = 'edgedesignuae.sharepoint.com';
-  const sitePath = '/sites/FINANCE';
+async function resolveSiteAndDrive() {
+  // Resolve site ID from the configured SharePoint site URL
+  const url = new URL(CONFIG.siteUrl);
+  const siteHost = url.hostname;
+  const sitePath = url.pathname; // e.g. /sites/EDGEPlatform
   const siteData = await graphRequest(`/sites/${siteHost}:${sitePath}`);
   siteId = siteData.id;
 
-  // Get all lists and map names to IDs
-  const listsData = await graphRequest(`/sites/${siteId}/lists?$select=id,name,displayName`);
-  
-  // Log all lists found for diagnosis
-  console.log('SharePoint lists found:', listsData.value.map(l => `name="${l.name}" display="${l.displayName}" id=${l.id}`));
-  
-  listsData.value.forEach(l => {
-    Object.entries(CONFIG.lists).forEach(([key, expectedName]) => {
-      // Match on internal name OR display name (case-insensitive)
-      if(l.name === expectedName || 
-         l.displayName === expectedName ||
-         l.name.toLowerCase() === expectedName.toLowerCase() ||
-         l.displayName.toLowerCase() === expectedName.toLowerCase()) {
-        listIds[key] = l.id;
-        console.log(`Matched list key="${key}" name="${l.name}" display="${l.displayName}"`);
-      }
-    });
-  });
-
-  // Check all lists found
-  const missing = Object.keys(CONFIG.lists).filter(k=>!listIds[k]);
-  console.log('listIds resolved:', JSON.stringify(listIds));
-  console.log('Missing lists:', missing);
-  if(missing.length) {
-    // Show exactly what lists exist to help diagnose
-    const available = listsData.value.map(l=>l.name).join(', ');
-    throw new Error(`Missing SharePoint lists: ${missing.join(', ')}\n\nLists available in SharePoint: ${available}\n\nCheck names match exactly.`);
-  }
-
-  // EdgeData column must be manually added to each SharePoint list
-  // as a 'Multiple lines of text' column named 'EdgeData'
-  // (Title field is limited to 255 chars — EdgeData has no limit)
+  // Get the default document library drive
+  const drivesData = await graphRequest(`/sites/${siteId}/drives`);
+  const docLib = drivesData.value.find(d => d.name === 'Documents' || d.driveType === 'documentLibrary');
+  if(!docLib) throw new Error('Could not find Documents library on SharePoint site');
+  driveId = docLib.id;
+  console.log('SharePoint resolved — siteId:', siteId, 'driveId:', driveId);
 }
 
 // ─────────────────────────────────────────────────
-// SHAREPOINT READ / WRITE
+// SHAREPOINT READ / WRITE  (single JSON file approach)
 // ─────────────────────────────────────────────────
+function spFileUrl(path) {
+  // Graph path to a file inside the configured folder
+  return `/drives/${driveId}/root:/${CONFIG.dbFolder}/${path}`;
+}
+
+async function ensureSpFolder() {
+  // Create the folder if it doesn't exist (PUT a folder item)
+  try {
+    await graphRequest(`/drives/${driveId}/root:/${CONFIG.dbFolder}`, 'GET');
+  } catch(e) {
+    // Folder missing — create it
+    await graphRequest(`/drives/${driveId}/root/children`, 'POST', {
+      name: CONFIG.dbFolder,
+      folder: {},
+      '@microsoft.graph.conflictBehavior': 'replace'
+    });
+  }
+}
+
 async function loadFromSharePoint() {
-  const keys = Object.keys(CONFIG.lists);
-  await Promise.all(keys.map(async key => {
-    const listId = listIds[key];
-    const data = await graphRequest(`/sites/${siteId}/lists/${listId}/items?$expand=fields&$select=fields&$top=999`);
-    db[key] = data.value.map(item => {
-      try {
-        // Try EdgeData first (multiline, no limit), fall back to Title for legacy data
-        const raw = item.fields.EdgeData || item.fields.Title || '{}';
-        return JSON.parse(raw);
-      } catch(e) { return null; }
-    }).filter(r => r && r.id);  // must have an id field to be valid
-  }));
-  // Seed if all lists empty
-  const isEmpty = Object.values(db).every(arr=>!arr.length);
-  if(isEmpty) {
-    seed();
-    await saveToSharePoint();
+  try {
+    // GET the raw content of the JSON file
+    const token = (await msalInstance.acquireTokenSilent({ scopes: CONFIG.scopes, account: currentAccount })).accessToken;
+    const resp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${driveId}/root:/${CONFIG.dbFolder}/${CONFIG.dbFileName}:/content`,
+      { headers: { Authorization: 'Bearer ' + token } }
+    );
+    if(resp.status === 404) {
+      // File doesn't exist yet — treat as empty, seed and save
+      seed();
+      await saveToSharePoint();
+      return;
+    }
+    if(!resp.ok) throw new Error(`SharePoint read ${resp.status}`);
+    const remote = await resp.json();
+    // Merge remote into db, remote wins for all keys
+    Object.assign(db, remote);
+    saveLocalDB();
+  } catch(e) {
+    console.warn('loadFromSharePoint error, using local data:', e);
+    // Fall back to local — don't block the user
   }
 }
 
 async function saveToSharePoint() {
   setSyncStatus('syncing','Saving…');
-  // Brief pause to let any in-progress MSAL interactions complete
-  await new Promise(r => setTimeout(r, 800));
   try {
-    const keys = Object.keys(CONFIG.lists);
-    await Promise.all(keys.map(async key => {
-      const listId = listIds[key];
-      const records = db[key];
-
-      // Get existing items
-      const existing = await graphRequest(`/sites/${siteId}/lists/${listId}/items?$expand=fields&$select=id,fields&$top=999`);
-      const existingMap = {};
-      existing.value.forEach(item => {
-        try {
-          // Try EdgeData first, fall back to Title for legacy items
-          const raw = item.fields.EdgeData || item.fields.Title || '{}';
-          const r = JSON.parse(raw);
-          if(r.id) existingMap[r.id] = item.id;
-          else if(item.fields.Title) existingMap[item.fields.Title] = item.id; // use Title as ID directly
-        } catch(e) {
-          if(item.fields.Title) existingMap[item.fields.Title] = item.id;
-        }
-      });
-
-      // Upsert all current records
-      const upsertPromises = records.map(async record => {
-        const json = JSON.stringify(record);
-        // Title = short identifier (record id, max 50 chars)
-        // EdgeData = full JSON in multiline text field (no size limit)
-        const payload = { fields: {
-          Title: record.id || uid(),
-          EdgeData: json
-        }};
-        const spItemId = existingMap[record.id];
-        if(spItemId) {
-          // Update
-          await graphRequest(`/sites/${siteId}/lists/${listId}/items/${spItemId}`, 'PATCH', payload);
-        } else {
-          // Create
-          await graphRequest(`/sites/${siteId}/lists/${listId}/items`, 'POST', payload);
-        }
-        delete existingMap[record.id];
-      });
-      await Promise.all(upsertPromises);
-
-      // Delete removed records
-      const deletePromises = Object.values(existingMap).map(spItemId =>
-        graphRequest(`/sites/${siteId}/lists/${listId}/items/${spItemId}`, 'DELETE')
-      );
-      await Promise.all(deletePromises);
-    }));
-
+    await ensureSpFolder();
+    const token = (await msalInstance.acquireTokenSilent({ scopes: CONFIG.scopes, account: currentAccount })).accessToken;
+    const body = JSON.stringify(db);
+    const resp = await fetch(
+      `https://graph.microsoft.com/v1.0/drives/${driveId}/root:/${CONFIG.dbFolder}/${CONFIG.dbFileName}:/content`,
+      {
+        method: 'PUT',
+        headers: {
+          Authorization: 'Bearer ' + token,
+          'Content-Type': 'application/json'
+        },
+        body
+      }
+    );
+    if(!resp.ok) {
+      const err = await resp.text();
+      throw new Error(`SharePoint write ${resp.status}: ${err}`);
+    }
+    saveLocalDB();
     setSyncStatus('ok', 'Saved ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}));
     markClean();
   } catch(e) {
